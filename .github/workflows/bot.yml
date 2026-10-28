@@ -1,17 +1,17 @@
-name: AlcashX Auto Bot
+name: AlcashX Cloud Twitter Bot
 
 on:
   workflow_dispatch:
   schedule:
-    # Har 4 ghante mein 1 baar chalega (Safe Anti-Ban Frequency: Din mein 6 baar)
-    - cron: '15 */4 * * *'
+    # Har 3 ghante mein run hoga (Safe Anti-Ban Schedule)
+    - cron: '15 */3 * * *'
 
 permissions:
   contents: write
   actions: write
 
 jobs:
-  run-bot:
+  run-twitter-fleet:
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -29,17 +29,17 @@ jobs:
           npm install
           npx playwright install --with-deps chromium
 
-      - name: Scrape Fresh Viral Videos/Images from Reddit
+      - name: Scrape Fresh Viral Videos/Images (Reddit)
         run: node bot/scraper.js
 
-      - name: Run Twitter Automation & Outreach Bot
+      - name: Execute Multi-Account Twitter Bot
         env:
-          CLOAKER_URL: 'https://fan-page-orpin-mu.vercel.app'
+          CLOAKER_URL: https://fan-page-orpin-mu.vercel.app
         run: node bot/run.js
 
-      - name: Save Updated Queue & Harvested Users to GitHub
+      - name: Save Bot Run Stats, Queue & Harvested Users
         run: |
-          git config --global user.name "AlcashX AutoBot"
+          git config --global user.name "AlcashX Bot"
           git config --global user.email "bot@alcashx.local"
           git add data/config.json
-          git diff --staged --quiet || (git commit -m "🔄 Auto-update mediaQueue and harvestedUsers" && git push)
+          git diff --staged --quiet || (git commit -m "📊 Auto-sync bot stats & media queue" && git push)
