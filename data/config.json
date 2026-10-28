@@ -8,10 +8,19 @@
       "status": "active"
     }
   ],
-  "images": [],
-  "captions": [],
-  "replies": [],
-  "targets": [],
+  "images": [
+    "xYz987A"
+  ],
+  "captions": [
+    "{Hey|Wow} check this exclusive update 🔥",
+    "Don't miss this {crazy|wild} drop 👇"
+  ],
+  "replies": [
+    "Access unlocked for 5 mins: {{LINK}}"
+  ],
+  "targets": [
+    "#viral"
+  ],
   "settings": {
     "autoSelfReply": true,
     "crossAccountLike": true,
@@ -19,5 +28,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 5
   },
-  "updatedAt": "2026-10-28T21:49:33.025Z"
+  "updatedAt": "2026-10-28T21:51:11.126Z"
 }
