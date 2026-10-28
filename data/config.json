@@ -28,5 +28,8 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 5
   },
-  "updatedAt": "2026-10-28T23:06:10.988Z"
+  "updatedAt": "2026-10-28T23:06:10.988Z",
+  "mediaQueue": [],
+  "usedMedia": [],
+  "harvestedUsers": []
 }
