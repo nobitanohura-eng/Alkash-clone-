@@ -1,0 +1,23 @@
+{
+  "accounts": [
+    {
+      "username": "@Marinasanq7ejm",
+      "auth_token": "39760f40e9a813dd8872bc73b4bcb65bd81f934e",
+      "ct0": "e337ea3bae66cc72c09e0d93aca9ba3a7170d9f968d5434a8db8a32fe69a9971baf33c9980fd2cff7e5752f62ad3ab1fc9f76a02035d24b06756ae0591c2e08c9a7073fb6abe7036d293142402ed97d3",
+      "proxy": "",
+      "status": "active"
+    }
+  ],
+  "images": [],
+  "captions": [],
+  "replies": [],
+  "targets": [],
+  "settings": {
+    "autoSelfReply": true,
+    "crossAccountLike": true,
+    "crossAccountRetweet": true,
+    "crossAccountBookmark": false,
+    "maxAccountsPerRun": 5
+  },
+  "updatedAt": "2026-10-28T21:49:33.025Z"
+}
