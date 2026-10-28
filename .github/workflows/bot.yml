@@ -1,0 +1,34 @@
+name: AlcashX Cloud Twitter Bot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */2 * * *'
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  run-twitter-fleet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies & Playwright Chromium
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Execute Multi-Account Twitter Bot
+        env:
+          CLOAKER_URL: https://fan-page-orpin-mu.vercel.app
+        run: node bot/run.js
