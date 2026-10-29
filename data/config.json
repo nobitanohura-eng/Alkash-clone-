@@ -6,7 +6,8 @@
       "ct0": "e337ea3bae66cc72c09e0d93aca9ba3a7170d9f968d5434a8db8a32fe69a9971baf33c9980fd2cff7e5752f62ad3ab1fc9f76a02035d24b06756ae0591c2e08c9a7073fb6abe7036d293142402ed97d3",
       "proxy": "",
       "status": "paused",
-      "lastRunAt": "2026-10-29T11:39:26.845Z"
+      "lastRunAt": "2026-10-29T11:39:26.845Z",
+      "lastStatus": null
     },
     {
       "username": "@sophieclicks0",
@@ -81,6 +82,51 @@
     "mutuals"
   ],
   "mediaQueue": [
+    "https://media.redgifs.com/NotedDeficientPharaohhound-mobile.mp4",
+    "https://media.redgifs.com/NotedDeficientPharaohhound-poster.jpg",
+    "https://media.redgifs.com/FlusteredPrudentPangolin-mobile.mp4",
+    "https://media.redgifs.com/FlusteredPrudentPangolin-poster.jpg",
+    "https://media.redgifs.com/SafeDependentAlaskajingle-mobile.mp4",
+    "https://media.redgifs.com/SafeDependentAlaskajingle-poster.jpg",
+    "https://media.redgifs.com/PolishedGrouchyAurochs-mobile.mp4",
+    "https://media.redgifs.com/PolishedGrouchyAurochs-poster.jpg",
+    "https://media.redgifs.com/PlumGlisteningUrutu-poster.jpg",
+    "https://media.redgifs.com/FearfulOvercookedOrca-mobile.mp4",
+    "https://media.redgifs.com/FearfulOvercookedOrca-poster.jpg",
+    "https://media.redgifs.com/WittyWatchfulGalapagosalbatross-mobile.mp4",
+    "https://media.redgifs.com/WittyWatchfulGalapagosalbatross-poster.jpg",
+    "https://media.redgifs.com/AwfulRightAxolotl-mobile.mp4",
+    "https://media.redgifs.com/AwfulRightAxolotl-poster.jpg",
+    "https://media.redgifs.com/WeeGlaringIchthyosaurs-mobile.mp4",
+    "https://media.redgifs.com/WeeGlaringIchthyosaurs-poster.jpg",
+    "https://media.redgifs.com/KnowledgeableLiquidAsianporcupine-mobile.mp4",
+    "https://media.redgifs.com/KnowledgeableLiquidAsianporcupine-poster.jpg",
+    "https://media.redgifs.com/PhonyDownrightAmberpenshell-mobile.mp4",
+    "https://media.redgifs.com/PhonyDownrightAmberpenshell-poster.jpg",
+    "https://media.redgifs.com/InnocentLowLion-mobile.mp4",
+    "https://media.redgifs.com/InnocentLowLion-poster.jpg",
+    "https://media.redgifs.com/NextUnsteadyIberianmole-mobile.mp4",
+    "https://media.redgifs.com/NextUnsteadyIberianmole-poster.jpg",
+    "https://media.redgifs.com/NocturnalViciousShrew-mobile.mp4",
+    "https://media.redgifs.com/NocturnalViciousShrew-poster.jpg",
+    "https://media.redgifs.com/WhisperedButteryAdamsstaghornedbeetle-mobile.mp4",
+    "https://media.redgifs.com/WhisperedButteryAdamsstaghornedbeetle-poster.jpg",
+    "https://media.redgifs.com/MatureBonyAmazondolphin-poster.jpg",
+    "https://media.redgifs.com/VibrantSpanishBengaltiger-medium.jpg",
+    "https://media.redgifs.com/BeigeGreenGrackle-mobile.mp4",
+    "https://media.redgifs.com/BeigeGreenGrackle-poster.jpg",
+    "https://media.redgifs.com/FlamboyantWryGoldfinch-mobile.mp4",
+    "https://media.redgifs.com/FlamboyantWryGoldfinch-poster.jpg",
+    "https://media.redgifs.com/SpitefulSentimentalCob-mobile.mp4",
+    "https://media.redgifs.com/SpitefulSentimentalCob-poster.jpg",
+    "https://media.redgifs.com/SuperficialImprobableSeal-mobile.mp4",
+    "https://media.redgifs.com/SuperficialImprobableSeal-poster.jpg",
+    "https://media.redgifs.com/ThinRewardingCicada-mobile.mp4",
+    "https://media.redgifs.com/ThinRewardingCicada-poster.jpg",
+    "https://media.redgifs.com/TerriblePrivateBengaltiger-mobile.mp4",
+    "https://media.redgifs.com/TerriblePrivateBengaltiger-poster.jpg",
+    "https://media.redgifs.com/AmpleThunderousHeifer-mobile.mp4",
+    "https://media.redgifs.com/AmpleThunderousHeifer-poster.jpg",
     "https://assets.mixkit.co/videos/preview/mixkit-sensual-woman-posing-for-the-camera-42995-large.mp4",
     "https://assets.mixkit.co/videos/preview/mixkit-young-woman-looking-at-the-camera-in-a-room-41643-large.mp4",
     "https://c4q5z4u3.aacdn.net/library/8/73600cbd42355b42e785d01944a0357d6d42b013.mp4",
@@ -139,11 +185,9 @@
     "https://media.redgifs.com/PlumGlisteningUrutu-mobile.mp4"
   ],
   "harvestedUsers": [
-    "@active_user1",
     "@reply_guy_99",
     "@nsfw_retweeter",
-    "@thirst_trap_lover",
-    "@simp_account_01"
+    "@thirst_trap_lover"
   ],
   "settings": {
     "autoSelfReply": true,
@@ -152,5 +196,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-29T11:43:45.469Z"
+  "updatedAt": "2026-10-29T16:21:02.985Z"
 }
