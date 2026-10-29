@@ -1,48 +1,122 @@
 /**
  * File: bot/scraper.js
- * AlcashX Cloud Pro v7.0 — High-Reach SFW/Tease Image & Pre-Blurred Card Scraper
- * Fetches clean glamour/selfie images from Reddit & Imgur and prepares both:
- *  1. Clean Teaser Images (For 100% Unblurred Organic X Reach)
- *  2. Pre-Blurred Censor Images (via wsrv.nl optical blur so X AI never flags nudity!)
+ * AlcashX Cloud Pro v9.0 — Real Model HD Poster Harvester & Google SafeSearch Blur Engine
+ * Upgrades:
+ *  1. ZERO Unsplash Stock Photos! 100% Real Amateur/Glamour Model Frames via RedGifs V2 API + Reddit JSON
+ *  2. Google SafeSearch-Style Optical Blur (blur=6, contrast boost) so curves/pose are visible & high-CTR
+ *  3. Preserves Custom Uploaded Vault Images (config.images) & never conflicts with admin.js
  */
 
 import fs from 'fs';
 import path from 'path';
 
-// 100% Safe-For-Algorithm Subreddits (High lust/curiosity, ZERO hardcore nudity = Massive X Reach!)
-const HIGH_REACH_IMAGE_SUBS = [
-  'SFWNextDoorGirls',
-  'tightdresses',
-  'girlsinyogapants',
-  'bikinis',
+const BANNED_WORDS = [
+  'jerkmate', 'chaturbate', 'stripchat', 'bonga', 'cam4', 'ad', 'promo',
+  'hentai', 'anime', '3d', 'sfm', 'cartoon', 'animated', 'rule34', 'furry',
+  'gay', 'trans', 'shemale', 'femboy', 'cuck', 'male', 'guy', 'man'
+];
+
+const REDGIFS_NICHE_QUERIES = [
+  'tiktok tease',
+  'mirror selfie girl',
+  'bikini try on haul',
+  'shirt lift tease',
+  'bedroom girlfriend tease',
+  'tight dress curves',
+  'lingerie mirror',
+  'desi saree tease'
+];
+
+const REDDIT_MODEL_SUBS = [
   'RealGirls',
-  'selfie',
-  'AmIHot',
-  'Faces'
+  'tightdresses',
+  'bikinis',
+  'SFWNextDoorGirls',
+  'girlsinyogapants',
+  'lingerie'
 ];
 
-// Curated High-Converting Imgur / CDN Glamour Teaser Fallback Pool
-const CURATED_GLAMOUR_IMAGES = [
-  'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=900&q=80',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&q=80',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&q=80',
-  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&q=80',
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&q=80'
-];
-
-// Converts any raw image URL into a custom Pre-Blurred Teaser Image URL (100% Safe from X AI!)
-function makePreBlurredUrl(rawImgUrl, blurLevel = 12) {
-  return `https://wsrv.nl/?url=${encodeURIComponent(rawImgUrl)}&w=900&h=500&fit=cover&blur=${blurLevel}&output=jpg`;
+/**
+ * Wraps any real model image URL into a Google SafeSearch-style Censored Teaser Card
+ * blur=6 keeps the model's silhouette, skin tone & pose clearly recognizable while censoring details!
+ */
+function toSafeSearchBlurUrl(rawImgUrl, blurLevel = 6) {
+  if (!rawImgUrl || typeof rawImgUrl !== 'string') return '';
+  const clean = rawImgUrl.trim();
+  if (clean.includes('wsrv.nl')) return clean;
+  return `https://wsrv.nl/?url=${encodeURIComponent(clean)}&w=960&h=540&fit=cover&a=attention&blur=${blurLevel}&con=12&bri=-5&output=jpg`;
 }
 
-async function fetchRedditGlamourImages() {
+/**
+ * Converts RedGifs MP4 or Poster URL into a valid JPG Poster URL
+ */
+function extractRedgifsPoster(gifObj) {
+  const poster = gifObj?.urls?.poster || gifObj?.urls?.thumbnail || gifObj?.urls?.vthumbnail;
+  if (poster && poster.startsWith('http')) return poster;
+  const mp4 = gifObj?.urls?.sd || gifObj?.urls?.hd || '';
+  if (mp4.includes('redgifs.com') && mp4.split('?')[0].endsWith('.mp4')) {
+    return mp4.replace('-mobile.mp4', '-poster.jpg').replace('.mp4', '-poster.jpg');
+  }
+  return null;
+}
+
+/**
+ * Source 1: Official RedGifs V2 API (100% Reliable on GitHub Actions & Vercel — Real Amateur Models)
+ */
+async function fetchRedGifsModelPosters() {
+  const results = [];
+  try {
+    const authRes = await fetch('https://api.redgifs.com/v2/auth/temporary', {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0' }
+    });
+    if (!authRes.ok) return results;
+    const { token } = await authRes.json();
+    if (!token) return results;
+
+    const pickedQueries = [...REDGIFS_NICHE_QUERIES].sort(() => 0.5 - Math.random()).slice(0, 3);
+
+    for (const q of pickedQueries) {
+      const page = Math.floor(Math.random() * 3) + 1;
+      const searchUrl = `https://api.redgifs.com/v2/gifs/search?search_text=${encodeURIComponent(q)}&order=trending&type=g&count=30&page=${page}`;
+      const res = await fetch(searchUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0'
+        }
+      });
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      for (const g of data?.gifs || []) {
+        const tags = (g?.tags || []).map((t) => String(t).toLowerCase());
+        const desc = String(g?.description || '').toLowerCase();
+        if (BANNED_WORDS.some((b) => tags.some((t) => t.includes(b)) || desc.includes(b))) continue;
+
+        const posterUrl = extractRedgifsPoster(g);
+        if (posterUrl) {
+          // 80% SafeSearch Blurred Teaser Cards (blur=6), 20% Light Tease Blur (blur=4)
+          const blurStrength = Math.random() < 0.8 ? 6 : 4;
+          results.push(toSafeSearchBlurUrl(posterUrl, blurStrength));
+        }
+      }
+    }
+  } catch (err) {
+    console.log('⚠️ RedGifs Poster fetch warning:', err.message);
+  }
+  return results;
+}
+
+/**
+ * Source 2: Reddit Model Subreddits (Multi-Fallback Fetcher)
+ */
+async function fetchRedditModelImages() {
   const images = [];
-  const pickedSubs = [...HIGH_REACH_IMAGE_SUBS].sort(() => 0.5 - Math.random()).slice(0, 4);
+  const pickedSubs = [...REDDIT_MODEL_SUBS].sort(() => 0.5 - Math.random()).slice(0, 3);
 
   for (const sub of pickedSubs) {
-    const rawTarget = `https://old.reddit.com/r/${sub}/hot.json?limit=40&raw_json=1`;
+    const rawTarget = `https://www.reddit.com/r/${sub}/hot.json?limit=35&raw_json=1`;
     const endpoints = [
+      rawTarget,
       `https://api.allorigins.win/raw?url=${encodeURIComponent(rawTarget)}`,
       `https://corsproxy.io/?${encodeURIComponent(rawTarget)}`
     ];
@@ -50,7 +124,10 @@ async function fetchRedditGlamourImages() {
     for (const ep of endpoints) {
       try {
         const res = await fetch(ep, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0' }
+          headers: {
+            'User-Agent': 'web:alcashx.bot.v9:v9.0 (by /u/alcashx_curator)',
+            Accept: 'application/json'
+          }
         });
         if (!res.ok) continue;
         const txt = await res.text();
@@ -63,17 +140,8 @@ async function fetchRedditGlamourImages() {
           if (!item || !item.url) continue;
           const cleanUrl = item.url.split('?')[0];
           if (/\.(jpg|jpeg|png)$/i.test(cleanUrl) && !cleanUrl.includes('avatar')) {
-            // If the post came from an 18+ subreddit (over_18), auto-apply our custom Safe Pre-Blur!
-            if (item.over_18) {
-              images.push(makePreBlurredUrl(cleanUrl, 14));
-            } else {
-              // Mix 50% crystal-clear SFW glamour + 50% teasing pre-blurred mystery cards!
-              if (Math.random() < 0.45) {
-                images.push(makePreBlurredUrl(cleanUrl, 10));
-              } else {
-                images.push(cleanUrl);
-              }
-            }
+            const blurAmt = item.over_18 ? 7 : 5;
+            images.push(toSafeSearchBlurUrl(cleanUrl, blurAmt));
           }
         }
         if (images.length > 0) break;
@@ -103,7 +171,7 @@ async function scrapeAll() {
       autoSelfReply: true,
       crossAccountLike: true,
       crossAccountRetweet: true,
-      crossAccountBookmark: false,
+      crossAccountBookmark: true,
       maxAccountsPerRun: 2
     }
   };
@@ -115,40 +183,75 @@ async function scrapeAll() {
   }
 
   if (!Array.isArray(config.mediaQueue)) config.mediaQueue = [];
+  if (!Array.isArray(config.images)) config.images = [];
   if (!Array.isArray(config.usedMedia)) config.usedMedia = [];
 
   const usedSet = new Set(config.usedMedia);
 
-  // Purge old .mp4 videos so queue only holds high-reach Images & Pre-Blurred Cards
-  config.mediaQueue = config.mediaQueue.filter((u) => {
-    if (!u || typeof u !== 'string') return false;
-    if (u.endsWith('.mp4') || u.includes('redgifs.com') || u.includes('aacdn.net')) return false;
-    return !usedSet.has(u);
-  });
+  // Strip old Unsplash stock images, Mixkit, Rule34, and already-used items
+  const isJunkOrStock = (u) => {
+    if (!u || typeof u !== 'string') return true;
+    return (
+      u.includes('images.unsplash.com') ||
+      u.includes('mixkit.co') ||
+      u.includes('aacdn.net') ||
+      u.includes('rule34')
+    );
+  };
+
+  config.images = config.images.filter((u) => !isJunkOrStock(u));
+
+  // Normalize any existing raw RedGifs .mp4 in queue into SafeSearch Blurred Poster Cards
+  config.mediaQueue = config.mediaQueue
+    .filter((u) => !isJunkOrStock(u) && !usedSet.has(u))
+    .map((u) => {
+      if (u.includes('redgifs.com') && u.split('?')[0].endsWith('.mp4')) {
+        const poster = u.replace('-mobile.mp4', '-poster.jpg').replace('.mp4', '-poster.jpg');
+        return toSafeSearchBlurUrl(poster, 6);
+      }
+      return u;
+    });
 
   const queueSet = new Set(config.mediaQueue);
   let addedCount = 0;
 
-  const redditImgs = await fetchRedditGlamourImages();
-  console.log(`📡 Fetched ${redditImgs.length} High-Reach SFW & Pre-Blurred Images from Reddit`);
-
-  const allCandidates = [...redditImgs, ...CURATED_GLAMOUR_IMAGES].sort(() => 0.5 - Math.random());
-
-  for (const imgUrl of allCandidates) {
-    if (!usedSet.has(imgUrl) && !queueSet.has(imgUrl)) {
-      config.mediaQueue.push(imgUrl);
-      queueSet.add(imgUrl);
+  // 1. First priority: User's Custom Uploaded / Vault Images (config.images)
+  for (const customImg of config.images) {
+    if (customImg && !usedSet.has(customImg) && !queueSet.has(customImg)) {
+      config.mediaQueue.unshift(customImg); // Put custom images at the very front of the queue!
+      queueSet.add(customImg);
       addedCount++;
     }
   }
 
-  config.mediaQueue = config.mediaQueue.slice(0, 350);
+  // 2. Fetch fresh RedGifs HD Model Posters + Reddit Model Images
+  const [redgifsCards, redditCards] = await Promise.all([
+    fetchRedGifsModelPosters(),
+    fetchRedditModelImages()
+  ]);
+
+  console.log(
+    `📡 Harvested ${redgifsCards.length} RedGifs HD Model Cards + ${redditCards.length} Reddit Glamour Cards`
+  );
+
+  const freshPool = [...redgifsCards, ...redditCards].sort(() => 0.5 - Math.random());
+
+  for (const cardUrl of freshPool) {
+    if (cardUrl && !usedSet.has(cardUrl) && !queueSet.has(cardUrl)) {
+      config.mediaQueue.push(cardUrl);
+      queueSet.add(cardUrl);
+      addedCount++;
+    }
+  }
+
+  config.mediaQueue = config.mediaQueue.slice(0, 400);
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   console.log(
-    `✅ Scraper v7.0 Complete! Added ${addedCount} Clean/Pre-Blurred Images | Total Queue: ${config.mediaQueue.length}`
+    `✅ Scraper v9.0 Complete! Added ${addedCount} SafeSearch Blurred Model Cards | Total Queue: ${config.mediaQueue.length}`
   );
   process.exit(0);
 }
 
 scrapeAll();
+
 
