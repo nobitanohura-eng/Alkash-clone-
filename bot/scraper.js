@@ -1,27 +1,71 @@
 /**
  * File: bot/scraper.js
- * Audited & Fixed: Uses Official RedGifs OAuth API + Reddit NSFW Proxies + Rule34 Video API
- * Guarantees 100% downloadable, non-repeating adult/thirst-trap videos & images.
+ * AlcashX Cloud Pro v4.0 — Pure Real Amateur & High-Converting Trap Video Scraper
+ * Fixed:
+ *  - COMPLETELY REMOVED Rule34 (aacdn.net animated/Jerkmate ads) & Mixkit stock videos!
+ *  - Strictly fetches ONLY .mp4 videos (Removed static .jpg posters)
+ *  - Filters out studio ads, Jerkmate, 3D/hentai, and long slow videos
+ *  - Targets high-curiosity real amateur girl niches (fingering, solo, homemade, gf, college, desi)
  */
 
 import fs from 'fs';
 import path from 'path';
 
-const SEARCH_NICHES = [
-  'bhabhi', 'desi', 'indian', 'tiktok', 'twerk', 'amateur',
-  'tease', 'booty', 'curves', 'bikini', 'lingerie', 'girlfriend'
+// High-Converting Real Amateur Trap Niches (High Curiosity + Fast Clicks)
+const TRAP_NICHES = [
+  'solo girl',
+  'fingering',
+  'amateur girl',
+  'homemade gf',
+  'bedroom tease',
+  'mirror girl',
+  'college girl',
+  'wet solo',
+  'desi bhabhi',
+  'indian amateur',
+  'rubbing',
+  'skirt lift'
 ];
 
-const SUBREDDITS = [
-  'TikTokThots', 'gonewild', 'RealGirls', 'nsfw_gifs',
-  'booty', 'curves', 'IndianBabes', 'DesiBoners'
+const AMATEUR_SUBREDDITS = [
+  'GoneWildAudio',
+  'RealGirls',
+  'Amateur',
+  'fingering',
+  'MasturbationGoneWild',
+  'IndianBabes',
+  'DesiBoners',
+  'TikTokThots'
 ];
 
-// 1. Official RedGifs API (With Temporary Bearer Token -> Returns Direct Downloadable MP4s & Posters)
-async function fetchRedgifsOfficialApi() {
+// Blacklist words to block Jerkmate ads, cartoons, studio promos & male-focused spam
+const BANNED_TAGS = [
+  'jerkmate', 'chaturbate', 'stripchat', 'bonga', 'cam4', 'ad', 'promo',
+  'hentai', 'anime', '3d', 'sfm', 'cartoon', 'animated', 'rule34', 'furry',
+  'gay', 'trans', 'shemale', 'femboy', 'cuck', 'compilation'
+];
+
+function isCleanRealAmateurGif(gif) {
+  if (!gif || !gif.urls) return false;
+  // Must have a real video duration between 4s and 45s (sweet spot for X auto-play loop)
+  if (gif.duration && (gif.duration < 4 || gif.duration > 45)) return false;
+
+  const tags = (gif.tags || []).map((t) => String(t).toLowerCase());
+  const desc = String(gif.description || '').toLowerCase();
+
+  for (const bad of BANNED_TAGS) {
+    if (tags.some((t) => t.includes(bad)) || desc.includes(bad)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// 1. Official RedGifs API (Strictly Real Amateur MP4s — No Posters, No Ads)
+async function fetchRedgifsAmateurMp4s() {
   const urls = [];
   try {
-    console.log('🔑 Requesting Official RedGifs API Token...');
+    console.log('🔑 Requesting Official RedGifs OAuth Token...');
     const authRes = await fetch('https://api.redgifs.com/v2/auth/temporary', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36'
@@ -31,12 +75,14 @@ async function fetchRedgifsOfficialApi() {
     if (authRes.ok) {
       const { token } = await authRes.json();
       if (token) {
-        // Pick 3 random niches each run so content is always fresh and never repeats!
-        const shuffledNiches = [...SEARCH_NICHES].sort(() => 0.5 - Math.random()).slice(0, 3);
+        const pickedNiches = [...TRAP_NICHES].sort(() => 0.5 - Math.random()).slice(0, 4);
 
-        for (const query of shuffledNiches) {
-          const pageNum = Math.floor(Math.random() * 5) + 1; // Random page 1-5 for fresh videos
-          const searchUrl = `https://api.redgifs.com/v2/gifs/search?search_text=${encodeURIComponent(query)}&order=trending&count=30&page=${pageNum}`;
+        for (const query of pickedNiches) {
+          const pageNum = Math.floor(Math.random() * 4) + 1;
+          const searchUrl = `https://api.redgifs.com/v2/gifs/search?search_text=${encodeURIComponent(
+            query
+          )}&order=trending&type=g&count=35&page=${pageNum}`;
+
           const res = await fetch(searchUrl, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -47,10 +93,12 @@ async function fetchRedgifsOfficialApi() {
           if (res.ok) {
             const data = await res.json();
             for (const gif of data?.gifs || []) {
-              // Prefer SD MP4 (fast upload) + high-res poster image
-              if (gif?.urls?.sd) urls.push(gif.urls.sd);
-              else if (gif?.urls?.hd) urls.push(gif.urls.hd);
-              if (gif?.urls?.poster) urls.push(gif.urls.poster);
+              if (!isCleanRealAmateurGif(gif)) continue;
+              // ONLY push actual MP4 video streams (Never push .jpg poster thumbnails!)
+              const mp4Url = gif?.urls?.sd || gif?.urls?.hd;
+              if (mp4Url && mp4Url.split('?')[0].endsWith('.mp4')) {
+                urls.push(mp4Url);
+              }
             }
           }
         }
@@ -62,20 +110,20 @@ async function fetchRedgifsOfficialApi() {
   return urls;
 }
 
-// 2. Reddit NSFW Subreddits via Public JSON Proxy
-async function fetchRedditSubreddits() {
+// 2. Reddit Real Amateur Subreddits (Strictly Direct MP4 Videos)
+async function fetchRedditAmateurMp4s() {
   const urls = [];
-  const pickedSubs = [...SUBREDDITS].sort(() => 0.5 - Math.random()).slice(0, 3);
+  const pickedSubs = [...AMATEUR_SUBREDDITS].sort(() => 0.5 - Math.random()).slice(0, 3);
 
   for (const sub of pickedSubs) {
-    const rawTarget = `https://old.reddit.com/r/${sub}/hot.json?limit=35&raw_json=1`;
-    const proxyEndpoints = [
+    const rawTarget = `https://old.reddit.com/r/${sub}/hot.json?limit=40&raw_json=1`;
+    const endpoints = [
       `https://api.allorigins.win/raw?url=${encodeURIComponent(rawTarget)}`,
       `https://corsproxy.io/?${encodeURIComponent(rawTarget)}`,
       rawTarget
     ];
 
-    for (const ep of proxyEndpoints) {
+    for (const ep of endpoints) {
       try {
         const res = await fetch(ep, {
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0' }
@@ -89,41 +137,19 @@ async function fetchRedditSubreddits() {
         for (const p of posts) {
           const item = p?.data;
           if (!item) continue;
+          const titleLower = String(item.title || '').toLowerCase();
+          if (BANNED_TAGS.some((b) => titleLower.includes(b))) continue;
+
           if (item.is_video && item.media?.reddit_video?.fallback_url) {
             urls.push(item.media.reddit_video.fallback_url.split('?')[0]);
           } else if (item.preview?.reddit_video_preview?.fallback_url) {
             urls.push(item.preview.reddit_video_preview.fallback_url.split('?')[0]);
-          } else if (item.url && /\.(mp4|gif|jpg|jpeg|png)$/i.test(item.url.split('?')[0])) {
-            urls.push(item.url.split('?')[0]);
           }
         }
         if (urls.length > 0) break;
       } catch (_) {}
     }
   }
-  return urls;
-}
-
-// 3. Unblockable Direct Adult Video/Image JSON API
-async function fetchDirectAdultCdn() {
-  const urls = [];
-  try {
-    const randomPid = Math.floor(Math.random() * 20);
-    const res = await fetch(
-      `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=40&pid=${randomPid}&json=1&tags=video+animated`,
-      { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } }
-    );
-    if (res.ok) {
-      const items = await res.json();
-      if (Array.isArray(items)) {
-        for (const it of items) {
-          if (it?.file_url && /\.(mp4|gif|jpg|jpeg|png)$/i.test(it.file_url)) {
-            urls.push(it.file_url);
-          }
-        }
-      }
-    }
-  } catch (_) {}
   return urls;
 }
 
@@ -142,10 +168,11 @@ async function scrapeAll() {
     mediaQueue: [],
     usedMedia: [],
     harvestedUsers: [],
+    activityLog: [],
     settings: {
       autoSelfReply: true,
-      crossAccountLike: false,
-      crossAccountRetweet: false,
+      crossAccountLike: true,
+      crossAccountRetweet: true,
       crossAccountBookmark: false,
       maxAccountsPerRun: 2
     }
@@ -161,21 +188,26 @@ async function scrapeAll() {
   if (!Array.isArray(config.usedMedia)) config.usedMedia = [];
 
   const usedSet = new Set(config.usedMedia);
+
+  // PURGE OLD JUNK: Remove any Rule34 (aacdn.net), Mixkit stock videos, or static .jpg posters from existing queue!
+  config.mediaQueue = config.mediaQueue.filter((u) => {
+    if (!u || typeof u !== 'string') return false;
+    const clean = u.toLowerCase().split('?')[0];
+    if (u.includes('aacdn.net') || u.includes('rule34') || u.includes('mixkit.co')) return false;
+    if (!clean.endsWith('.mp4')) return false; // Keep ONLY high-converting MP4 videos
+    return !usedSet.has(u);
+  });
+
   const queueSet = new Set(config.mediaQueue);
   let addedCount = 0;
 
-  // Collect from all 3 sources
-  const rgUrls = await fetchRedgifsOfficialApi();
-  console.log(`📡 RedGifs Official API: found ${rgUrls.length} media URLs`);
+  const rgUrls = await fetchRedgifsAmateurMp4s();
+  console.log(`📡 RedGifs Real Amateur MP4s: found ${rgUrls.length} videos`);
 
-  const redditUrls = await fetchRedditSubreddits();
-  console.log(`📡 Reddit NSFW Subreddits: found ${redditUrls.length} media URLs`);
+  const redditUrls = await fetchRedditAmateurMp4s();
+  console.log(`📡 Reddit Amateur MP4s: found ${redditUrls.length} videos`);
 
-  const cdnUrls = await fetchDirectAdultCdn();
-  console.log(`📡 Direct Adult CDN API: found ${cdnUrls.length} media URLs`);
-
-  // Combine and shuffle so every account gets completely different videos/images!
-  const allCandidates = [...rgUrls, ...redditUrls, ...cdnUrls].sort(() => 0.5 - Math.random());
+  const allCandidates = [...rgUrls, ...redditUrls].sort(() => 0.5 - Math.random());
 
   for (const url of allCandidates) {
     if (!usedSet.has(url) && !queueSet.has(url)) {
@@ -185,29 +217,16 @@ async function scrapeAll() {
     }
   }
 
-  // Merge custom user URLs from Admin Panel (only if NOT already in usedMedia!)
-  if (Array.isArray(config.images)) {
-    for (const raw of config.images) {
-      if (!raw || raw === 'xYz987A') continue;
-      const fullUrl = raw.startsWith('http')
-        ? raw
-        : `https://i.imgur.com/${raw.replace(/\.(jpg|png|gif|jpeg|mp4)$/i, '')}.jpg`;
-      if (!usedSet.has(fullUrl) && !queueSet.has(fullUrl)) {
-        config.mediaQueue.push(fullUrl);
-        queueSet.add(fullUrl);
-        addedCount++;
-      }
-    }
-  }
-
-  // Keep queue trimmed to 400 fresh items and usedMedia capped at 2000
-  config.mediaQueue = config.mediaQueue.slice(0, 400);
-  if (config.usedMedia.length > 2000) {
-    config.usedMedia = config.usedMedia.slice(-2000);
+  // Keep queue trimmed to 350 fresh MP4s
+  config.mediaQueue = config.mediaQueue.slice(0, 350);
+  if (config.usedMedia.length > 2500) {
+    config.usedMedia = config.usedMedia.slice(-2500);
   }
 
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-  console.log(`✅ Scraper Finished! Added: ${addedCount} new | Total Unique Queue: ${config.mediaQueue.length}`);
+  console.log(
+    `✅ Scraper Complete! Purged junk & added ${addedCount} pure amateur MP4s | Queue: ${config.mediaQueue.length}`
+  );
   process.exit(0);
 }
 
