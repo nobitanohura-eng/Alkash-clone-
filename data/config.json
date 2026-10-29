@@ -24,8 +24,8 @@
       "ct0": "95dee312b51979d567bfd713522e9994c849a4fe7baa7b1f3a0cca4bb2c611ef0810d708a7aeb7131a9f1026e84c779d263883dfa9c8df959cb68503e146f71970e67b5d5aaab1fdc542899ac76c64ef",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-29T19:47:41.806Z",
-      "lastStatus": "✅ Video + Link (Retry) + 0 Hijacks"
+      "lastRunAt": "2026-10-29T22:44:50.160Z",
+      "lastStatus": "⚠️ Error: locator.waitFor: Timeout 20000"
     },
     {
       "username": "@Spicydesimodels",
@@ -33,8 +33,8 @@
       "ct0": "c40ccb3c0b144b50c0adf3d049ab52ccba603d5ce5f5870beaecd916dbb9686a2ceb8b478f7a37f20d586abbf418e7cd04ddfdd3797fda48be6957cfbdcf22b0c7d8a01587371f8e25173d88f67df13b",
       "proxy": "",
       "status": "active",
-      "lastRunAt": null,
-      "lastStatus": null
+      "lastRunAt": "2026-10-29T22:42:30.856Z",
+      "lastStatus": "✅ 1 Card + 0 Viral Hijacks"
     }
   ],
   "images": [
@@ -76,8 +76,6 @@
     "#egirl"
   ],
   "mediaQueue": [
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309970573_832.jpg#noblur",
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309947506_456.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309913440_410.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309878045_240.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309851972_77.jpg#noblur",
@@ -157,7 +155,57 @@
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FPhonyDownrightAmberpenshell-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FNeatElaborateMice-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FAfraidAgonizingAllosaurus-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
-    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FBeigeGreenGrackle-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg"
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FBeigeGreenGrackle-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDescriptiveThankfulIsabellinewheatear-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FQuickRightTaruca-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FLameBuoyantKusimanse-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FRemarkableLightAnophelesmosquito-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FBlissfulKnottyOsprey-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FCheerfulLightsteelblueAfricangroundhornbill-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FWellmadeEuphoricColt-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FAnxiousWavyWhoopingcrane-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FGreenSelfreliantLabradorretriever-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFlusteredPrudentPangolin-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FNextUnsteadyIberianmole-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FRemarkableLightAnophelesmosquito-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FImpossibleWellwornBluefintuna-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FLostExtrovertedFanworms-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FYearlyElderlyPachyderm-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FNegativeShadyBat-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFuzzyHarmfulUromastyxspinipes-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDualPowerfulWaterboatman-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFancyGranularLeonberger-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FProductiveMagnificentAmethystinepython-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FExcitingAdorableEastrussiancoursinghounds-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FUnimportantProfuseDove-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FWittyWatchfulGalapagosalbatross-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FThoroughDefiniteEmeraldtreeskink-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FPerfectTerribleSenegalpython-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FNarrowFarMacaque-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FGracefulLuckyAmphiuma-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSimpleImpishAdder-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FWellmadeEuphoricColt-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FThinRewardingCicada-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FInnocentLowLion-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FExcitableAwareBubblefish-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FWretchedSeagreenRoadrunner-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FIntentPertinentSolenodon-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FHilariousUnlawfulBurro-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FEmptyRoastedSnowyowl-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDeterminedThisLorikeet-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FQuickNippyStagbeetle-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSecretDeadlyGuineapig-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDarkgoldenrodUnfitGreyhounddog-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDizzyFlickeringCob-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FGraciousTrickyRainbowlorikeet-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSeveralImaginaryYellowthroat-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FAfraidAgonizingAllosaurus-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FVillainousSlipperyOlingo-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FCrushingOverjoyedBat-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FEarlyDigitalXiphosuran-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FClearSteepLowchen-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FProductiveMagnificentAmethystinepython-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSeparateSmallAxisdeer-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -176,7 +224,9 @@
     "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&q=80",
     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900&q=80",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793308954132_741.jpg#noblur",
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793308836733_353.jpg#noblur"
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793308836733_353.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309970573_832.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309947506_456.jpg#noblur"
   ],
   "harvestedUsers": [],
   "activityLog": [
