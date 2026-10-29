@@ -1,6 +1,10 @@
 /**
  * AlcashX Cloud Pro — Single-File Vercel Serverless Function (api/admin.js)
- * Upgraded with Live GitHub Actions Telemetry, Queue Preservation & 1-Click Viral Spintax Loader
+ * Upgraded with:
+ *  - Live GitHub Actions Telemetry & Step Logs Link
+ *  - Master AI Scraper Prompt & 1-Click Full Queue/Spintax/Users Auto-Extractor
+ *  - Account Live Session Health Status (lastStatus & lastRunAt from bot/run.js)
+ *  - Safe Queue Preservation (mediaQueue, usedMedia, harvestedUsers)
  */
 
 const DEFAULT_CONFIG = {
@@ -17,7 +21,7 @@ const DEFAULT_CONFIG = {
     crossAccountLike: true,
     crossAccountRetweet: true,
     crossAccountBookmark: false,
-    maxAccountsPerRun: 5
+    maxAccountsPerRun: 1
   },
   updatedAt: null
 };
@@ -85,8 +89,8 @@ export default async function handler(req, res) {
           runs = (runsData.workflow_runs || []).map(r => ({
             id: r.id,
             name: r.name,
-            status: r.status, // queued, in_progress, completed
-            conclusion: r.conclusion, // success, failure, cancelled
+            status: r.status,
+            conclusion: r.conclusion,
             createdAt: r.created_at,
             updatedAt: r.updated_at,
             url: r.html_url
@@ -175,7 +179,7 @@ export default async function handler(req, res) {
             crossAccountLike: Boolean(config.settings?.crossAccountLike),
             crossAccountRetweet: Boolean(config.settings?.crossAccountRetweet),
             crossAccountBookmark: Boolean(config.settings?.crossAccountBookmark),
-            maxAccountsPerRun: Math.max(1, parseInt(config.settings?.maxAccountsPerRun ?? 5, 10) || 5)
+            maxAccountsPerRun: Math.max(1, parseInt(config.settings?.maxAccountsPerRun ?? 1, 10) || 1)
           },
           updatedAt: new Date().toISOString()
         };
@@ -197,7 +201,7 @@ export default async function handler(req, res) {
         const putResult = await putRes.json();
         return res.status(200).json({
           ok: true,
-          message: '✅ Configuration saved to GitHub (Scraper queues preserved!)',
+          message: '✅ Configuration saved to GitHub (Scraper queues & users synced!)',
           sha: putResult.content?.sha || null,
           config: payloadToSave
         });
@@ -256,7 +260,7 @@ function renderAdminHTML() {
           <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">AlcashX Cloud Pro</h1>
           <span id="connBadge" class="px-2.5 py-0.5 text-[11px] font-mono font-semibold rounded-full bg-slate-800 text-slate-400 border border-slate-700">⚪ Not Connected</span>
         </div>
-        <p id="connSubtext" class="text-xs sm:text-sm text-slate-400 mt-0.5">Enter Admin PIN &amp; click Load Config to verify GitHub connection</p>
+        <p id="connSubtext" class="text-xs sm:text-sm text-slate-400 mt-0.5">Enter Admin PIN &amp; click Load / Sync to verify GitHub connection</p>
       </div>
       <div class="flex flex-wrap items-center gap-2.5">
         <input id="adminPassword" type="password" placeholder="Admin Password / PIN" class="w-full sm:w-auto h-11 px-3.5 bg-slate-900 border border-slate-800 rounded-lg text-sm text-white placeholder-slate-500 font-mono focus:outline-none focus:border-sky-500" />
@@ -323,7 +327,7 @@ function renderAdminHTML() {
     <!-- Navigation Tabs -->
     <nav class="flex items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto">
       <button onclick="switchTab('accounts')" id="tabBtn-accounts" class="flex-1 min-h-[44px] px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-white cursor-pointer whitespace-nowrap">1. Accounts Manager</button>
-      <button onclick="switchTab('content')" id="tabBtn-content" class="flex-1 min-h-[44px] px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white cursor-pointer whitespace-nowrap">2. Content &amp; Viral Spintax</button>
+      <button onclick="switchTab('content')" id="tabBtn-content" class="flex-1 min-h-[44px] px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white cursor-pointer whitespace-nowrap">2. AI Scraper &amp; Spintax Studio</button>
       <button onclick="switchTab('settings')" id="tabBtn-settings" class="flex-1 min-h-[44px] px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white cursor-pointer whitespace-nowrap">3. Scraped Queue &amp; Settings</button>
     </nav>
 
@@ -355,7 +359,7 @@ function renderAdminHTML() {
             <thead>
               <tr class="border-b border-slate-800 text-xs text-slate-400 bg-slate-950/40">
                 <th class="py-3 px-4">Username</th>
-                <th class="py-3 px-4">Token Diagnostics</th>
+                <th class="py-3 px-4">Token &amp; Last Bot Check</th>
                 <th class="py-3 px-4">Proxy</th>
                 <th class="py-3 px-4">Status (Click to Toggle)</th>
                 <th class="py-3 px-4 text-right">Actions</th>
@@ -367,34 +371,28 @@ function renderAdminHTML() {
       </div>
     </section>
 
-    <!-- TAB 2: CONTENT STUDIO + 1-CLICK VIRAL ADULT PACK -->
+    <!-- TAB 2: CONTENT STUDIO + MASTER AI SCRAPER IMPORTER -->
     <section id="tabPanel-content" class="hidden space-y-6">
       
-      <!-- 🔥 1-CLICK BUILT-IN VIRAL THIRST-TRAP PACK -->
-      <div class="bg-gradient-to-r from-rose-950/40 to-sky-950/40 border border-rose-500/40 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h3 class="text-sm font-bold text-rose-300">🔥 1-Click Viral Thirst-Trap &amp; Adult Fanpage Preset</h3>
-          <p class="text-xs text-slate-300 mt-0.5">Instantly load high-converting clean main captions (like "Caught me being cute again ✌️🐆"), spicy self-replies with {{LINK}}, and viral NSFW search targets.</p>
-        </div>
-        <button onclick="loadBuiltInViralPack()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-lg cursor-pointer whitespace-nowrap shadow-lg">
-          🔥 Load Viral Adult Spintax Pack
-        </button>
-      </div>
-
-      <!-- ⚡ SMART AI PACK IMPORTER -->
+      <!-- ⚡ MASTER AI AGENT SCRAPER & PACK IMPORTER -->
       <div class="bg-sky-950/30 border border-sky-500/40 rounded-xl p-5 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 class="text-sm font-bold text-sky-300">⚡ Custom AI Agent Pack Importer</h3>
-            <p class="text-xs text-slate-400">Paste JSON or raw output from ChatGPT/Claude/Gemini to auto-fill captions, replies, targets &amp; images.</p>
+            <h3 class="text-sm font-bold text-sky-300">⚡ Master AI Scraper Prompt &amp; 1-Click Auto-Extractor</h3>
+            <p class="text-xs text-slate-300 mt-0.5">1. Click <b>Copy Master Scraper Prompt</b> &amp; give it to any AI agent (ChatGPT/Perplexity/Gemini/Claude).<br/>2. Paste the AI's output (or raw .mp4/.jpg links) below to auto-populate <b>Video Queue, Captions, Replies, Targets &amp; Active @Users</b> in 1 click!</p>
           </div>
-          <button onclick="copyAgentPrompt()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-sky-300 text-xs font-semibold rounded-lg border border-sky-500/30 cursor-pointer">
-            📋 Copy Prompt for AI Bot
-          </button>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="copyAgentPrompt()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded-lg shadow cursor-pointer">
+              📋 Copy Master Scraper Prompt for AI
+            </button>
+            <button onclick="loadBuiltInViralPack()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-lg cursor-pointer shadow">
+              🔥 Load Built-in Viral Spintax
+            </button>
+          </div>
         </div>
-        <textarea id="aiRawInput" rows="2" placeholder='Paste AI JSON output here...' class="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 font-mono focus:outline-none focus:border-sky-500"></textarea>
-        <button onclick="extractAiPack()" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-lg cursor-pointer">
-          ⚡ Auto-Extract &amp; Fill All Boxes Below
+        <textarea id="aiRawInput" rows="4" placeholder='Paste AI JSON output OR raw .mp4 / .jpg / .gif URLs here...' class="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 font-mono focus:outline-none focus:border-sky-500"></textarea>
+        <button onclick="extractAiPack()" class="w-full py-2.5 bg-gradient-to-r from-sky-600 to-emerald-600 hover:from-sky-500 hover:to-emerald-500 text-white font-bold text-xs rounded-lg cursor-pointer shadow-lg">
+          ⚡ Auto-Extract &amp; Fill All Media Queue, Captions, Replies &amp; Targets
         </button>
       </div>
 
@@ -425,7 +423,7 @@ function renderAdminHTML() {
             <h3 class="text-sm font-semibold text-white">Fallback Image IDs / Direct MP4 URLs</h3>
             <span id="countImages" class="text-xs text-slate-400 font-mono">0 lines</span>
           </div>
-          <textarea id="txtImages" rows="6" oninput="syncContentFromTextareas()" placeholder="xYz987A or https://..." class="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-100 font-mono"></textarea>
+          <textarea id="txtImages" rows="6" oninput="syncContentFromTextareas()" placeholder="https://..." class="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-100 font-mono"></textarea>
         </div>
       </div>
     </section>
@@ -435,11 +433,11 @@ function renderAdminHTML() {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-semibold text-sky-400">🎬 Auto-Scraped Reddit Video/Image Queue (mediaQueue)</h3>
+            <h3 class="text-sm font-semibold text-sky-400">🎬 Scraped Video/Image Queue (mediaQueue)</h3>
             <span id="countMediaQueue" class="text-xs text-slate-400 font-mono">0 queued</span>
           </div>
-          <p class="text-xs text-slate-400">Filled automatically by <code class="text-sky-300">bot/scraper.js</code>. You can also paste direct .mp4 / .jpg links here.</p>
-          <textarea id="txtMediaQueue" rows="6" oninput="syncQueueFromTextareas()" placeholder="Auto-filled by scraper.js..." class="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-100 font-mono"></textarea>
+          <p class="text-xs text-slate-400">Filled automatically by <code class="text-sky-300">bot/scraper.js</code> (from getredgifs.com/trending) or AI Importer.</p>
+          <textarea id="txtMediaQueue" rows="6" oninput="syncQueueFromTextareas()" placeholder="Auto-filled by scraper.js or AI Importer..." class="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-100 font-mono"></textarea>
         </div>
 
         <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
@@ -453,7 +451,7 @@ function renderAdminHTML() {
       </div>
 
       <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-6">
-        <h2 class="text-base font-semibold text-white">Engagement Pod &amp; Execution Settings</h2>
+        <h2 class="text-base font-semibold text-white">Engagement Pod &amp; Anti-Suspension Settings</h2>
         <div class="divide-y divide-slate-800">
           <div class="py-4 flex items-center justify-between gap-4">
             <div><div class="text-sm font-medium text-white">Auto-Self-Reply (Money Link in Comment + Active User Tags)</div><div class="text-xs text-slate-400">Post Vercel pre-lander link under newly uploaded native videos.</div></div>
@@ -472,7 +470,7 @@ function renderAdminHTML() {
             <input id="chkCrossBookmark" type="checkbox" onchange="syncSettingsFromInputs()" class="w-5 h-5 accent-sky-500 rounded cursor-pointer" />
           </div>
           <div class="pt-4 flex items-center justify-between gap-3">
-            <div><div class="text-sm font-medium text-white">Max Accounts per Run</div><div class="text-xs text-slate-400">Max accounts processed per workflow run.</div></div>
+            <div><div class="text-sm font-medium text-white">Max Accounts per Run (Keep at 1 for Zero-Ban IP Safety)</div><div class="text-xs text-slate-400">Bot automatically rotates through accounts one by one on each run.</div></div>
             <input id="numMaxAccounts" type="number" min="1" max="100" onchange="syncSettingsFromInputs()" class="w-28 h-11 px-3 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white font-mono" />
           </div>
         </div>
@@ -491,7 +489,7 @@ function renderAdminHTML() {
       mediaQueue: [],
       usedMedia: [],
       harvestedUsers: [],
-      settings: { autoSelfReply: true, crossAccountLike: true, crossAccountRetweet: true, crossAccountBookmark: true, maxAccountsPerRun: 5 }
+      settings: { autoSelfReply: true, crossAccountLike: false, crossAccountRetweet: false, crossAccountBookmark: false, maxAccountsPerRun: 1 }
     };
     let pollTimer = null;
 
@@ -544,28 +542,95 @@ function renderAdminHTML() {
       showBanner('🔥 Viral Adult Spintax Pack loaded! Click "Save to GitHub" to apply.');
     }
 
+    // 📋 MASTER AI AGENT SCRAPER PROMPT
     function copyAgentPrompt() {
-      const p = \`Generate a high-converting Twitter traffic pack for an 18+ VIP Creator Fanpage. Return ONLY valid JSON block with keys: "images" (array of Imgur IDs if any), "captions" (15 clean spintax hooks WITHOUT links using {word1|word2}), "replies" (10 urgent self-replies with {{LINK}}), and "targets" (15 trending hashtags or search terms).\`;
+      const p = \`Act as an automated content scraper & viral X (Twitter) marketer for an 18+ Thirst-Trap / Adult Creator Fanpage.
+Scrape or generate a complete JSON pack from https://getredgifs.com/trending (or similar viral adult/thirst-trap feeds) and return ONLY a valid JSON object in this exact structure:
+{
+  "mediaQueue": [
+    "https://...direct-video-or-gif-1.mp4",
+    "https://...direct-video-or-image-2.jpg"
+  ],
+  "captions": [
+    "{Caught me being|Feeling a little} {cute|naughty|playful} {again ✌️🐆|tonight 😈|🙊}",
+    "{Wait for the end|Don't pause at 0:01|Did I show too much?} {😳|🤫|💦}"
+  ],
+  "replies": [
+    "{Full uncensored video|Watch what happened next} {👇|😈|💦} {{LINK}}",
+    "{Couldn't post the full 2 min clip on X}, watch it free here 👉 {{LINK}} 🔥"
+  ],
+  "targets": [
+    "#nsfwtwt",
+    "#thirsttrap",
+    "caught me being cute",
+    "who is up"
+  ],
+  "harvestedUsers": [
+    "@active_user1",
+    "@active_user2"
+  ]
+}
+Rules:
+1. Provide at least 15 direct .mp4/.gif/.jpg URLs in "mediaQueue" (direct media file URLs).
+2. Provide 15 lustful/teasing spintax "captions" WITHOUT any links.
+3. Provide 10 urgent self-reply templates in "replies" containing {{LINK}}.
+4. Output ONLY raw valid JSON so I can paste it directly into my system.\`;
+
       navigator.clipboard.writeText(p);
-      showBanner('📋 AI Agent Prompt copied!');
+      showBanner('📋 Master AI Scraper Prompt copied! Give it to any AI agent and paste its output below.');
     }
 
+    // ⚡ 1-CLICK MULTI-FORMAT AUTO EXTRACTOR (JSON + RAW MEDIA URLS)
     function extractAiPack() {
       const raw = document.getElementById('aiRawInput').value.trim();
-      if (!raw) return showBanner('Paste AI output first!', true);
+      if (!raw) return showBanner('Paste AI output or media links first!', true);
+
+      let extractedAny = false;
+
       try {
         const jsonMatch = raw.match(/\\{[\\s\\S]*\\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
-          if (Array.isArray(parsed.images) && parsed.images.length) state.images = [...new Set([...state.images, ...parsed.images])];
-          if (Array.isArray(parsed.captions)) state.captions = parsed.captions;
-          if (Array.isArray(parsed.replies)) state.replies = parsed.replies;
-          if (Array.isArray(parsed.targets)) state.targets = parsed.targets;
+          if (Array.isArray(parsed.mediaQueue) && parsed.mediaQueue.length) {
+            state.mediaQueue = [...new Set([...(state.mediaQueue || []), ...parsed.mediaQueue])];
+            extractedAny = true;
+          }
+          if (Array.isArray(parsed.images) && parsed.images.length) {
+            state.images = [...new Set([...(state.images || []), ...parsed.images])];
+            state.mediaQueue = [...new Set([...(state.mediaQueue || []), ...parsed.images])];
+            extractedAny = true;
+          }
+          if (Array.isArray(parsed.captions) && parsed.captions.length) {
+            state.captions = [...new Set([...(state.captions || []), ...parsed.captions])];
+            extractedAny = true;
+          }
+          if (Array.isArray(parsed.replies) && parsed.replies.length) {
+            state.replies = [...new Set([...(state.replies || []), ...parsed.replies])];
+            extractedAny = true;
+          }
+          if (Array.isArray(parsed.targets) && parsed.targets.length) {
+            state.targets = [...new Set([...(state.targets || []), ...parsed.targets])];
+            extractedAny = true;
+          }
+          if (Array.isArray(parsed.harvestedUsers) && parsed.harvestedUsers.length) {
+            state.harvestedUsers = [...new Set([...(state.harvestedUsers || []), ...parsed.harvestedUsers])];
+            extractedAny = true;
+          }
         }
+      } catch (_) {}
+
+      // Also extract any direct .mp4/.gif/.jpg/.png URLs even if user pasted plain text
+      const rawUrls = raw.match(/https?:\\/\\/[^\\s"'<>\\\\]+\\.(?:mp4|gif|jpg|jpeg|png)/gi) || [];
+      if (rawUrls.length > 0) {
+        state.mediaQueue = [...new Set([...(state.mediaQueue || []), ...rawUrls])];
+        extractedAny = true;
+      }
+
+      if (extractedAny) {
         renderUI();
-        showBanner('⚡ AI Pack extracted! Click "Save to GitHub" to commit.');
-      } catch (e) {
-        showBanner('Could not parse JSON. Ensure AI returned valid JSON.', true);
+        showBanner('⚡ Extracted! Queue: ' + state.mediaQueue.length + ' media | Captions: ' + state.captions.length + '. Click "💾 Save to GitHub"!');
+      } else {
+        showBanner('Could not find valid JSON or direct .mp4/.jpg links in pasted text.', true);
       }
     }
 
@@ -642,10 +707,14 @@ function renderAdminHTML() {
               ? '<span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 text-xs font-mono">✅ Tokens Valid</span>'
               : '<span class="px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800 text-xs font-mono">⚠️ Check Length</span>';
 
+            const lastStatusBadge = acc.lastStatus
+              ? \`<span class="ml-2 px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px] font-mono">\${acc.lastStatus}</span>\`
+              : '';
+
             return \`
               <tr class="hover:bg-slate-800/30">
                 <td class="py-3 px-4 font-mono text-white font-semibold">\${acc.username}</td>
-                <td class="py-3 px-4">\${diagBadge}</td>
+                <td class="py-3 px-4">\${diagBadge}\${lastStatusBadge}</td>
                 <td class="py-3 px-4 font-mono text-xs text-slate-400">\${acc.proxy || 'Direct (GitHub IP)'}</td>
                 <td class="py-3 px-4">
                   <button onclick="toggleAccountStatus(\${idx})" class="px-2.5 py-1 rounded text-xs font-bold cursor-pointer \${acc.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
@@ -677,7 +746,7 @@ function renderAdminHTML() {
       document.getElementById('chkCrossLike').checked = Boolean(state.settings.crossAccountLike);
       document.getElementById('chkCrossRetweet').checked = Boolean(state.settings.crossAccountRetweet);
       document.getElementById('chkCrossBookmark').checked = Boolean(state.settings.crossAccountBookmark);
-      document.getElementById('numMaxAccounts').value = state.settings.maxAccountsPerRun ?? 5;
+      document.getElementById('numMaxAccounts').value = state.settings.maxAccountsPerRun ?? 1;
     }
 
     function handleAddAccount(e) {
@@ -717,7 +786,7 @@ function renderAdminHTML() {
         crossAccountLike: document.getElementById('chkCrossLike').checked,
         crossAccountRetweet: document.getElementById('chkCrossRetweet').checked,
         crossAccountBookmark: document.getElementById('chkCrossBookmark').checked,
-        maxAccountsPerRun: parseInt(document.getElementById('numMaxAccounts').value || '5', 10)
+        maxAccountsPerRun: parseInt(document.getElementById('numMaxAccounts').value || '1', 10)
       };
     }
 
@@ -802,6 +871,12 @@ function renderAdminHTML() {
     }
 
     renderUI();
+    if (getPassword()) loadConfigFromGitHub();
+  </script>
+</body>
+</html>`;
+}
+
     if (getPassword()) loadConfigFromGitHub();
   </script>
 </body>
