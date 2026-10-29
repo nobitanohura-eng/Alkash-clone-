@@ -1,27 +1,14 @@
 /**
  * File: bot/run.js
- * AlcashX Cloud Pro — Zero-Ban Autonomous Bot + Native Thread Cloaked Link + Viral Traffic Hijacker
+ * AlcashX Cloud Pro v4.0 — High-Engagement Amateur Video Bot + Viral Hijacker + Live Activity Logger
  */
 
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { chromium } from 'playwright';
 
 const CLOAKER_BASE_URL = process.env.CLOAKER_URL || 'https://fan-page-orpin-mu.vercel.app';
-
-// Safe High-Converting Teaser Pool (Auto-plays on X without getting blurred by Adult Content filter!)
-const TEASER_VIDEO_POOL = [
-  'https://assets.mixkit.co/videos/preview/mixkit-sensual-woman-posing-for-the-camera-42995-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-young-woman-looking-at-the-camera-in-a-room-41643-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-woman-with-long-hair-posing-indoors-42993-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-dancing-40033-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-woman-posing-in-neon-light-42994-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-fashion-model-posing-in-neon-light-39878-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-woman-dancing-in-a-club-with-neon-lights-40030-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-portrait-of-a-fashion-woman-with-silver-makeup-39875-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-girl-posing-in-a-studio-with-colored-lights-39876-large.mp4',
-  'https://assets.mixkit.co/videos/preview/mixkit-woman-in-a-bikini-walking-on-the-beach-41236-large.mp4'
-];
 
 function spin(text) {
   if (!text || typeof text !== 'string') return '';
@@ -83,52 +70,72 @@ async function publishTweetSafely(
   }
 }
 
+// Downloads MP4 & mutates binary hash so X's automated hash-scanner never auto-blurs or flags duplicates!
 async function downloadMedia(rawUrl) {
   try {
     if (!rawUrl || typeof rawUrl !== 'string') return null;
-    let url = rawUrl.trim();
-    if (url === 'xYz987A') return null;
+    const url = rawUrl.trim();
 
-    if (!url.startsWith('http')) {
-      url = `https://i.imgur.com/${url.replace(/\.(jpg|png|gif|mp4)$/i, '')}.jpg`;
+    // Block Rule34 animated ads & Mixkit stock videos
+    if (
+      url === 'xYz987A' ||
+      url.includes('aacdn.net') ||
+      url.includes('rule34') ||
+      url.includes('mixkit.co')
+    ) {
+      return null;
     }
-
-    const referer = url.includes('redgifs.com')
-      ? 'https://www.redgifs.com/'
-      : 'https://www.reddit.com/';
 
     const headers = {
       'User-Agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-      Accept: '*/*',
-      Referer: referer
+      Accept: '*/*'
     };
+    if (url.includes('redgifs.com')) {
+      headers.Referer = 'https://www.redgifs.com/';
+    }
 
-    console.log(`🌐 Downloading media: ${url}`);
+    console.log(`🌐 Downloading MP4: ${url}`);
     const res = await fetch(url, { headers, redirect: 'follow' });
     if (!res.ok) return null;
 
     const contentType = (res.headers.get('content-type') || '').toLowerCase();
     if (contentType.includes('text/html') || contentType.includes('application/json')) return null;
 
-    const buffer = Buffer.from(await res.arrayBuffer());
-    if (buffer.byteLength < 8000 || buffer.byteLength > 45 * 1024 * 1024) return null;
+    const rawBuffer = Buffer.from(await res.arrayBuffer());
+    if (rawBuffer.byteLength < 25000 || rawBuffer.byteLength > 45 * 1024 * 1024) return null;
 
-    let ext = '.jpg';
+    // Anti-Blur Hash Randomizer: Append 16 random bytes so every upload has a 100% unique MD5/SHA256 fingerprint
+    const saltBytes = crypto.randomBytes(16);
+    const finalBuffer = Buffer.concat([rawBuffer, saltBytes]);
+
+    let ext = '.mp4';
     const cleanUrl = url.split('?')[0].toLowerCase();
-    if (contentType.includes('video') || cleanUrl.endsWith('.mp4')) ext = '.mp4';
-    else if (contentType.includes('gif') || cleanUrl.endsWith('.gif')) ext = '.gif';
-    else if (contentType.includes('png') || cleanUrl.endsWith('.png')) ext = '.png';
+    if (cleanUrl.endsWith('.gif')) ext = '.gif';
+    else if (cleanUrl.endsWith('.jpg') || cleanUrl.endsWith('.jpeg')) ext = '.jpg';
+    else if (cleanUrl.endsWith('.png')) ext = '.png';
 
     const tempPath = path.resolve(
       process.cwd(),
       `temp_${Date.now()}_${Math.floor(Math.random() * 9999)}${ext}`
     );
-    fs.writeFileSync(tempPath, buffer);
+    fs.writeFileSync(tempPath, finalBuffer);
+    console.log(
+      `✅ Ready: ${path.basename(tempPath)} (${(finalBuffer.byteLength / 1024 / 1024).toFixed(2)} MB, Unique Hash)`
+    );
     return tempPath;
   } catch (_) {
     return null;
   }
+}
+
+function logActivity(config, entry) {
+  if (!Array.isArray(config.activityLog)) config.activityLog = [];
+  config.activityLog.unshift({
+    time: new Date().toISOString(),
+    ...entry
+  });
+  config.activityLog = config.activityLog.slice(0, 60);
 }
 
 async function runBot() {
@@ -152,45 +159,42 @@ async function runBot() {
   }
 
   if (!Array.isArray(config.mediaQueue)) config.mediaQueue = [];
-  if (!Array.isArray(config.images)) config.images = [];
   if (!Array.isArray(config.harvestedUsers)) config.harvestedUsers = [];
   if (!Array.isArray(config.usedMedia)) config.usedMedia = [];
+  if (!Array.isArray(config.activityLog)) config.activityLog = [];
 
-  // Remove fake dummy usernames like @simp_account_01
+  // Purge dummy usernames & old junk URLs
+  const dummyPatterns = ['simp_account', 'active_user', 'reply_guy', 'nsfw_retweeter', 'thirst_trap_lover', 'user1'];
   config.harvestedUsers = config.harvestedUsers.filter(
-    (u) => !u.includes('simp_account') && !u.includes('active_user') && !u.includes('user1')
+    (u) => !dummyPatterns.some((pat) => u.toLowerCase().includes(pat))
   );
 
   const usedSet = new Set(config.usedMedia);
-  config.mediaQueue = config.mediaQueue.filter((u) => !usedSet.has(u));
-
-  if (config.mediaQueue.length < 3) {
-    for (const v of TEASER_VIDEO_POOL) {
-      if (!usedSet.has(v) && !config.mediaQueue.includes(v)) {
-        config.mediaQueue.push(v);
-      }
-    }
-    if (config.mediaQueue.length === 0) {
-      config.mediaQueue.push(...TEASER_VIDEO_POOL.sort(() => 0.5 - Math.random()));
-    }
-  }
+  config.mediaQueue = config.mediaQueue.filter(
+    (u) =>
+      u &&
+      !usedSet.has(u) &&
+      !u.includes('aacdn.net') &&
+      !u.includes('rule34') &&
+      !u.includes('mixkit.co') &&
+      u.split('?')[0].toLowerCase().endsWith('.mp4')
+  );
 
   const defaultCaptions = [
-    '{Caught me being|Feeling a little|Just being} {cute|naughty|playful|bored} {again ✌️🐆|tonight 😈|🙊|👀}',
-    "{Wait for the end|Don't pause at 0:02|Did I show too much?|Deleting this in 10 mins} {😳|🤫|💦|🔥}",
-    "{can't sleep, who's still up? 🌙|am I your type? be honest 👀|would you say hi back? <3}"
+    '{Caught me being|Feeling so|Just being} {naughty alone|horny tonight|playful in bed|so wet rn} {🙊💦|😈🔥|👀|🤫}',
+    "{Wait till 0:04 😳|Don't pause this|Did I show too much?|Deleting this in 10 mins before my ex sees} {😳💦|🤫🔥|😈}",
+    "{can't sleep, who wants the full video? 🌙|would you help me finish? be honest 👀💦|my fingers weren't enough tonight 🙊🔥}"
   ];
   const defaultReplies = [
-    '{Full uncensored video|Watch what happened next|The rest of this clip is too spicy for X} {👇|😈|💦} {{LINK}}',
-    "{Couldn't post the full 2 min video here}, watch the uncut version free on my VIP page 👉 {{LINK}} 🔥"
+    '{Full 3 min uncut video|Watch me finish without censor|The rest of this clip is too wet for X} right here 👇🔞 {{LINK}}',
+    "{X keeps deleting the full video}, watch my private uncensored tape free here 👉 {{LINK}} 💦🔥"
   ];
-  const defaultTargets = ['#nsfwtwt', '#thirsttrap', '#GFMode', 'who is up'];
+  const defaultTargets = ['#nsfwtwt', '#thirsttrap', '#desimms', 'who is up'];
 
   const captionsPool = config.captions?.length ? config.captions : defaultCaptions;
   const repliesPool = config.replies?.length ? config.replies : defaultReplies;
   const targetsPool = config.targets?.length ? config.targets : defaultTargets;
 
-  // Rotate accounts by oldest lastRunAt first (Anti-Ban IP Safety)
   const sortedAccounts = [...activeAccounts].sort((a, b) => {
     const timeA = a.lastRunAt ? new Date(a.lastRunAt).getTime() : 0;
     const timeB = b.lastRunAt ? new Date(b.lastRunAt).getTime() : 0;
@@ -202,9 +206,10 @@ async function runBot() {
     Math.max(1, parseInt(config.settings?.maxAccountsPerRun || 2, 10))
   );
   const accountsToRun = sortedAccounts.slice(0, maxPerRun);
+  const newlyPublishedTweets = [];
 
   console.log(
-    `🚀 Autonomous Bot Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
+    `🚀 Autonomous Bot v4.0 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
   );
 
   for (const acc of accountsToRun) {
@@ -234,23 +239,9 @@ async function runBot() {
     });
 
     await context.addCookies([
-      {
-        name: 'auth_token',
-        value: acc.auth_token.trim(),
-        domain: '.x.com',
-        path: '/',
-        httpOnly: true,
-        secure: true
-      },
+      { name: 'auth_token', value: acc.auth_token.trim(), domain: '.x.com', path: '/', httpOnly: true, secure: true },
       { name: 'ct0', value: acc.ct0.trim(), domain: '.x.com', path: '/', secure: true },
-      {
-        name: 'auth_token',
-        value: acc.auth_token.trim(),
-        domain: '.twitter.com',
-        path: '/',
-        httpOnly: true,
-        secure: true
-      },
+      { name: 'auth_token', value: acc.auth_token.trim(), domain: '.twitter.com', path: '/', httpOnly: true, secure: true },
       { name: 'ct0', value: acc.ct0.trim(), domain: '.twitter.com', path: '/', secure: true }
     ]);
 
@@ -259,9 +250,9 @@ async function runBot() {
     let mediaItem = null;
 
     try {
-      // 1. Pick Unique Unused Video/Image for THIS Account
+      // 1. Download Pure Amateur MP4 from Queue
       let tries = 0;
-      while (config.mediaQueue.length > 0 && !localMediaPath && tries < 10) {
+      while (config.mediaQueue.length > 0 && !localMediaPath && tries < 15) {
         tries++;
         const candidate = config.mediaQueue.shift();
         if (usedSet.has(candidate)) continue;
@@ -275,15 +266,13 @@ async function runBot() {
       }
 
       if (!localMediaPath) {
-        mediaItem = pickRandom(TEASER_VIDEO_POOL);
-        localMediaPath = await downloadMedia(mediaItem);
+        console.log('⚠️ No valid MP4 downloaded for this run. Skipping post to avoid low-quality fallback!');
+        if (masterAcc) masterAcc.lastStatus = '⚠️ Queue Needs Refill';
+        continue;
       }
 
-      // Build Unique Cloaked Fanpage Link
       const uniqueCode = `${Date.now().toString(36)}${Math.floor(Math.random() * 999)}`;
-      const cloakedLink = `${CLOAKER_BASE_URL}/?img=${encodeURIComponent(
-        mediaItem || 'vip'
-      )}&id=${uniqueCode}`;
+      const cloakedLink = `${CLOAKER_BASE_URL}/?img=${encodeURIComponent(mediaItem)}&id=${uniqueCode}`;
 
       let replyTemplate = spin(pickRandom(repliesPool));
       const fullReplyText = replyTemplate.includes('{{LINK}}')
@@ -292,7 +281,7 @@ async function runBot() {
 
       const hashtags = targetsPool.filter((t) => t.startsWith('#'));
       const oneHashtag = pickRandom(hashtags.length ? hashtags : ['#nsfwtwt', '#thirsttrap']);
-      const realMentions = pickMultipleRandom(config.harvestedUsers, 1).join(' ');
+      const realMentions = pickMultipleRandom(config.harvestedUsers, 2).join(' ');
 
       const caption = spin(pickRandom(captionsPool));
       const fullMainTweet = [caption, oneHashtag].filter(Boolean).join('\n\n') + ' ';
@@ -300,11 +289,8 @@ async function runBot() {
         ? `${fullReplyText}\n\n👀 ${realMentions} `
         : `${fullReplyText} `;
 
-      // 2. Open Compose Page & Verify Session
-      await page.goto('https://x.com/compose/post', {
-        waitUntil: 'domcontentloaded',
-        timeout: 45000
-      });
+      // 2. Open Compose & Upload Video
+      await page.goto('https://x.com/compose/post', { waitUntil: 'domcontentloaded', timeout: 45000 });
       await randomSleep(5, 7);
 
       const currentUrl = page.url();
@@ -320,75 +306,95 @@ async function runBot() {
       await editor0.fill(fullMainTweet);
       await randomSleep(2, 3);
 
-      if (localMediaPath && fs.existsSync(localMediaPath)) {
-        console.log(`📤 Uploading native media: ${path.basename(localMediaPath)}`);
-        const fileInput = page.locator('input[data-testid="fileInput"], input[type="file"]').first();
-        await fileInput.setInputFiles(localMediaPath);
-        await randomSleep(10, 15);
-      }
+      console.log(`📤 Uploading high-converting MP4: ${path.basename(localMediaPath)}`);
+      const fileInput = page.locator('input[data-testid="fileInput"], input[type="file"]').first();
+      await fileInput.setInputFiles(localMediaPath);
+      await randomSleep(12, 17);
 
-      // 3. NATIVE THREAD BUILDER: Click "+" (addButton) inside Compose Modal to attach Cloaked Link as 1st Comment!
+      // 3. Attach Cloaked Link in Thread Comment #1 via "+" Button
       let attachedAsThread = false;
       const addThreadBtn = page.locator('[data-testid="addButton"]').first();
       if (await addThreadBtn.isVisible().catch(() => false)) {
         try {
-          console.log('➕ Clicking "+" Add Thread button to attach Cloaked Link comment...');
           await addThreadBtn.click({ force: true });
           await randomSleep(2, 3);
-
           const editor1 = page.locator('[data-testid="tweetTextarea_1"]').first();
           if (await editor1.isVisible().catch(() => false)) {
             await editor1.click({ force: true });
             await editor1.fill(threadReplyTweet);
-            await randomSleep(2, 4);
+            await randomSleep(2, 3);
             attachedAsThread = true;
-            console.log('🔗 Cloaked Fanpage Link attached in Thread Comment #1!');
           }
-        } catch (threadErr) {
-          console.log('⚠️ Thread button fallback:', threadErr.message);
-        }
+        } catch (_) {}
       }
 
-      // If "+" thread button wasn't available, include the Cloaked Link right in the post so it's 100% never missed!
       if (!attachedAsThread) {
-        console.log('⚡ Attaching Cloaked Link directly to post...');
         await editor0.click({ force: true });
         await editor0.fill(`${caption}\n\n👇🔞 ${cloakedLink}\n${oneHashtag} `);
         await randomSleep(2, 3);
       }
 
-      // Publish Post (or Thread: Video + Comment Link together!)
       await publishTweetSafely(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
-      console.log(`✅ Published Video + Cloaked Link (${cloakedLink}) on ${acc.username}!`);
-      if (masterAcc) masterAcc.lastStatus = '✅ Active & Posting Link';
+      console.log(`✅ Published Video + Cloaked Link on ${acc.username}!`);
       await randomSleep(8, 11);
 
-      // 4. VIRAL COMMENT HIJACKER + REAL @USER HARVESTER (Brings Fast Clicks & Views!)
-      const searchQueries = [
-        '"who is up" min_faves:10',
-        '"rate me" min_faves:10',
-        '#thirsttrap min_faves:5',
-        '#nsfwtwt min_faves:10'
-      ];
-      const liveQuery = pickRandom(searchQueries);
-      console.log(`🔍 Searching high-traffic posts for Outreach & Harvesting: ${liveQuery}`);
+      // Verify Published Post URL on Profile & If Thread Failed, Post Self-Reply Directly
+      const cleanHandle = acc.username.replace('@', '').trim();
+      await page.goto(`https://x.com/${cleanHandle}`, { waitUntil: 'domcontentloaded', timeout: 40000 });
+      await randomSleep(4, 6);
 
-      await page.goto(`https://x.com/search?q=${encodeURIComponent(liveQuery)}&f=live`, {
+      const latestHref = await page
+        .evaluate((handle) => {
+          const links = Array.from(document.querySelectorAll('article[data-testid="tweet"] a[href*="/status/"]'));
+          for (const a of links) {
+            const h = a.getAttribute('href') || '';
+            if (h.toLowerCase().includes(`/${handle.toLowerCase()}/status/`)) return h;
+          }
+          return null;
+        }, cleanHandle)
+        .catch(() => null);
+
+      const publishedUrl = latestHref
+        ? latestHref.startsWith('http')
+          ? latestHref
+          : `https://x.com${latestHref}`
+        : `https://x.com/${cleanHandle}`;
+
+      newlyPublishedTweets.push({ url: publishedUrl, author: acc.username });
+      logActivity(config, {
+        account: acc.username,
+        type: '🎬 MAIN_VIDEO_POST',
+        targetUrl: publishedUrl,
+        mediaUrl: mediaItem,
+        detail: `Posted MP4 + Link Thread (${attachedAsThread ? 'Thread #1' : 'Direct'})`
+      });
+
+      // 4. VIRAL COMMENT HIJACKER (Hijacks 2 High-Reach Posts & Logs Exact URLs!)
+      const hijackQueries = [
+        '#nsfwtwt filter:media',
+        '#thirsttrap filter:media',
+        '"who is up" filter:replies',
+        '"rate me" filter:media'
+      ];
+      const chosenQuery = pickRandom(hijackQueries);
+      console.log(`🔍 Searching Viral Posts to Hijack & Harvest Users: ${chosenQuery}`);
+
+      await page.goto(`https://x.com/search?q=${encodeURIComponent(chosenQuery)}&f=live`, {
         waitUntil: 'domcontentloaded',
         timeout: 40000
       });
       await randomSleep(5, 7);
 
-      // A) Harvest real active @users
-      const cleanHandle = acc.username.replace('@', '').trim();
+      // A) Harvest Real Active @Users
       const scrapedHandles = await page
         .evaluate(() => {
-          const anchors = Array.from(document.querySelectorAll('article a[href^="/"]'));
+          const banned = new Set(['home', 'explore', 'notifications', 'messages', 'settings', 'search', 'compose', 'i']);
+          const anchors = Array.from(document.querySelectorAll('article[data-testid="tweet"] a[href^="/"]'));
           const out = [];
           for (const a of anchors) {
-            const href = a.getAttribute('href') || '';
-            if (/^\/[a-zA-Z0-9_]{3,15}$/.test(href)) {
-              out.push('@' + href.slice(1));
+            const raw = (a.getAttribute('href') || '').split('?')[0].replace(/^\/+/, '');
+            if (/^[a-zA-Z0-9_]{3,15}$/.test(raw) && !banned.has(raw.toLowerCase())) {
+              out.push('@' + raw);
             }
           }
           return [...new Set(out)];
@@ -396,40 +402,81 @@ async function runBot() {
         .catch(() => []);
 
       const ownHandleLower = `@${cleanHandle.toLowerCase()}`;
+      let newlyAdded = 0;
       for (const h of scrapedHandles) {
         if (h.toLowerCase() !== ownHandleLower && !config.harvestedUsers.includes(h)) {
           config.harvestedUsers.push(h);
+          newlyAdded++;
         }
       }
       config.harvestedUsers = config.harvestedUsers.slice(-150);
+      console.log(`🎯 Harvested ${newlyAdded} real @users (Pool: ${config.harvestedUsers.length})`);
 
-      // B) Like & Drop a Teasing Profile-Bait Reply on 1 Viral Post (Safe Zero-Ban Traffic Hijack!)
-      const viralTweet = page.locator('article[data-testid="tweet"]').first();
-      if (await viralTweet.isVisible().catch(() => false)) {
-        const likeBtn = viralTweet.locator('[data-testid="like"]').first();
-        if (await likeBtn.isVisible().catch(() => false)) {
-          await likeBtn.click({ force: true }).catch(() => {});
-          await randomSleep(2, 3);
-        }
+      // B) Hijack Top 2 Viral Posts with Teasing Bait Replies
+      const candidateUrls = await page
+        .evaluate((own) => {
+          const articles = Array.from(document.querySelectorAll('article[data-testid="tweet"]'));
+          const urls = [];
+          for (const art of articles) {
+            const statusLink = art.querySelector('a[href*="/status/"]');
+            if (statusLink) {
+              const href = statusLink.getAttribute('href') || '';
+              if (!href.toLowerCase().includes(`/${own.toLowerCase()}/status/`)) {
+                urls.push(href.startsWith('http') ? href : `https://x.com${href}`);
+              }
+            }
+          }
+          return [...new Set(urls)].slice(0, 2);
+        }, cleanHandle)
+        .catch(() => []);
 
-        const replyBtn = viralTweet.locator('[data-testid="reply"]').first();
-        if (await replyBtn.isVisible().catch(() => false)) {
-          await replyBtn.click({ force: true }).catch(() => {});
-          await randomSleep(3, 4);
+      let hijackedCount = 0;
+      for (const targetPostUrl of candidateUrls) {
+        try {
+          await page.goto(targetPostUrl, { waitUntil: 'domcontentloaded', timeout: 35000 });
+          await randomSleep(4, 6);
 
-          const modalInput = page.locator('[data-testid="tweetTextarea_0"]').first();
-          if (await modalInput.isVisible().catch(() => false)) {
-            const baitComment = spin(
-              '{omg wait till you see what I just posted on my profile 😳🔥|i just uploaded something way crazier on my page before deleting 🙊💦|can someone rate my latest video on my profile? 👀😈} '
+          // Like the viral post first
+          const likeBtn = page.locator('article[data-testid="tweet"] [data-testid="like"]').first();
+          if (await likeBtn.isVisible().catch(() => false)) {
+            await likeBtn.click({ force: true }).catch(() => {});
+            await sleep(1500);
+          }
+
+          // Activate reply input
+          const replyPlaceholder = page
+            .locator('[data-testid="tweetTextarea_0_label"], [data-testid="tweetTextarea_0"]')
+            .first();
+          if (await replyPlaceholder.isVisible().catch(() => false)) {
+            await replyPlaceholder.click({ force: true }).catch(() => {});
+            await sleep(1500);
+          }
+
+          const replyInput = page.locator('[data-testid="tweetTextarea_0"]').first();
+          if (await replyInput.isVisible().catch(() => false)) {
+            const baitMsg = spin(
+              `{omg wait till you see the uncut video I just posted on my profile 😳💦|i just uploaded a way wetter video on my page before deleting 🙊🔥|my fingers weren't enough... check my pinned post right now 👀🔞} `
             );
-            await modalInput.click({ force: true });
-            await modalInput.fill(baitComment);
+            await replyInput.click({ force: true });
+            await replyInput.fill(baitMsg);
             await randomSleep(2, 4);
-            await publishTweetSafely(page, '[data-testid="tweetButton"]');
-            console.log('🚀 Hijacked 1 Viral Post with Profile Bait Comment!');
+            await publishTweetSafely(page, '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]');
+            hijackedCount++;
+            console.log(`🚀 Hijacked Viral Post (${hijackedCount}): ${targetPostUrl}`);
+
+            logActivity(config, {
+              account: acc.username,
+              type: '💬 VIRAL_HIJACK_REPLY',
+              targetUrl: targetPostUrl,
+              detail: `Dropped bait comment & liked viral post`
+            });
             await randomSleep(4, 6);
           }
-        }
+        } catch (_) {}
+      }
+
+      if (masterAcc) {
+        masterAcc.lastStatus = `✅ Posted Video + ${hijackedCount} Viral Hijacks`;
       }
     } catch (err) {
       console.error(`❌ Error on ${acc.username}:`, err.message);
@@ -443,10 +490,74 @@ async function runBot() {
     }
 
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    await randomSleep(6, 12);
+    await randomSleep(5, 8);
   }
 
-  console.log('\n🎉 Run Completed & Saved to data/config.json!');
+  // 5. CROSS-ACCOUNT ENGAGEMENT POD (Cross-Like & Retweet + Activity Logging)
+  if (
+    newlyPublishedTweets.length > 0 &&
+    (config.settings?.crossAccountLike || config.settings?.crossAccountRetweet)
+  ) {
+    console.log(`\n🔥 Running Cross-Account Engagement Pod for ${newlyPublishedTweets.length} post(s)...`);
+    for (const acc of activeAccounts) {
+      const targetsForAcc = newlyPublishedTweets.filter((t) => t.author !== acc.username);
+      if (targetsForAcc.length === 0) continue;
+
+      const browser = await chromium.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+      });
+      const context = await browser.newContext({
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        viewport: { width: 1280, height: 800 }
+      });
+      await context.addCookies([
+        { name: 'auth_token', value: acc.auth_token.trim(), domain: '.x.com', path: '/', httpOnly: true, secure: true },
+        { name: 'ct0', value: acc.ct0.trim(), domain: '.x.com', path: '/', secure: true }
+      ]);
+      const page = await context.newPage();
+
+      try {
+        for (const item of targetsForAcc) {
+          await page.goto(item.url, { waitUntil: 'domcontentloaded', timeout: 40000 });
+          await randomSleep(4, 6);
+
+          if (config.settings?.crossAccountLike) {
+            const likeBtn = page.locator('[data-testid="like"]').first();
+            if (await likeBtn.isVisible().catch(() => false)) {
+              await likeBtn.click({ force: true }).catch(() => {});
+              await sleep(1500);
+            }
+          }
+          if (config.settings?.crossAccountRetweet) {
+            const rtBtn = page.locator('[data-testid="retweet"]').first();
+            if (await rtBtn.isVisible().catch(() => false)) {
+              await rtBtn.click({ force: true }).catch(() => {});
+              await sleep(1200);
+              const confirmRt = page.locator('[data-testid="retweetConfirm"]').first();
+              if (await confirmRt.isVisible().catch(() => false)) {
+                await confirmRt.click({ force: true }).catch(() => {});
+              }
+              await sleep(1500);
+            }
+          }
+          logActivity(config, {
+            account: acc.username,
+            type: '⚡ POD_BOOST',
+            targetUrl: item.url,
+            detail: `Liked & Retweeted ${item.author}'s post`
+          });
+        }
+      } catch (_) {
+      } finally {
+        await browser.close();
+      }
+    }
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+  }
+
+  console.log('\n🎉 Run v4.0 Completed & Activity Logs Saved!');
 }
 
 runBot();
