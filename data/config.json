@@ -6,8 +6,8 @@
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-29T17:39:24.235Z",
-      "lastStatus": "✅ Posted Video + 0 Viral Hijacks"
+      "lastRunAt": "2026-10-29T19:46:31.701Z",
+      "lastStatus": "✅ Video + Link (Retry) + 0 Hijacks"
     },
     {
       "username": "@Mariaclickam",
@@ -24,8 +24,8 @@
       "ct0": "95dee312b51979d567bfd713522e9994c849a4fe7baa7b1f3a0cca4bb2c611ef0810d708a7aeb7131a9f1026e84c779d263883dfa9c8df959cb68503e146f71970e67b5d5aaab1fdc542899ac76c64ef",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-29T18:33:17.345Z",
-      "lastStatus": "✅ Posted Video + Link & 0 Hijacks"
+      "lastRunAt": "2026-10-29T19:47:41.806Z",
+      "lastStatus": "✅ Video + Link (Retry) + 0 Hijacks"
     }
   ],
   "images": [],
@@ -42,8 +42,6 @@
     "#GFMode"
   ],
   "mediaQueue": [
-    "https://media.redgifs.com/CloudyDecisiveChameleon-mobile.mp4",
-    "https://media.redgifs.com/YearlyElderlyPachyderm-mobile.mp4",
     "https://media.redgifs.com/HilariousUnlawfulBurro-mobile.mp4",
     "https://media.redgifs.com/ThinRewardingCicada-mobile.mp4",
     "https://media.redgifs.com/FancyGranularLeonberger-mobile.mp4",
@@ -177,7 +175,9 @@
     "https://media.redgifs.com/DazzlingDisfiguredWallaroo-mobile.mp4",
     "https://media.redgifs.com/SlimySardonicAldabratortoise-mobile.mp4",
     "https://media.redgifs.com/SardonicWillingIslandcanary-mobile.mp4",
-    "https://media.redgifs.com/SinfulSquigglyChrysalis-mobile.mp4"
+    "https://media.redgifs.com/SinfulSquigglyChrysalis-mobile.mp4",
+    "https://media.redgifs.com/OrangeSelfreliantAnole-mobile.mp4",
+    "https://media.redgifs.com/NastyShimmeringZander-mobile.mp4"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -190,10 +190,56 @@
     "https://media.redgifs.com/BestVengefulLeech-mobile.mp4",
     "https://media.redgifs.com/ChartreuseHuskyTiger-mobile.mp4",
     "https://media.redgifs.com/IncompatibleColossalLeafwing-mobile.mp4",
-    "https://media.redgifs.com/IntentPertinentSolenodon-mobile.mp4"
+    "https://media.redgifs.com/IntentPertinentSolenodon-mobile.mp4",
+    "https://media.redgifs.com/CloudyDecisiveChameleon-mobile.mp4",
+    "https://media.redgifs.com/YearlyElderlyPachyderm-mobile.mp4"
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-10-29T19:49:10.157Z",
+      "account": "@Chloedaily0",
+      "type": "⚡ POD_BOOST",
+      "targetUrl": "https://x.com/sophieclicks0",
+      "detail": "Liked Video + Link Comment & Retweeted @sophieclicks0"
+    },
+    {
+      "time": "2026-10-29T19:49:04.919Z",
+      "account": "@Mariaclickam",
+      "type": "⚡ POD_BOOST",
+      "targetUrl": "https://x.com/Chloedaily0",
+      "detail": "Liked Video + Link Comment & Retweeted @Chloedaily0"
+    },
+    {
+      "time": "2026-10-29T19:49:00.873Z",
+      "account": "@Mariaclickam",
+      "type": "⚡ POD_BOOST",
+      "targetUrl": "https://x.com/sophieclicks0",
+      "detail": "Liked Video + Link Comment & Retweeted @sophieclicks0"
+    },
+    {
+      "time": "2026-10-29T19:48:56.647Z",
+      "account": "@sophieclicks0",
+      "type": "⚡ POD_BOOST",
+      "targetUrl": "https://x.com/Chloedaily0",
+      "detail": "Liked Video + Link Comment & Retweeted @Chloedaily0"
+    },
+    {
+      "time": "2026-10-29T19:48:37.308Z",
+      "account": "@Chloedaily0",
+      "type": "🎬 VIDEO_AND_LINK",
+      "targetUrl": "https://x.com/Chloedaily0",
+      "mediaUrl": "https://media.redgifs.com/YearlyElderlyPachyderm-mobile.mp4",
+      "detail": "Video + Link (⚠️ Video Only)"
+    },
+    {
+      "time": "2026-10-29T19:47:24.659Z",
+      "account": "@sophieclicks0",
+      "type": "🎬 VIDEO_AND_LINK",
+      "targetUrl": "https://x.com/sophieclicks0",
+      "mediaUrl": "https://media.redgifs.com/CloudyDecisiveChameleon-mobile.mp4",
+      "detail": "Video + Link (⚠️ Video Only)"
+    },
     {
       "time": "2026-10-29T18:35:50.573Z",
       "account": "@Chloedaily0",
