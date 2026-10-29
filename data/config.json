@@ -26,6 +26,15 @@
       "status": "active",
       "lastRunAt": "2026-10-29T19:47:41.806Z",
       "lastStatus": "✅ Video + Link (Retry) + 0 Hijacks"
+    },
+    {
+      "username": "@Spicydesimodels",
+      "auth_token": "45b178a6c7c5f4124b0d6c856cd18e24eeab9f41",
+      "ct0": "c40ccb3c0b144b50c0adf3d049ab52ccba603d5ce5f5870beaecd916dbb9686a2ceb8b478f7a37f20d586abbf418e7cd04ddfdd3797fda48be6957cfbdcf22b0c7d8a01587371f8e25173d88f67df13b",
+      "proxy": "",
+      "status": "active",
+      "lastRunAt": null,
+      "lastStatus": null
     }
   ],
   "images": [
@@ -311,5 +320,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 2
   },
-  "updatedAt": "2026-10-29T21:39:38.868Z"
+  "updatedAt": "2026-10-29T22:09:24.137Z"
 }
