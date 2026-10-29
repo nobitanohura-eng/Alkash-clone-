@@ -1,9 +1,9 @@
 /**
- * AlcashX Cloud Pro — Autonomous Twitter/X Bot (bot/run.js)
+ * AlcashX Cloud Pro — Autonomous Anti-Suspension Twitter/X Bot (bot/run.js)
  * Fixed:
- *  - Zero Click Interception Timeout (3-Layer Publish: Ctrl+Enter + DOM Click + Force Click)
- *  - Scrapes & Downloads from https://getredgifs.com/trending
- *  - Native Video/Image Upload + Auto-Self-Reply Money Link + Active @User Tagging & Outreach
+ *  - Fixed "choices is not defined" in spin() function
+ *  - Anti-Suspension Safe Mode (Natural delays, no aggressive spam replies on others' posts)
+ *  - 3-Layer Bulletproof Tweet Publisher (Zero Timeout Errors)
  */
 
 import fs from 'fs';
@@ -12,17 +12,18 @@ import { chromium } from 'playwright';
 
 const CLOAKER_BASE_URL = process.env.CLOAKER_URL || 'https://fan-page-orpin-mu.vercel.app';
 
+// Safe Spintax Parser (Fixed choices variable)
 function spin(text) {
-  if (!text) return '';
-  return text.replace(/\{([^{}]+)\}/g, (_, opts) => {
-    const choices = opts.split('|');
-    return choices[Math.floor(Math.random() * choices.length)];
+  if (!text || typeof text !== 'string') return '';
+  return text.replace(/\{([^{}]+)\}/g, (_, group) => {
+    const optionsList = group.split('|');
+    return optionsList[Math.floor(Math.random() * optionsList.length)];
   });
 }
 
 function pickRandom(arr) {
   if (!Array.isArray(arr) || arr.length === 0) return '';
-  return arr[Math.floor(Math.random() * choices.length)];
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function pickMultipleRandom(arr, count) {
@@ -34,11 +35,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const randomSleep = (minSec, maxSec) =>
   sleep((Math.floor(Math.random() * (maxSec - minSec + 1)) + minSec) * 1000);
 
-// ============================================================================
-// BULLETPROOF TWEET / REPLY PUBLISHER (Fixes "subtree intercepts pointer events")
-// ============================================================================
-async function publishTweetSafely(page, buttonSelector = '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]') {
-  // Wait until Twitter finishes processing uploaded media (aria-disabled becomes false)
+// Bulletproof Tweet / Reply Publisher
+async function publishTweetSafely(
+  page,
+  buttonSelector = '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]'
+) {
   for (let i = 0; i < 15; i++) {
     const isDisabled = await page
       .locator(buttonSelector)
@@ -49,22 +50,22 @@ async function publishTweetSafely(page, buttonSelector = '[data-testid="tweetBut
     await sleep(1000);
   }
 
-  // Method 1: Keyboard Shortcut (Control+Enter bypasses all CSS overlays!)
+  // Layer 1: Keyboard Control+Enter
   try {
     await page.keyboard.press('Control+Enter');
-    await sleep(2500);
+    await sleep(3000);
   } catch (_) {}
 
-  // Check if button is still visible; if so, use Method 2: Direct JS DOM Click
+  // Layer 2: JS DOM Click
   const btn = page.locator(buttonSelector).first();
   if (await btn.isVisible().catch(() => false)) {
     try {
       await btn.evaluate((el) => el.click());
-      await sleep(2500);
+      await sleep(3000);
     } catch (_) {}
   }
 
-  // Method 3: Playwright Force Click fallback
+  // Layer 3: Force Click
   if (await btn.isVisible().catch(() => false)) {
     try {
       await btn.click({ force: true, timeout: 8000 });
@@ -72,11 +73,10 @@ async function publishTweetSafely(page, buttonSelector = '[data-testid="tweetBut
   }
 }
 
-// ============================================================================
-// DOWNLOAD MEDIA FROM getredgifs.com OR QUEUE FOR NATIVE TWITTER UPLOAD
-// ============================================================================
+// Download Media Locally for Native Upload
 async function downloadMedia(url) {
   try {
+    if (!url || typeof url !== 'string') return null;
     const cleanUrl = url.split('?')[0];
     const ext = cleanUrl.endsWith('.mp4')
       ? '.mp4'
@@ -102,19 +102,14 @@ async function downloadMedia(url) {
   }
 }
 
-// ============================================================================
-// ROBUST COMPOSE BOX OPENER (Prefers /home Inline Editor to avoid Modal Overlays)
-// ============================================================================
 async function openComposeEditor(page) {
-  // Attempt 1: Inline editor on https://x.com/home (No modal overlay issues!)
   const inlineEditor = page.locator('[data-testid="tweetTextarea_0"]').first();
   if (await inlineEditor.isVisible().catch(() => false)) {
     await inlineEditor.click({ force: true });
     return inlineEditor;
   }
 
-  // Attempt 2: Direct navigation to /compose/post
-  console.log('🔄 Navigating directly to https://x.com/compose/post...');
+  console.log('🔄 Navigating to https://x.com/compose/post...');
   await page.goto('https://x.com/compose/post', { waitUntil: 'domcontentloaded', timeout: 40000 });
   await randomSleep(4, 6);
   await inlineEditor.waitFor({ state: 'visible', timeout: 20000 });
@@ -122,9 +117,6 @@ async function openComposeEditor(page) {
   return inlineEditor;
 }
 
-// ============================================================================
-// MAIN AUTONOMOUS BOT RUNNER
-// ============================================================================
 async function runBot() {
   const dataDir = path.resolve(process.cwd(), 'data');
   const configPath = path.join(dataDir, 'config.json');
@@ -165,7 +157,6 @@ async function runBot() {
   const repliesPool = config.replies?.length ? config.replies : defaultReplies;
   const targetsPool = config.targets?.length ? config.targets : defaultTargets;
 
-  // Smart Rotation: Oldest lastRunAt runs first
   const sortedAccounts = [...activeAccounts].sort((a, b) => {
     const timeA = a.lastRunAt ? new Date(a.lastRunAt).getTime() : 0;
     const timeB = b.lastRunAt ? new Date(b.lastRunAt).getTime() : 0;
@@ -181,8 +172,6 @@ async function runBot() {
   console.log(
     `🚀 Autonomous Bot Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
   );
-
-  const postedTweetUrls = [];
 
   for (const acc of accountsToRun) {
     console.log(`\n👤 Processing Account: ${acc.username}`);
@@ -242,7 +231,6 @@ async function runBot() {
     let localMediaPath = null;
 
     try {
-      // STEP A: Open X Home & Dismiss Any Blocking Popups/Banners
       console.log('🌐 Checking X session...');
       await page.goto('https://x.com/home', { waitUntil: 'domcontentloaded', timeout: 45000 });
       await randomSleep(5, 8);
@@ -258,13 +246,16 @@ async function runBot() {
         continue;
       }
 
-      // Dismiss any cookie banner or notification sheet that could block clicks
-      await page.evaluate(() => {
-        const layers = document.querySelectorAll('[data-testid="BottomBar"], [role="dialog"] [aria-label="Close"]');
-        layers.forEach((el) => el.click?.());
-      }).catch(() => {});
+      // Dismiss overlays
+      await page
+        .evaluate(() => {
+          document
+            .querySelectorAll('[data-testid="BottomBar"], [role="dialog"] [aria-label="Close"]')
+            .forEach((el) => el.click?.());
+        })
+        .catch(() => {});
 
-      // STEP B: Pick & Download Media from getredgifs.com Queue
+      // Pick & Download Media from Queue
       let mediaItem = null;
       let attempts = 0;
       while (config.mediaQueue.length > 0 && !localMediaPath && attempts < 8) {
@@ -281,16 +272,16 @@ async function runBot() {
         mediaItem || 'https://getredgifs.com/trending'
       )}&t=${Date.now().toString().slice(-4)}`;
 
-      // Combine hashtags + 1 active harvested user for main post
-      const allTagPool = [...targetsPool.filter((t) => t.startsWith('#')), ...config.harvestedUsers];
-      const selectedTags = pickMultipleRandom(
-        allTagPool.length ? allTagPool : ['#nsfwtwt', '#thirsttrap'],
-        2
-      ).join(' ');
+      // Anti-Ban Tagging: Only 1 hashtag + 1 harvested user max in main post
+      const hashtags = targetsPool.filter((t) => t.startsWith('#'));
+      const oneHashtag = pickRandom(hashtags.length ? hashtags : ['#nsfwtwt', '#thirsttrap']);
+      const oneUser = pickRandom(config.harvestedUsers);
+      const selectedTags = [oneHashtag, oneUser].filter(Boolean).join(' ');
+
       const caption = spin(pickRandom(captionsPool));
       const fullMainTweet = [caption, selectedTags].filter(Boolean).join('\n\n');
 
-      // STEP C: Compose & Upload Media + Bulletproof Publish
+      // Compose & Upload Native Media
       const editor = await openComposeEditor(page);
 
       if (localMediaPath && fs.existsSync(localMediaPath)) {
@@ -310,9 +301,9 @@ async function runBot() {
       await publishTweetSafely(page);
       console.log(`✅ Main Post Published by ${acc.username}!`);
       if (masterAcc) masterAcc.lastStatus = '✅ Active & Posting';
-      await randomSleep(8, 11);
+      await randomSleep(8, 12);
 
-      // STEP D: Open Profile & Post Auto-Self-Reply with Money Link + Active @Users
+      // Post Auto-Self-Reply with Money Link
       const cleanHandle = acc.username.replace('@', '').trim();
       await page.goto(`https://x.com/${cleanHandle}`, {
         waitUntil: 'domcontentloaded',
@@ -326,41 +317,40 @@ async function runBot() {
         .getAttribute('href')
         .catch(() => null);
 
-      if (latestTweetHref) {
+      if (latestTweetHref && config.settings?.autoSelfReply !== false) {
         const fullTweetUrl = `https://x.com${latestTweetHref}`;
-        postedTweetUrls.push({ url: fullTweetUrl, author: acc.username });
+        console.log(`🔗 Opening latest post for Self-Reply: ${fullTweetUrl}`);
+        await page.goto(fullTweetUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
+        await randomSleep(4, 7);
 
-        if (config.settings?.autoSelfReply !== false) {
-          console.log(`🔗 Opening latest post for Self-Reply: ${fullTweetUrl}`);
-          await page.goto(fullTweetUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
-          await randomSleep(4, 7);
+        let replyMsg = spin(pickRandom(repliesPool));
+        replyMsg = replyMsg.includes('{{LINK}}')
+          ? replyMsg.replace('{{LINK}}', cloakedLink)
+          : `${replyMsg} ${cloakedLink}`;
 
-          let replyMsg = spin(pickRandom(repliesPool));
-          replyMsg = replyMsg.includes('{{LINK}}')
-            ? replyMsg.replace('{{LINK}}', cloakedLink)
-            : `${replyMsg} ${cloakedLink}`;
+        const replyMentions = pickMultipleRandom(config.harvestedUsers, 1).join(' ');
+        if (replyMentions) {
+          replyMsg = `${replyMsg}\n\n👀 ${replyMentions}`;
+        }
 
-          const replyMentions = pickMultipleRandom(config.harvestedUsers, 2).join(' ');
-          if (replyMentions) {
-            replyMsg = `${replyMsg}\n\n👀 ${replyMentions}`;
-          }
-
-          const replyBox = page.locator('[data-testid="tweetTextarea_0"]').first();
-          if (await replyBox.isVisible().catch(() => false)) {
-            await replyBox.click({ force: true });
-            await replyBox.fill(replyMsg);
-            await randomSleep(3, 5);
-            await publishTweetSafely(page, '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]');
-            console.log(`💬 Self-Reply + Money Link + Mentions posted!`);
-            await randomSleep(5, 8);
-          }
+        const replyBox = page.locator('[data-testid="tweetTextarea_0"]').first();
+        if (await replyBox.isVisible().catch(() => false)) {
+          await replyBox.click({ force: true });
+          await replyBox.fill(replyMsg);
+          await randomSleep(3, 5);
+          await publishTweetSafely(
+            page,
+            '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]'
+          );
+          console.log(`💬 Self-Reply + Money Link posted!`);
+          await randomSleep(5, 8);
         }
       }
 
-      // STEP E: Harvest Active @Users + Like & Bait-Reply on Live Posts
+      // Safe Organic Activity: Harvest Active @Users & Like 1 Post (No Spam Replies on Others!)
       const searchKeywords = targetsPool.filter((t) => !t.startsWith('@'));
       const searchQuery = pickRandom(searchKeywords) || '#nsfwtwt';
-      console.log(`🔍 Harvesting active @users & doing Outreach on: "${searchQuery}"`);
+      console.log(`🔍 Harvesting active @users from live search: "${searchQuery}"`);
 
       await page.goto(
         `https://x.com/search?q=${encodeURIComponent(searchQuery)}&f=live`,
@@ -378,7 +368,14 @@ async function runBot() {
         .catch(() => []);
 
       const ownHandleLower = `@${cleanHandle.toLowerCase()}`;
-      const systemRoutes = ['/home', '/explore', '/notifications', '/messages', '/settings', '/search'];
+      const systemRoutes = [
+        '/home',
+        '/explore',
+        '/notifications',
+        '/messages',
+        '/settings',
+        '/search'
+      ];
       let newHarvestCount = 0;
 
       for (const link of userLinks) {
@@ -397,37 +394,15 @@ async function runBot() {
         `🎯 Harvested ${newHarvestCount} new @users (Total Pool: ${config.harvestedUsers.length})`
       );
 
-      // Like & Reply on top 2 active posts
-      const liveTweets = page.locator('article[data-testid="tweet"]');
-      const liveCount = await liveTweets.count().catch(() => 0);
-      for (let i = 0; i < Math.min(liveCount, 2); i++) {
-        try {
-          const tTweet = liveTweets.nth(i);
-          const likeBtn = tTweet.locator('[data-testid="like"]').first();
-          if (await likeBtn.isVisible().catch(() => false)) {
-            await likeBtn.click({ force: true });
-            console.log(`❤️ Liked active post (#${i + 1})`);
-            await randomSleep(2, 4);
-          }
-
-          const replyIcon = tTweet.locator('[data-testid="reply"]').first();
-          if (await replyIcon.isVisible().catch(() => false)) {
-            await replyIcon.click({ force: true });
-            await randomSleep(2, 4);
-            const baitReply = spin(
-              '{omg wait till you see my latest post 😳🔥|i just posted something way crazier on my profile 🙊💦|check my latest clip before i delete it 👀😈}'
-            );
-            const modalInput = page.locator('[data-testid="tweetTextarea_0"]').first();
-            if (await modalInput.isVisible().catch(() => false)) {
-              await modalInput.click({ force: true });
-              await modalInput.fill(baitReply);
-              await randomSleep(2, 4);
-              await publishTweetSafely(page, '[data-testid="tweetButton"]');
-              console.log(`🗣️ Replied bait on active post (#${i + 1})`);
-              await randomSleep(4, 6);
-            }
-          }
-        } catch (_) {}
+      // Like 1st active post for organic human signal
+      const firstLiveTweet = page.locator('article[data-testid="tweet"]').first();
+      if (await firstLiveTweet.isVisible().catch(() => false)) {
+        const likeBtn = firstLiveTweet.locator('[data-testid="like"]').first();
+        if (await likeBtn.isVisible().catch(() => false)) {
+          await likeBtn.click({ force: true }).catch(() => {});
+          console.log('❤️ Liked 1 active post for organic engagement');
+          await randomSleep(2, 4);
+        }
       }
     } catch (err) {
       console.error(`❌ Error on ${acc.username}:`, err.message);
@@ -441,69 +416,7 @@ async function runBot() {
     }
 
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    await randomSleep(6, 12);
-  }
-
-  // =========================================================================
-  // PHASE 2: CROSS-ACCOUNT POD (LIKE + RETWEET + BOOKMARK)
-  // =========================================================================
-  if (
-    postedTweetUrls.length > 0 &&
-    activeAccounts.length > 1 &&
-    (config.settings?.crossAccountLike ||
-      config.settings?.crossAccountRetweet ||
-      config.settings?.crossAccountBookmark)
-  ) {
-    console.log(`\n🔥 Starting Cross-Account Engagement Pod...`);
-    for (const acc of activeAccounts.slice(0, 5)) {
-      const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
-      const context = await browser.newContext();
-      await context.addCookies([
-        {
-          name: 'auth_token',
-          value: acc.auth_token.trim(),
-          domain: '.x.com',
-          path: '/',
-          httpOnly: true,
-          secure: true
-        },
-        { name: 'ct0', value: acc.ct0.trim(), domain: '.x.com', path: '/', secure: true }
-      ]);
-      const page = await context.newPage();
-
-      try {
-        for (const item of postedTweetUrls) {
-          if (item.author === acc.username) continue;
-          await page.goto(item.url, { waitUntil: 'domcontentloaded', timeout: 40000 });
-          await randomSleep(4, 6);
-
-          if (config.settings?.crossAccountLike) {
-            const likeBtn = page.locator('[data-testid="like"]').first();
-            if (await likeBtn.isVisible().catch(() => false)) await likeBtn.click({ force: true });
-            await randomSleep(1, 3);
-          }
-          if (config.settings?.crossAccountRetweet) {
-            const rtBtn = page.locator('[data-testid="retweet"]').first();
-            if (await rtBtn.isVisible().catch(() => false)) {
-              await rtBtn.click({ force: true });
-              await sleep(1000);
-              const confirmRt = page.locator('[data-testid="retweetConfirm"]').first();
-              if (await confirmRt.isVisible().catch(() => false)) await confirmRt.click({ force: true });
-              await randomSleep(1, 3);
-            }
-          }
-          if (config.settings?.crossAccountBookmark) {
-            const bmBtn = page.locator('[data-testid="bookmark"]').first();
-            if (await bmBtn.isVisible().catch(() => false)) await bmBtn.click({ force: true });
-            await randomSleep(1, 3);
-          }
-          console.log(`⚡ Pod Boost by ${acc.username} -> ${item.url}`);
-        }
-      } catch (_) {
-      } finally {
-        await browser.close();
-      }
-    }
+    await randomSleep(5, 10);
   }
 
   console.log('\n🎉 Autonomous Bot Run Completed & Saved to data/config.json!');
