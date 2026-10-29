@@ -1,9 +1,10 @@
 /**
  * AlcashX Cloud Pro — Autonomous Anti-Suspension Twitter/X Bot (bot/run.js)
- * Fixed:
- *  - Fixed "choices is not defined" in spin() function
- *  - Anti-Suspension Safe Mode (Natural delays, no aggressive spam replies on others' posts)
- *  - 3-Layer Bulletproof Tweet Publisher (Zero Timeout Errors)
+ * Upgraded:
+ *  - Deep Webpage + RedGifs/Imgur Video & Image Scraper inside downloadMedia()
+ *  - Uses both config.mediaQueue AND config.images (Fallback MP4 URLs)
+ *  - Validates Content-Type so HTML pages are never saved as corrupted .jpg/.mp4
+ *  - Native Video/Photo Upload on Main Tweet + Cloaked Link strictly in Self-Reply
  */
 
 import fs from 'fs';
@@ -12,7 +13,6 @@ import { chromium } from 'playwright';
 
 const CLOAKER_BASE_URL = process.env.CLOAKER_URL || 'https://fan-page-orpin-mu.vercel.app';
 
-// Safe Spintax Parser (Fixed choices variable)
 function spin(text) {
   if (!text || typeof text !== 'string') return '';
   return text.replace(/\{([^{}]+)\}/g, (_, group) => {
@@ -35,12 +35,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const randomSleep = (minSec, maxSec) =>
   sleep((Math.floor(Math.random() * (maxSec - minSec + 1)) + minSec) * 1000);
 
-// Bulletproof Tweet / Reply Publisher
 async function publishTweetSafely(
   page,
   buttonSelector = '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]'
 ) {
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 20; i++) {
     const isDisabled = await page
       .locator(buttonSelector)
       .first()
@@ -50,13 +49,11 @@ async function publishTweetSafely(
     await sleep(1000);
   }
 
-  // Layer 1: Keyboard Control+Enter
   try {
     await page.keyboard.press('Control+Enter');
     await sleep(3000);
   } catch (_) {}
 
-  // Layer 2: JS DOM Click
   const btn = page.locator(buttonSelector).first();
   if (await btn.isVisible().catch(() => false)) {
     try {
@@ -65,7 +62,6 @@ async function publishTweetSafely(
     } catch (_) {}
   }
 
-  // Layer 3: Force Click
   if (await btn.isVisible().catch(() => false)) {
     try {
       await btn.click({ force: true, timeout: 8000 });
@@ -73,28 +69,84 @@ async function publishTweetSafely(
   }
 }
 
-// Download Media Locally for Native Upload
-async function downloadMedia(url) {
+// Smart Media Scraper + Downloader (Handles Direct MP4/JPG, Imgur IDs, RedGifs & Webpages)
+async function downloadMedia(rawUrl) {
   try {
-    if (!url || typeof url !== 'string') return null;
-    const cleanUrl = url.split('?')[0];
-    const ext = cleanUrl.endsWith('.mp4')
-      ? '.mp4'
-      : cleanUrl.endsWith('.gif')
-      ? '.gif'
-      : '.jpg';
-    const tempPath = path.resolve(process.cwd(), `temp_${Date.now()}${ext}`);
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-        Referer: 'https://getredgifs.com/'
-      }
-    });
+    if (!rawUrl || typeof rawUrl !== 'string') return null;
+    let url = rawUrl.trim();
+
+    // Convert bare Imgur ID or Imgur gallery URL to direct link
+    if (!url.startsWith('http')) {
+      url = `https://i.imgur.com/${url}.mp4`;
+    } else if (url.includes('imgur.com/') && !url.includes('i.imgur.com')) {
+      const id = url.split('/').pop().split('?')[0].split('.')[0];
+      url = `https://i.imgur.com/${id}.jpg`;
+    }
+
+    const headers = {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+      Accept: '*/*'
+    };
+
+    console.log(`🌐 Fetching media candidate: ${url}`);
+    let res = await fetch(url, { headers, redirect: 'follow' });
     if (!res.ok) return null;
-    const buffer = await res.arrayBuffer();
-    if (buffer.byteLength < 5000 || buffer.byteLength > 45 * 1024 * 1024) return null;
-    fs.writeFileSync(tempPath, Buffer.from(buffer));
+
+    let contentType = (res.headers.get('content-type') || '').toLowerCase();
+
+    // If URL is a webpage (HTML), scrape the actual .mp4 / og:video / og:image inside it
+    if (contentType.includes('text/html')) {
+      const html = await res.text();
+      const mp4Match = html.match(/https:\/\/[^"'\s<>]+\.mp4(?:\?[^"'\s<>]*)?/i);
+      const ogVideo = html.match(
+        /<meta[^>]+property=["']og:video(?::url|:secure_url)?["'][^>]+content=["']([^"']+)["']/i
+      );
+      const ogImage = html.match(
+        /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i
+      );
+      const extractedUrl = mp4Match?.[0] || ogVideo?.[1] || ogImage?.[1];
+
+      if (!extractedUrl) {
+        console.log('⚠️ Webpage returned HTML with no extractable video/image.');
+        return null;
+      }
+
+      console.log(`🎯 Extracted direct media from page: ${extractedUrl}`);
+      url = extractedUrl;
+      res = await fetch(url, { headers, redirect: 'follow' });
+      if (!res.ok) return null;
+      contentType = (res.headers.get('content-type') || '').toLowerCase();
+    }
+
+    // Reject if still HTML or text
+    if (contentType.includes('text/html') || contentType.includes('application/json')) {
+      console.log(`⚠️ Rejected non-media content-type: ${contentType}`);
+      return null;
+    }
+
+    const buffer = Buffer.from(await res.arrayBuffer());
+    // Reject tiny broken files (< 10KB) or huge files (> 48MB)
+    if (buffer.byteLength < 10000 || buffer.byteLength > 48 * 1024 * 1024) {
+      console.log(`⚠️ Invalid media size (${buffer.byteLength} bytes), skipping.`);
+      return null;
+    }
+
+    let ext = '.jpg';
+    const cleanUrl = url.split('?')[0].toLowerCase();
+    if (contentType.includes('video') || cleanUrl.endsWith('.mp4')) {
+      ext = '.mp4';
+    } else if (contentType.includes('gif') || cleanUrl.endsWith('.gif')) {
+      ext = '.gif';
+    } else if (contentType.includes('png') || cleanUrl.endsWith('.png')) {
+      ext = '.png';
+    }
+
+    const tempPath = path.resolve(process.cwd(), `temp_${Date.now()}${ext}`);
+    fs.writeFileSync(tempPath, buffer);
+    console.log(
+      `✅ Downloaded valid ${ext.toUpperCase()} (${(buffer.byteLength / 1024).toFixed(1)} KB)`
+    );
     return tempPath;
   } catch (e) {
     console.log('⚠️ Media download skipped:', e.message);
@@ -138,6 +190,7 @@ async function runBot() {
   }
 
   if (!Array.isArray(config.mediaQueue)) config.mediaQueue = [];
+  if (!Array.isArray(config.images)) config.images = [];
   if (!Array.isArray(config.harvestedUsers)) config.harvestedUsers = [];
   if (!Array.isArray(config.usedMedia)) config.usedMedia = [];
 
@@ -156,6 +209,12 @@ async function runBot() {
   const captionsPool = config.captions?.length ? config.captions : defaultCaptions;
   const repliesPool = config.replies?.length ? config.replies : defaultReplies;
   const targetsPool = config.targets?.length ? config.targets : defaultTargets;
+
+  // Built-in Working Direct MP4 Fallbacks if Queue URLs fail
+  const guaranteedFallbacks = [
+    'https://assets.mixkit.co/videos/preview/mixkit-sensual-woman-posing-for-the-camera-42995-large.mp4',
+    'https://assets.mixkit.co/videos/preview/mixkit-young-woman-looking-at-the-camera-in-a-room-41643-large.mp4'
+  ];
 
   const sortedAccounts = [...activeAccounts].sort((a, b) => {
     const timeA = a.lastRunAt ? new Date(a.lastRunAt).getTime() : 0;
@@ -255,10 +314,10 @@ async function runBot() {
         })
         .catch(() => {});
 
-      // Pick & Download Media from Queue
+      // STEP 1: Try downloading from Scraped Media Queue (config.mediaQueue)
       let mediaItem = null;
       let attempts = 0;
-      while (config.mediaQueue.length > 0 && !localMediaPath && attempts < 8) {
+      while (config.mediaQueue.length > 0 && !localMediaPath && attempts < 10) {
         attempts++;
         const candidate = config.mediaQueue.shift();
         localMediaPath = await downloadMedia(candidate);
@@ -268,8 +327,25 @@ async function runBot() {
         }
       }
 
+      // STEP 2: If Queue failed/empty, use Fallback Image IDs / Direct MP4 URLs (config.images)
+      if (!localMediaPath) {
+        console.log('🔄 Trying Fallback Image IDs / Direct MP4 URLs pool...');
+        const fallbackPool = config.images.length > 0 ? config.images : guaranteedFallbacks;
+        const shuffledFallbacks = [...fallbackPool, ...guaranteedFallbacks].sort(
+          () => 0.5 - Math.random()
+        );
+        for (const candidate of shuffledFallbacks) {
+          localMediaPath = await downloadMedia(candidate);
+          if (localMediaPath) {
+            mediaItem = candidate;
+            config.usedMedia.push(mediaItem);
+            break;
+          }
+        }
+      }
+
       const cloakedLink = `${CLOAKER_BASE_URL}/?img=${encodeURIComponent(
-        mediaItem || 'https://getredgifs.com/trending'
+        mediaItem || 'vip'
       )}&t=${Date.now().toString().slice(-4)}`;
 
       // Anti-Ban Tagging: Only 1 hashtag + 1 harvested user max in main post
@@ -279,28 +355,25 @@ async function runBot() {
       const selectedTags = [oneHashtag, oneUser].filter(Boolean).join(' ');
 
       const caption = spin(pickRandom(captionsPool));
+      // NEVER put the raw cloaked link in the main post so broken link cards never appear!
       const fullMainTweet = [caption, selectedTags].filter(Boolean).join('\n\n');
 
       // Compose & Upload Native Media
       const editor = await openComposeEditor(page);
+      await editor.fill(fullMainTweet);
+      await randomSleep(2, 3);
 
       if (localMediaPath && fs.existsSync(localMediaPath)) {
-        console.log(`📤 Uploading native media: ${path.basename(localMediaPath)}`);
-        const fileInput = page.locator('input[data-testid="fileInput"]').first();
+        console.log(`📤 Uploading native media to X: ${path.basename(localMediaPath)}`);
+        const fileInput = page.locator('input[data-testid="fileInput"], input[type="file"]').first();
         await fileInput.setInputFiles(localMediaPath);
-        console.log('⏳ Waiting for X media processing...');
-        await randomSleep(10, 15);
-        await editor.click({ force: true });
-        await editor.fill(fullMainTweet);
-      } else {
-        await editor.click({ force: true });
-        await editor.fill(`${fullMainTweet}\n\n${cloakedLink}`);
+        console.log('⏳ Waiting for X video/image processing...');
+        await randomSleep(12, 18);
       }
 
-      await randomSleep(3, 5);
       await publishTweetSafely(page);
-      console.log(`✅ Main Post Published by ${acc.username}!`);
-      if (masterAcc) masterAcc.lastStatus = '✅ Active & Posting';
+      console.log(`✅ Main Media Post Published by ${acc.username}!`);
+      if (masterAcc) masterAcc.lastStatus = '✅ Active & Posting Media';
       await randomSleep(8, 12);
 
       // Post Auto-Self-Reply with Money Link
@@ -347,7 +420,7 @@ async function runBot() {
         }
       }
 
-      // Safe Organic Activity: Harvest Active @Users & Like 1 Post (No Spam Replies on Others!)
+      // Harvest Active @Users & Like 1 Post
       const searchKeywords = targetsPool.filter((t) => !t.startsWith('@'));
       const searchQuery = pickRandom(searchKeywords) || '#nsfwtwt';
       console.log(`🔍 Harvesting active @users from live search: "${searchQuery}"`);
@@ -394,7 +467,6 @@ async function runBot() {
         `🎯 Harvested ${newHarvestCount} new @users (Total Pool: ${config.harvestedUsers.length})`
       );
 
-      // Like 1st active post for organic human signal
       const firstLiveTweet = page.locator('article[data-testid="tweet"]').first();
       if (await firstLiveTweet.isVisible().catch(() => false)) {
         const likeBtn = firstLiveTweet.locator('[data-testid="like"]').first();
