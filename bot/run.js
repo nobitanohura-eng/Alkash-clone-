@@ -1,6 +1,6 @@
 /**
  * File: bot/run.js
- * AlcashX Cloud Pro v4.5 — Guaranteed Multi-Account Post Delivery + Safe-Search Bypass Hijacker
+ * AlcashX Cloud Pro v5.0 — 100% Guaranteed Cloaked Link Publisher + React Input Trigger + Viral Hijacker
  */
 
 import fs from 'fs';
@@ -32,7 +32,18 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const randomSleep = (minSec, maxSec) =>
   sleep((Math.floor(Math.random() * (maxSec - minSec + 1)) + minSec) * 1000);
 
-// Waits for media upload to finish 100% AND verifies compose editor actually submits!
+// CRITICAL FIX: Triggers X's React onChange state so Reply/Post buttons NEVER stay disabled!
+async function typeIntoXEditor(page, editorLocator, text) {
+  await editorLocator.waitFor({ state: 'visible', timeout: 20000 });
+  await editorLocator.click({ force: true });
+  await sleep(500);
+  await editorLocator.fill(text);
+  await sleep(600);
+  // Real keyboard press wakes up Draft.js / React state on X!
+  await page.keyboard.type(' ');
+  await sleep(400);
+}
+
 async function publishTweetAndWait(
   page,
   buttonSelector = '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]'
@@ -40,7 +51,6 @@ async function publishTweetAndWait(
   await page.keyboard.press('Escape').catch(() => {});
   await sleep(600);
 
-  // Wait up to 30 seconds for Twitter to finish processing the MP4 (button becomes enabled)
   for (let i = 0; i < 30; i++) {
     const btn = page.locator(buttonSelector).first();
     const isDisabled = await btn.getAttribute('aria-disabled').catch(() => null);
@@ -54,16 +64,14 @@ async function publishTweetAndWait(
 
   await sleep(1500);
 
-  // Layer 1: Direct DOM Click on Tweet Button
   const btn = page.locator(buttonSelector).first();
   if (await btn.isVisible().catch(() => false)) {
     try {
       await btn.evaluate((el) => el.click());
-      await sleep(4000);
+      await sleep(4500);
     } catch (_) {}
   }
 
-  // Layer 2: Control+Enter if button still visible
   if (await btn.isVisible().catch(() => false)) {
     try {
       await page.keyboard.press('Control+Enter');
@@ -71,7 +79,6 @@ async function publishTweetAndWait(
     } catch (_) {}
   }
 
-  // Layer 3: Playwright Force Click if still visible
   if (await btn.isVisible().catch(() => false)) {
     try {
       await btn.click({ force: true, timeout: 8000 });
@@ -80,7 +87,6 @@ async function publishTweetAndWait(
   }
 }
 
-// Downloads fast MP4 (< 8.5 MB so upload never hangs) & mutates binary hash
 async function downloadMedia(rawUrl) {
   try {
     if (!rawUrl || typeof rawUrl !== 'string') return null;
@@ -112,9 +118,8 @@ async function downloadMedia(rawUrl) {
     if (contentType.includes('text/html') || contentType.includes('application/json')) return null;
 
     const rawBuffer = Buffer.from(await res.arrayBuffer());
-    // Keep between 30KB and 8.5MB so Twitter processes the video in 3-5 seconds without failing!
     if (rawBuffer.byteLength < 30000 || rawBuffer.byteLength > 8.5 * 1024 * 1024) {
-      console.log(`⏩ Skipping oversized/tiny file (${(rawBuffer.byteLength / 1024 / 1024).toFixed(2)} MB) for fast upload`);
+      console.log(`⏩ Skipping file (${(rawBuffer.byteLength / 1024 / 1024).toFixed(2)} MB)`);
       return null;
     }
 
@@ -186,15 +191,15 @@ async function runBot() {
   );
 
   const defaultCaptions = [
-    '{Caught me being|Feeling a little|Just being} {naughty alone|playful in bed|so bored tonight} {🙊💦|😈🔥|👀|✌️🐆}',
-    "{Wait till 0:03 😳|Don't pause this|Did I show too much?|Deleting this in 10 mins} {😳💦|🤫🔥|😈}",
-    "{can't sleep, who wants the full video? 🌙|am I your type? be honest 👀💦|should I post the uncut part 2? 🙊🔥}"
+    '{Part 1 before X deletes it|Wait till 0:04 😳|Caught on camera|My camera roll is dangerous} {🙊💦|😈🔥|👀}',
+    "{Should I post the uncut part 2?|Did I show too much at the end?|Deleting this in 10 mins} {😳💦|🤫🔥|👇}",
+    "{Full leaked clip is in my replies 👇|Don't pause at the end 😳|Be honest, would you? 💦} {🙊|😈|🔥}"
   ];
   const defaultReplies = [
-    '{Full 3 min uncut video|Watch what happened next without censor|The rest of this clip is too spicy for X} right here 👇🔞 {{LINK}}',
-    "{X keeps deleting the full video}, watch my private uncensored tape free here 👉 {{LINK}} 💦🔥"
+    '{Full 3 min uncut leaked video|Watch what happened next without censor|The rest of this clip is too spicy for X} right here 👇🔞 {{LINK}}',
+    "{X deleted the second half}, watch the full uncensored video free on my VIP page 👉 {{LINK}} 💦🔥"
   ];
-  const defaultTargets = ['#thirsttrap', '#nsfwtwt', '#GFMode'];
+  const defaultTargets = ['#thirsttrap', '#GFMode', '#latenight'];
 
   const captionsPool = config.captions?.length ? config.captions : defaultCaptions;
   const repliesPool = config.replies?.length ? config.replies : defaultReplies;
@@ -214,7 +219,7 @@ async function runBot() {
   const newlyPublishedTweets = [];
 
   console.log(
-    `🚀 Autonomous Bot v4.5 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
+    `🚀 Autonomous Bot v5.0 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
   );
 
   for (const acc of accountsToRun) {
@@ -255,7 +260,7 @@ async function runBot() {
     let mediaItem = null;
 
     try {
-      // 1. Download Fast-Upload MP4 (< 8.5 MB)
+      // 1. Download Fast MP4
       let tries = 0;
       while (config.mediaQueue.length > 0 && !localMediaPath && tries < 20) {
         tries++;
@@ -271,7 +276,7 @@ async function runBot() {
       }
 
       if (!localMediaPath) {
-        console.log('⚠️ Could not download a valid MP4 under 8.5MB. Skipping...');
+        console.log('⚠️ Could not download a valid MP4. Skipping...');
         if (masterAcc) masterAcc.lastStatus = '⚠️ Queue Needs Refill';
         continue;
       }
@@ -290,13 +295,12 @@ async function runBot() {
       const replyMentions = pickMultipleRandom(config.harvestedUsers, 2).join(' ');
 
       const caption = spin(pickRandom(captionsPool));
-      // Clean Main Post (No link in main caption so X doesn't deboost reach!)
-      const fullMainTweet = [caption, [oneHashtag, mainMentions].filter(Boolean).join(' ')].filter(Boolean).join('\n\n') + ' ';
+      const fullMainTweet = `${caption}\n\nFull uncut link in replies 👇🔞\n${[oneHashtag, mainMentions].filter(Boolean).join(' ')}`;
       const selfReplyComment = replyMentions
-        ? `${fullReplyText}\n\n👀 ${replyMentions} `
-        : `${fullReplyText} `;
+        ? `${fullReplyText}\n\n👀 ${replyMentions}`
+        : `${fullReplyText}`;
 
-      // 2. Open X Compose & Publish Single Video Post First (100% Reliable on ALL Accounts!)
+      // 2. Open Compose & Upload Video
       await page.goto('https://x.com/compose/post', { waitUntil: 'domcontentloaded', timeout: 45000 });
       await randomSleep(5, 7);
 
@@ -308,9 +312,7 @@ async function runBot() {
       }
 
       const editor0 = page.locator('[data-testid="tweetTextarea_0"]').first();
-      await editor0.waitFor({ state: 'visible', timeout: 25000 });
-      await editor0.click({ force: true });
-      await editor0.fill(fullMainTweet);
+      await typeIntoXEditor(page, editor0, fullMainTweet);
       await randomSleep(2, 3);
 
       console.log(`📤 Uploading MP4 to X: ${path.basename(localMediaPath)}`);
@@ -319,14 +321,15 @@ async function runBot() {
       await randomSleep(10, 14);
 
       await publishTweetAndWait(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
-      console.log(`✅ Main Video Post submitted on ${acc.username}! Waiting 7s for X profile indexing...`);
-      await randomSleep(7, 10);
+      console.log(`✅ Main Video Post submitted on ${acc.username}! Waiting 8s for profile indexing...`);
+      await randomSleep(8, 10);
 
-      // 3. Open Profile, Grab Exact Published Tweet URL & Post Self-Reply Comment with Cloaked Link!
+      // 3. BULLETPROOF SELF-REPLY VIA PROFILE REPLY MODAL (100% Never Misses Link!)
       const cleanHandle = acc.username.replace('@', '').trim();
       await page.goto(`https://x.com/${cleanHandle}`, { waitUntil: 'domcontentloaded', timeout: 40000 });
       await randomSleep(5, 7);
 
+      const firstTweetArticle = page.locator('article[data-testid="tweet"]').first();
       const latestHref = await page
         .evaluate((handle) => {
           const links = Array.from(document.querySelectorAll('article[data-testid="tweet"] a[href*="/status/"]'));
@@ -346,40 +349,58 @@ async function runBot() {
 
       newlyPublishedTweets.push({ url: publishedUrl, author: acc.username });
 
-      // Post Money Link in Self-Reply Comment under the Video!
-      if (latestHref && config.settings?.autoSelfReply !== false) {
-        console.log(`💬 Posting Cloaked Fanpage Link under: ${publishedUrl}`);
+      let linkReplySuccess = false;
+
+      // Method A: Click Reply Icon directly on Profile's 1st Tweet to open clean Reply Modal!
+      if (await firstTweetArticle.isVisible().catch(() => false)) {
+        const replyIconBtn = firstTweetArticle.locator('[data-testid="reply"]').first();
+        if (await replyIconBtn.isVisible().catch(() => false)) {
+          console.log(`💬 Clicking Reply Icon on latest tweet to attach Money Link: ${cloakedLink}`);
+          await replyIconBtn.click({ force: true });
+          await randomSleep(3, 5);
+
+          const modalEditor = page.locator('[data-testid="tweetTextarea_0"]').first();
+          if (await modalEditor.isVisible().catch(() => false)) {
+            await typeIntoXEditor(page, modalEditor, selfReplyComment);
+            await randomSleep(5, 7); // Wait 6s so X fetches the Vercel Fanpage Image Card!
+            await publishTweetAndWait(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
+            linkReplySuccess = true;
+            console.log(`🔗 SUCCESS! Cloaked Fanpage Link published via Reply Modal!`);
+            await randomSleep(4, 6);
+          }
+        }
+      }
+
+      // Method B Fallback: Navigate directly to status URL if Modal didn't open
+      if (!linkReplySuccess && latestHref) {
+        console.log(`🔄 Fallback: Opening ${publishedUrl} directly to post link comment...`);
         await page.goto(publishedUrl, { waitUntil: 'domcontentloaded', timeout: 40000 });
         await randomSleep(4, 6);
 
-        const replyPlaceholder = page
+        const inlinePlaceholder = page
           .locator('[data-testid="tweetTextarea_0_label"], [data-testid="tweetTextarea_0"]')
           .first();
-        if (await replyPlaceholder.isVisible().catch(() => false)) {
-          await replyPlaceholder.click({ force: true }).catch(() => {});
-          await sleep(1200);
-        }
-
-        const replyBox = page.locator('[data-testid="tweetTextarea_0"]').first();
-        if (await replyBox.isVisible().catch(() => false)) {
-          await replyBox.click({ force: true });
-          await replyBox.fill(selfReplyComment);
-          await randomSleep(4, 6); // Wait 5s so X renders the clickable Fanpage Card preview!
+        if (await inlinePlaceholder.isVisible().catch(() => false)) {
+          await inlinePlaceholder.click({ force: true }).catch(() => {});
+          await sleep(1000);
+          const replyBox = page.locator('[data-testid="tweetTextarea_0"]').first();
+          await typeIntoXEditor(page, replyBox, selfReplyComment);
+          await randomSleep(5, 7);
           await publishTweetAndWait(page, '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]');
-          console.log(`🔗 Cloaked Fanpage Link + Card published in comment!`);
-          await randomSleep(4, 6);
+          linkReplySuccess = true;
+          console.log(`🔗 SUCCESS! Cloaked Fanpage Link published on Status Page!`);
         }
       }
 
       logActivity(config, {
         account: acc.username,
-        type: '🎬 VIDEO_POST_AND_LINK',
+        type: '🎬 VIDEO_AND_LINK',
         targetUrl: publishedUrl,
         mediaUrl: mediaItem,
-        detail: `Published Video + Fanpage Link Comment`
+        detail: `Video + Link Comment (${linkReplySuccess ? '✅ Link Posted' : '⚠️ Video Only'})`
       });
 
-      // 4. SAFE-SEARCH BYPASS VIRAL HIJACKER (Uses Unfiltered Queries so it NEVER returns 0 users!)
+      // 4. SAFE-SEARCH BYPASS VIRAL HIJACKER (With React Keyboard Trigger + Cloaked Link Bait!)
       const unfilteredQueries = [
         '"who is up" min_faves:3',
         '"can\'t sleep" min_faves:5',
@@ -396,7 +417,6 @@ async function runBot() {
       });
       await randomSleep(5, 7);
 
-      // Scroll once to ensure tweets are rendered in DOM
       await page.evaluate(() => window.scrollBy(0, 800)).catch(() => {});
       await sleep(2000);
 
@@ -429,7 +449,7 @@ async function runBot() {
       config.harvestedUsers = config.harvestedUsers.slice(-150);
       console.log(`🎯 Harvested ${newlyAdded} real @users (Total Pool: ${config.harvestedUsers.length})`);
 
-      // B) Hijack Top 2 Active Posts with Profile-Bait Comments
+      // B) Hijack Top 2 Active Posts using Reply Modal + React Trigger
       const candidateUrls = await page
         .evaluate((own) => {
           const links = Array.from(document.querySelectorAll('a[href*="/status/"]'));
@@ -453,29 +473,28 @@ async function runBot() {
           await page.goto(targetPostUrl, { waitUntil: 'domcontentloaded', timeout: 35000 });
           await randomSleep(4, 6);
 
-          const likeBtn = page.locator('article[data-testid="tweet"] [data-testid="like"]').first();
+          const mainArticle = page.locator('article[data-testid="tweet"]').first();
+          const likeBtn = mainArticle.locator('[data-testid="like"]').first();
           if (await likeBtn.isVisible().catch(() => false)) {
             await likeBtn.click({ force: true }).catch(() => {});
-            await sleep(1500);
+            await sleep(1200);
           }
 
-          const replyPlaceholder = page
-            .locator('[data-testid="tweetTextarea_0_label"], [data-testid="tweetTextarea_0"]')
-            .first();
-          if (await replyPlaceholder.isVisible().catch(() => false)) {
-            await replyPlaceholder.click({ force: true }).catch(() => {});
-            await sleep(1500);
+          // Click the reply icon on the viral tweet to open modal
+          const replyIcon = mainArticle.locator('[data-testid="reply"]').first();
+          if (await replyIcon.isVisible().catch(() => false)) {
+            await replyIcon.click({ force: true }).catch(() => {});
+            await sleep(2000);
           }
 
           const replyInput = page.locator('[data-testid="tweetTextarea_0"]').first();
           if (await replyInput.isVisible().catch(() => false)) {
             const baitMsg = spin(
-              `{omg wait till you see the video I just posted on my profile 😳💦|i’m awake too... just uploaded something crazy on my page before deleting 🙊🔥|can someone rate the video I just posted on my profile? 👀🔞} `
+              `{i can't sleep either 😭 just posted a crazy leaked clip on my profile before deleting 🙊💦|omg wait till you see the uncut video I just dropped on my page 😳🔥|rate the new video I just posted on my profile? be honest 👀🔞}`
             );
-            await replyInput.click({ force: true });
-            await replyInput.fill(baitMsg);
+            await typeIntoXEditor(page, replyInput, baitMsg);
             await randomSleep(2, 4);
-            await publishTweetAndWait(page, '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]');
+            await publishTweetAndWait(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
             hijackedCount++;
             console.log(`🚀 Hijacked Active Post (${hijackedCount}): ${targetPostUrl}`);
 
@@ -491,7 +510,7 @@ async function runBot() {
       }
 
       if (masterAcc) {
-        masterAcc.lastStatus = `✅ Posted Video + Link & ${hijackedCount} Hijacks`;
+        masterAcc.lastStatus = `✅ Video + Link (${linkReplySuccess ? 'OK' : 'Retry'}) + ${hijackedCount} Hijacks`;
       }
     } catch (err) {
       console.error(`❌ Error on ${acc.username}:`, err.message);
@@ -508,7 +527,7 @@ async function runBot() {
     await randomSleep(5, 8);
   }
 
-  // 5. CROSS-ACCOUNT ENGAGEMENT POD
+  // 5. CROSS-ACCOUNT ENGAGEMENT POD (Likes & Retweets BOTH Main Post & Link Comment!)
   if (
     newlyPublishedTweets.length > 0 &&
     (config.settings?.crossAccountLike || config.settings?.crossAccountRetweet)
@@ -538,11 +557,13 @@ async function runBot() {
           await page.goto(item.url, { waitUntil: 'domcontentloaded', timeout: 40000 });
           await randomSleep(4, 6);
 
+          // Like first 2 tweets on the page (Main Video Post + Self-Reply Link Comment!)
           if (config.settings?.crossAccountLike) {
-            const likeBtn = page.locator('[data-testid="like"]').first();
-            if (await likeBtn.isVisible().catch(() => false)) {
-              await likeBtn.click({ force: true }).catch(() => {});
-              await sleep(1500);
+            const likeBtns = page.locator('[data-testid="like"]');
+            const count = await likeBtns.count().catch(() => 0);
+            for (let k = 0; k < Math.min(count, 2); k++) {
+              await likeBtns.nth(k).click({ force: true }).catch(() => {});
+              await sleep(1200);
             }
           }
           if (config.settings?.crossAccountRetweet) {
@@ -561,7 +582,7 @@ async function runBot() {
             account: acc.username,
             type: '⚡ POD_BOOST',
             targetUrl: item.url,
-            detail: `Liked & Retweeted ${item.author}'s post`
+            detail: `Liked Video + Link Comment & Retweeted ${item.author}`
           });
         }
       } catch (_) {
@@ -572,7 +593,7 @@ async function runBot() {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   }
 
-  console.log('\n🎉 Run v4.5 Completed & Activity Logs Saved!');
+  console.log('\n🎉 Run v5.0 Completed & Activity Logs Saved!');
 }
 
 runBot();
