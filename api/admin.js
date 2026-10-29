@@ -1,10 +1,10 @@
 /**
- * AlcashX Cloud Pro v3.0 — Ultimate Command Center & Serverless Admin API (api/admin.js)
- * What's New in v3.0:
- *  1. Zero-Conflict Smart Merge + No-Store Cache (Never loses scraped mediaQueue or throws 409 error)
- *  2. Fixed triggerBotNow() so clicking "RUN BOT NOW" never overwrites background scraped queues
- *  3. Built-in Serverless Cloud Harvester ("cloud_scrape" action fetches 30+ RedGifs MP4s in 3 seconds!)
- *  4. Visual Media Queue Preview Grid, Estimated Revenue Calculator & 1-Click High-CPM Niche Packs
+ * AlcashX Cloud Pro v4.5 — Ultimate Command Center & Serverless Admin API (api/admin.js)
+ * Upgraded in v4.5:
+ *  1. Pure Amateur/Trap MP4 Cloud Harvester (Zero static .jpg posters, blocks Jerkmate/3D/Rule34 ads)
+ *  2. Auto-Purge Junk Filter on Save (Strips aacdn.net, mixkit.co, rule34 & non-MP4 links automatically)
+ *  3. Live Bot Activity & Viral Hijack Proof Table (Click to verify exact tweets & hijacked comments!)
+ *  4. Zero-Conflict Smart Merge + Pure Dispatch (Never overwrites background scraped queues)
  */
 
 const DEFAULT_CONFIG = {
@@ -16,6 +16,7 @@ const DEFAULT_CONFIG = {
   mediaQueue: [],
   usedMedia: [],
   harvestedUsers: [],
+  activityLog: [],
   settings: {
     autoSelfReply: true,
     crossAccountLike: true,
@@ -26,8 +27,14 @@ const DEFAULT_CONFIG = {
   updatedAt: null
 };
 
-// Built-in Serverless RedGifs Official API Harvester (Fetches fresh MP4s in 3 sec directly from Admin Panel!)
-async function fetchFreshAdultMediaServerless(nicheQuery = 'tiktok') {
+const BANNED_WORDS = [
+  'jerkmate', 'chaturbate', 'stripchat', 'bonga', 'cam4', 'ad', 'promo',
+  'hentai', 'anime', '3d', 'sfm', 'cartoon', 'animated', 'rule34', 'furry',
+  'gay', 'trans', 'shemale', 'femboy', 'cuck', 'compilation'
+];
+
+// Built-in Serverless RedGifs Official API Harvester (Strictly Real Amateur/Tease MP4s — No Posters!)
+async function fetchFreshAdultMediaServerless(nicheQuery = 'skirt lift') {
   const urls = [];
   try {
     const authRes = await fetch('https://api.redgifs.com/v2/auth/temporary', {
@@ -37,11 +44,20 @@ async function fetchFreshAdultMediaServerless(nicheQuery = 'tiktok') {
     if (authRes.ok) {
       const { token } = await authRes.json();
       if (token) {
-        const queries = [nicheQuery, 'amateur', 'tease', 'curves', 'bhabhi', 'twerk'];
+        const queries = [
+          nicheQuery,
+          'solo girl',
+          'fingering',
+          'skirt lift',
+          'mirror tease',
+          'bedroom tease',
+          'homemade gf',
+          'desi bhabhi'
+        ];
         const picked = queries[Math.floor(Math.random() * queries.length)];
         const page = Math.floor(Math.random() * 4) + 1;
         const sRes = await fetch(
-          `https://api.redgifs.com/v2/gifs/search?search_text=${encodeURIComponent(picked)}&order=trending&count=30&page=${page}`,
+          `https://api.redgifs.com/v2/gifs/search?search_text=${encodeURIComponent(picked)}&order=trending&type=g&count=35&page=${page}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -53,9 +69,17 @@ async function fetchFreshAdultMediaServerless(nicheQuery = 'tiktok') {
         if (sRes.ok) {
           const data = await sRes.json();
           for (const g of data?.gifs || []) {
-            if (g?.urls?.sd) urls.push(g.urls.sd);
-            else if (g?.urls?.hd) urls.push(g.urls.hd);
-            if (g?.urls?.poster) urls.push(g.urls.poster);
+            if (g?.duration && (g.duration < 4 || g.duration > 30)) continue;
+            const tags = (g?.tags || []).map((t) => String(t).toLowerCase());
+            const desc = String(g?.description || '').toLowerCase();
+            if (BANNED_WORDS.some((b) => tags.some((t) => t.includes(b)) || desc.includes(b))) {
+              continue;
+            }
+            // ONLY push direct .mp4 video streams (Never push .jpg poster thumbnails!)
+            const mp4Url = g?.urls?.sd || g?.urls?.hd;
+            if (mp4Url && mp4Url.split('?')[0].toLowerCase().endsWith('.mp4')) {
+              urls.push(mp4Url);
+            }
           }
         }
       }
@@ -105,7 +129,7 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${githubToken}`,
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': 'AlcashX-Cloud-Pro-v3',
+        'User-Agent': 'AlcashX-Cloud-Pro-v4.5',
         'Content-Type': 'application/json'
       };
 
@@ -189,17 +213,17 @@ export default async function handler(req, res) {
         return res.status(200).json({ ok: true, repo: githubRepo, runs });
       }
 
-      // 3. INSTANT SERVERLESS CLOUD SCRAPER (1-CLICK VIDEO QUEUE REFILL)
+      // 3. INSTANT SERVERLESS CLOUD SCRAPER (1-CLICK PURE MP4 QUEUE REFILL)
       if (action === 'cloud_scrape') {
-        const freshUrls = await fetchFreshAdultMediaServerless(niche || 'tiktok');
+        const freshUrls = await fetchFreshAdultMediaServerless(niche || 'skirt lift');
         return res.status(200).json({
           ok: true,
           urls: freshUrls,
-          message: `☁️ Pulled ${freshUrls.length} fresh viral media links! Click "Save to GitHub" to lock them in.`
+          message: `☁️ Pulled ${freshUrls.length} pure amateur/trap MP4 videos! Click "💾 Save Changes" to lock them in.`
         });
       }
 
-      // 4. SAVE CONFIG (WITH AUTO-RETRY ON 409 CONFLICT & SMART UNION MERGE)
+      // 4. SAVE CONFIG (WITH AUTO-RETRY ON 409 CONFLICT & JUNK PURGE FILTER)
       if (action === 'save_config') {
         if (!config || typeof config !== 'object') {
           return res.status(400).json({ ok: false, error: 'Invalid config payload.' });
@@ -228,20 +252,26 @@ export default async function handler(req, res) {
             ...(Array.isArray(config.usedMedia) ? config.usedMedia : [])
           ]);
 
-          // Merge remote + local mediaQueue & remove anything already used
+          // Merge remote + local mediaQueue & strictly purge Rule34 (aacdn), Mixkit, and non-MP4s!
           const mergedQueue = [
             ...new Set([
               ...(Array.isArray(config.mediaQueue) ? config.mediaQueue : []),
               ...(Array.isArray(existingFileConfig.mediaQueue) ? existingFileConfig.mediaQueue : [])
             ])
-          ].filter((u) => !usedSet.has(u));
+          ].filter((u) => {
+            if (!u || typeof u !== 'string') return false;
+            const clean = u.toLowerCase().split('?')[0];
+            if (u.includes('aacdn.net') || u.includes('rule34') || u.includes('mixkit.co')) return false;
+            if (!clean.endsWith('.mp4')) return false;
+            return !usedSet.has(u);
+          });
 
           const mergedUsers = [
             ...new Set([
               ...(Array.isArray(config.harvestedUsers) ? config.harvestedUsers : []),
               ...(Array.isArray(existingFileConfig.harvestedUsers) ? existingFileConfig.harvestedUsers : [])
             ])
-          ].filter((u) => !u.includes('simp_account') && !u.includes('active_user'));
+          ].filter((u) => !u.includes('simp_account') && !u.includes('active_user') && !u.includes('user1'));
 
           // Preserve bot's lastRunAt & lastStatus for accounts
           const remoteAccMap = new Map(
@@ -256,16 +286,23 @@ export default async function handler(req, res) {
             };
           });
 
+          const cleanImages = (Array.isArray(config.images) ? config.images : []).filter(
+            (u) => u && !u.includes('mixkit.co') && !u.includes('aacdn.net')
+          );
+
           const payloadToSave = {
             ...existingFileConfig,
             accounts: mergedAccounts,
-            images: Array.isArray(config.images) ? config.images : [],
+            images: cleanImages,
             captions: Array.isArray(config.captions) ? config.captions : [],
             replies: Array.isArray(config.replies) ? config.replies : [],
             targets: Array.isArray(config.targets) ? config.targets : [],
             mediaQueue: mergedQueue.slice(0, 400),
-            usedMedia: [...usedSet].slice(-2000),
+            usedMedia: [...usedSet].slice(-2500),
             harvestedUsers: mergedUsers.slice(-200),
+            activityLog: Array.isArray(existingFileConfig.activityLog)
+              ? existingFileConfig.activityLog.slice(0, 60)
+              : [],
             settings: {
               autoSelfReply: Boolean(config.settings?.autoSelfReply),
               crossAccountLike: Boolean(config.settings?.crossAccountLike),
@@ -278,7 +315,7 @@ export default async function handler(req, res) {
 
           const contentBase64 = Buffer.from(JSON.stringify(payloadToSave, null, 2), 'utf-8').toString('base64');
           const putBody = {
-            message: `⚡ Sync config via AlcashX Command Center [${new Date().toISOString()}]`,
+            message: `⚡ Sync config via AlcashX Command Center v4.5 [${new Date().toISOString()}]`,
             content: contentBase64,
             branch
           };
@@ -292,7 +329,7 @@ export default async function handler(req, res) {
           });
 
           if (putRes.status === 409 && attempt === 1) {
-            continue; // Auto-retry once with fresh SHA if GitHub had a race condition
+            continue;
           }
 
           if (!putRes.ok) {
@@ -303,14 +340,14 @@ export default async function handler(req, res) {
           const putResult = await putRes.json();
           return res.status(200).json({
             ok: true,
-            message: `✅ Saved & Merged! Queue: ${payloadToSave.mediaQueue.length} items | Users: ${payloadToSave.harvestedUsers.length}`,
+            message: `✅ Saved & Cleaned! Pure MP4 Queue: ${payloadToSave.mediaQueue.length} | Harvested Users: ${payloadToSave.harvestedUsers.length}`,
             sha: putResult.content?.sha || null,
             config: payloadToSave
           });
         }
       }
 
-      // 5. TRIGGER BOT NOW (PURE DISPATCH — NO ACCIDENTAL QUEUE OVERWRITE!)
+      // 5. TRIGGER BOT NOW (PURE DISPATCH)
       if (action === 'trigger_bot') {
         const dispatchUrl = `https://api.github.com/repos/${githubRepo}/actions/workflows/bot.yml/dispatches`;
         const dispatchRes = await fetch(dispatchUrl, {
@@ -322,7 +359,7 @@ export default async function handler(req, res) {
         if (dispatchRes.status === 204 || dispatchRes.ok) {
           return res.status(200).json({
             ok: true,
-            message: `🚀 Autonomous Bot Dispatched! Watch Live Monitor below.`
+            message: `🚀 Autonomous Bot v4.5 Dispatched! Watch Live Monitor below.`
           });
         }
         const errText = await dispatchRes.text();
@@ -344,7 +381,7 @@ function renderAdminHTML() {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>AlcashX Cloud Pro v3.0 — Autonomous Traffic & Revenue Center</title>
+  <title>AlcashX Cloud Pro v4.5 — Autonomous Traffic & Revenue Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
@@ -365,16 +402,16 @@ function renderAdminHTML() {
     <header class="glass border border-slate-800/90 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-xl">
       <div>
         <div class="flex flex-wrap items-center gap-2.5">
-          <span class="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider rounded-md bg-gradient-to-r from-emerald-500/20 to-sky-500/20 text-emerald-300 border border-emerald-500/30">v3.0 AUTOPILOT</span>
+          <span class="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider rounded-md bg-gradient-to-r from-emerald-500/20 to-sky-500/20 text-emerald-300 border border-emerald-500/30">v4.5 ANTI-BLUR</span>
           <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white">AlcashX Command Center</h1>
           <span id="connBadge" class="px-2.5 py-0.5 text-[11px] font-mono font-semibold rounded-full bg-slate-800 text-slate-400 border border-slate-700">⚪ Standby</span>
         </div>
-        <p id="connSubtext" class="text-xs text-slate-400 mt-1">Zero-Touch X Traffic Arbitrage &amp; Adsterra Direct Link Engine</p>
+        <p id="connSubtext" class="text-xs text-slate-400 mt-1">Pure Amateur MP4 Engine · Safe-Search Bypass Hijacker · Live Proof Tracker</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <input id="adminPassword" type="password" placeholder="Admin PIN" class="w-full sm:w-40 h-10 px-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-sky-500" />
         <button onclick="loadConfigFromGitHub()" class="h-10 px-3.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-semibold cursor-pointer">🔄 Sync GitHub</button>
-        <button onclick="instantCloudRefill('tiktok')" class="h-10 px-3.5 rounded-xl bg-purple-600/90 hover:bg-purple-500 text-white text-xs font-bold cursor-pointer shadow">☁️ +30 Viral Videos</button>
+        <button onclick="instantCloudRefill('skirt lift')" class="h-10 px-3.5 rounded-xl bg-purple-600/90 hover:bg-purple-500 text-white text-xs font-bold cursor-pointer shadow">☁️ +30 Trap MP4s</button>
         <button onclick="saveConfigToGitHub()" class="h-10 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold cursor-pointer shadow-lg">💾 Save Changes</button>
       </div>
     </header>
@@ -392,7 +429,7 @@ function renderAdminHTML() {
       </div>
 
       <div class="glass border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
-        <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Video Queue</span>
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Pure MP4 Queue</span>
         <div class="mt-2 flex items-baseline justify-between">
           <span id="statMediaQueue" class="text-2xl sm:text-3xl font-extrabold text-sky-400 font-mono">0</span>
           <span id="statUsedMedia" class="text-xs text-slate-400 font-mono">0 posted</span>
@@ -403,7 +440,7 @@ function renderAdminHTML() {
         <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Harvested @Users</span>
         <div class="mt-2 flex items-baseline justify-between">
           <span id="statHarvestedUsers" class="text-2xl sm:text-3xl font-extrabold text-purple-400 font-mono">0</span>
-          <span class="text-xs text-slate-400 font-mono">targets</span>
+          <span class="text-xs text-slate-400 font-mono">real users</span>
         </div>
       </div>
 
@@ -431,22 +468,39 @@ function renderAdminHTML() {
       </div>
     </section>
 
-    <!-- Live GitHub Actions Telemetry Bar -->
-    <section class="glass border border-slate-800/90 rounded-2xl p-4 sm:p-5 space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">Live GitHub Actions Execution Stream (bot.yml)</h2>
+    <!-- Live GitHub Actions Telemetry + Activity Proof Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Workflow Runs -->
+      <section class="glass border border-slate-800/90 rounded-2xl p-4 sm:p-5 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">GitHub Actions Stream (bot.yml)</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <a href="https://fan-page-orpin-mu.vercel.app" target="_blank" class="px-2.5 py-1 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[11px] font-mono hover:bg-rose-500/30">🔞 Pre-Lander ↗</a>
+            <button onclick="pollWorkflowRuns()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-sky-400 font-mono cursor-pointer">🔄 Refresh</button>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <a href="https://fan-page-orpin-mu.vercel.app" target="_blank" class="px-3 py-1 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-mono hover:bg-rose-500/30">🔞 Preview Money Pre-Lander ↗</a>
-          <button onclick="pollWorkflowRuns()" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-sky-400 font-mono cursor-pointer">🔄 Refresh Logs</button>
+        <div id="runsListContainer" class="space-y-2 text-xs font-mono max-h-60 overflow-y-auto">
+          <div class="text-slate-500 py-2">Enter Admin PIN and click "Sync GitHub" to view live cloud runs...</div>
         </div>
-      </div>
-      <div id="runsListContainer" class="space-y-2 text-xs font-mono">
-        <div class="text-slate-500 py-2">Enter Admin PIN and click "Sync GitHub" to view live cloud runs...</div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Live Bot Activity & Viral Hijack Proof Table -->
+      <section class="glass border border-slate-800/90 rounded-2xl p-4 sm:p-5 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">🎯</span>
+            <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">Verified Posts &amp; Viral Hijack Proof Log</h2>
+          </div>
+          <span id="activityCountBadge" class="text-[11px] font-mono text-emerald-400">0 actions logged</span>
+        </div>
+        <div id="activityLogContainer" class="space-y-2 text-xs font-mono max-h-60 overflow-y-auto">
+          <div class="text-slate-500 py-2">No verified post/hijack logs yet. Run the bot with v4.5 to see exact clickable tweet &amp; comment URLs here!</div>
+        </div>
+      </section>
+    </div>
 
     <!-- Navigation Tabs -->
     <nav class="flex items-center gap-1.5 p-1.5 glass border border-slate-800 rounded-2xl overflow-x-auto">
@@ -460,7 +514,7 @@ function renderAdminHTML() {
       <div class="glass border border-slate-800 rounded-2xl p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h2 class="text-sm sm:text-base font-bold text-white">Add X (Twitter) Account to Autonomous Fleet</h2>
-          <span class="text-xs text-emerald-400 font-mono">💡 Tip: Turn ON "Mark media as sensitive" in X Settings for Zero-Ban!</span>
+          <span class="text-xs text-amber-300 font-mono">💡 Important: Keep "Mark media you post as sensitive" UNTICKED (OFF) in X Settings so videos play UNBLURRED!</span>
         </div>
         <form onsubmit="handleAddAccount(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <input id="accUsername" type="text" required placeholder="@handle" class="w-full h-11 px-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
@@ -501,24 +555,23 @@ function renderAdminHTML() {
 
     <!-- TAB 2: HIGH-CPM VIRAL STUDIO -->
     <section id="tabPanel-content" class="hidden space-y-5">
-      <!-- 1-Click Niche Switcher -->
       <div class="glass border border-sky-500/30 rounded-2xl p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 class="text-sm font-bold text-sky-300">💰 1-Click High-Converting Niche Packs &amp; Cloud Video Puller</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Select a high-converting niche preset below or pull 30+ fresh videos directly from the cloud:</p>
+            <h3 class="text-sm font-bold text-sky-300">💰 1-Click High-Converting Niche Packs &amp; Cloud MP4 Puller</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Select a high-converting niche preset below or pull 30+ fresh amateur trap MP4s directly from the cloud:</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button onclick="loadNichePreset('tier1')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl cursor-pointer shadow">🇺🇸 Tier-1 USA/UK E-Girl Pack (High CPM)</button>
-            <button onclick="loadNichePreset('desi')" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl cursor-pointer shadow">🇮🇳 Desi Bhabhi / MMS Pack (Massive Clicks)</button>
+            <button onclick="loadNichePreset('tier1')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl cursor-pointer shadow">🇺🇸 Tier-1 AmateurGF / Solo Trap Pack</button>
+            <button onclick="loadNichePreset('desi')" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl cursor-pointer shadow">🇮🇳 Desi Bhabhi / Room MMS Pack</button>
             <button onclick="loadNichePreset('hookup')" class="px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl cursor-pointer shadow">🔥 Late-Night Hookup Bait Pack</button>
-            <button onclick="copyAgentPrompt()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold text-xs rounded-xl border border-slate-700 cursor-pointer">📋 Copy AI Prompt</button>
+            <button onclick="copyAgentPrompt()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold text-xs rounded-xl border border-slate-700 cursor-pointer">📋 Copy AI Scraper Prompt</button>
           </div>
         </div>
 
         <div class="pt-2 border-t border-slate-800/80 space-y-2">
-          <textarea id="aiRawInput" rows="3" placeholder="Paste AI JSON output OR raw .mp4 / .jpg URLs here to bulk-import..." class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 font-mono focus:outline-none focus:border-sky-500"></textarea>
-          <button onclick="extractAiPack()" class="w-full py-2.5 bg-gradient-to-r from-sky-600 to-emerald-600 hover:from-sky-500 hover:to-emerald-500 text-white font-bold text-xs rounded-xl cursor-pointer shadow">⚡ Auto-Extract &amp; Merge into Queue</button>
+          <textarea id="aiRawInput" rows="3" placeholder="Paste AI JSON output OR raw .mp4 URLs here to bulk-import..." class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 font-mono focus:outline-none focus:border-sky-500"></textarea>
+          <button onclick="extractAiPack()" class="w-full py-2.5 bg-gradient-to-r from-sky-600 to-emerald-600 hover:from-sky-500 hover:to-emerald-500 text-white font-bold text-xs rounded-xl cursor-pointer shadow">⚡ Auto-Extract &amp; Merge into MP4 Queue</button>
         </div>
       </div>
 
@@ -528,7 +581,7 @@ function renderAdminHTML() {
           <textarea id="txtCaptions" rows="6" oninput="syncContentFromTextareas()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 font-mono"></textarea>
         </div>
         <div class="glass border border-slate-800 rounded-2xl p-4 space-y-2">
-          <div class="flex justify-between"><h3 class="text-xs font-bold text-white uppercase">Thread / Reply Templates (With {{LINK}})</h3><span id="countReplies" class="text-xs text-emerald-400 font-mono">0</span></div>
+          <div class="flex justify-between"><h3 class="text-xs font-bold text-white uppercase">Self-Reply Comment Templates (With {{LINK}})</h3><span id="countReplies" class="text-xs text-emerald-400 font-mono">0</span></div>
           <textarea id="txtReplies" rows="6" oninput="syncContentFromTextareas()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 font-mono"></textarea>
         </div>
         <div class="glass border border-slate-800 rounded-2xl p-4 space-y-2">
@@ -536,7 +589,7 @@ function renderAdminHTML() {
           <textarea id="txtTargets" rows="5" oninput="syncContentFromTextareas()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 font-mono"></textarea>
         </div>
         <div class="glass border border-slate-800 rounded-2xl p-4 space-y-2">
-          <div class="flex justify-between"><h3 class="text-xs font-bold text-white uppercase">Custom Direct MP4 / Image URLs</h3><span id="countImages" class="text-xs text-amber-400 font-mono">0</span></div>
+          <div class="flex justify-between"><h3 class="text-xs font-bold text-white uppercase">Custom Direct MP4 URLs</h3><span id="countImages" class="text-xs text-amber-400 font-mono">0</span></div>
           <textarea id="txtImages" rows="5" oninput="syncContentFromTextareas()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 font-mono"></textarea>
         </div>
       </div>
@@ -547,12 +600,13 @@ function renderAdminHTML() {
       <div class="glass border border-slate-800 rounded-2xl p-5 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 class="text-sm font-bold text-white">🎬 Visual Media Queue Inspector (Next 8 Items to Post)</h3>
-            <p class="text-xs text-slate-400">Each item is permanently moved to <code class="text-emerald-400">usedMedia</code> after posting so videos never repeat.</p>
+            <h3 class="text-sm font-bold text-white">🎬 Visual MP4 Queue Inspector (Next 8 Videos to Post)</h3>
+            <p class="text-xs text-slate-400">Strictly pure <code class="text-sky-400">.mp4</code> videos. Rule34/Mixkit/Posters are automatically purged.</p>
           </div>
-          <div class="flex gap-2">
-            <button onclick="instantCloudRefill('bhabhi')" class="px-3 py-1.5 rounded-lg bg-amber-600/80 hover:bg-amber-500 text-white text-xs font-bold cursor-pointer">☁️ +30 Desi Clips</button>
-            <button onclick="state.usedMedia=[];renderUI();showBanner('♻️ Used Media history cleared! Click Save Changes.');" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 cursor-pointer">♻️ Reset Used History</button>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="instantCloudRefill('fingering')" class="px-3 py-1.5 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer">☁️ +30 Solo Girl MP4s</button>
+            <button onclick="instantCloudRefill('desi bhabhi')" class="px-3 py-1.5 rounded-lg bg-amber-600/80 hover:bg-amber-500 text-white text-xs font-bold cursor-pointer">☁️ +30 Desi MP4s</button>
+            <button onclick="state.mediaQueue=[];renderUI();showBanner('🧹 Queue cleared! Click +30 Trap MP4s then Save Changes.');" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-rose-300 cursor-pointer">🧹 Clear Queue</button>
           </div>
         </div>
         <div id="visualGalleryGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2"></div>
@@ -560,7 +614,7 @@ function renderAdminHTML() {
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="glass border border-slate-800 rounded-2xl p-4 space-y-2">
-          <div class="flex justify-between"><h3 class="text-xs font-bold text-sky-400 uppercase">Raw Scraped Queue (mediaQueue)</h3><span id="countMediaQueue" class="text-xs text-slate-400 font-mono">0</span></div>
+          <div class="flex justify-between"><h3 class="text-xs font-bold text-sky-400 uppercase">Raw Scraped MP4 Queue (mediaQueue)</h3><span id="countMediaQueue" class="text-xs text-slate-400 font-mono">0</span></div>
           <textarea id="txtMediaQueue" rows="6" oninput="syncQueueFromTextareas()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 font-mono"></textarea>
         </div>
         <div class="glass border border-slate-800 rounded-2xl p-4 space-y-2">
@@ -573,7 +627,7 @@ function renderAdminHTML() {
         <h2 class="text-sm font-bold text-white uppercase tracking-wider">Automation &amp; Anti-Ban Controls</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           <label class="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 cursor-pointer">
-            <div><div class="text-xs sm:text-sm font-bold text-white">Auto-Thread / Self-Reply Money Link</div><div class="text-[11px] text-slate-400">Attaches Cloaked Link on every post</div></div>
+            <div><div class="text-xs sm:text-sm font-bold text-white">Auto-Self-Reply Money Link + Card</div><div class="text-[11px] text-slate-400">Posts clickable Fanpage Card comment under every video</div></div>
             <input id="chkAutoSelfReply" type="checkbox" onchange="syncSettingsFromInputs()" class="w-5 h-5 accent-emerald-500 rounded" />
           </label>
           <label class="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 cursor-pointer">
@@ -597,8 +651,8 @@ function renderAdminHTML() {
   <script>
     let state = {
       accounts: [], images: [], captions: [], replies: [], targets: [],
-      mediaQueue: [], usedMedia: [], harvestedUsers: [],
-      settings: { autoSelfReply: true, crossAccountLike: false, crossAccountRetweet: false, crossAccountBookmark: false, maxAccountsPerRun: 2 }
+      mediaQueue: [], usedMedia: [], harvestedUsers: [], activityLog: [],
+      settings: { autoSelfReply: true, crossAccountLike: true, crossAccountRetweet: true, crossAccountBookmark: false, maxAccountsPerRun: 2 }
     };
     let pollTimer = null;
 
@@ -630,53 +684,53 @@ function renderAdminHTML() {
     function loadNichePreset(type) {
       if (type === 'tier1') {
         state.captions = [
-          "{Caught me being|Feeling a little|Just being} {cute|naughty|playful|bored} {again ✌️🐆|tonight 😈|🙊|👀}",
-          "{Wait for the end|Don't pause at 0:02|Did I show too much?|Deleting this in 10 mins} {😳|🤫|💦|🔥}",
-          "{can't sleep in my dorm, who's still up? 🌙|am I your type? be honest 👀|would you date a girl like me? <3}",
+          "{Caught me being|Feeling so|Just being} {naughty alone|playful in bed|horny tonight} {🙊💦|😈🔥|👀|✌️🐆}",
+          "{Wait till 0:03 😳|Don't pause this|Did I show too much?|Deleting this in 10 mins} {😳💦|🤫🔥|😈}",
+          "{can't sleep in my dorm, who wants the full video? 🌙|my fingers weren't enough tonight 🙊🔥|am I your type? be honest 👀💦}",
           "{My camera roll is dangerous|Too risky for X?|Should I post part 2?} {🙊|😈|🔥|👇}"
         ];
         state.replies = [
-          "{Full uncensored video|Watch what happened next|The rest of this clip is too spicy for X} {👇|😈|💦} {{LINK}}",
+          "{Full 3 min uncut video|Watch me finish without censor|The rest of this clip is too wet for X} right here 👇🔞 {{LINK}}",
           "{Couldn't post the full 2 min video here}, watch the uncut version free on my VIP page 👉 {{LINK}} 🔥"
         ];
-        state.targets = ["#nsfwtwt", "#thirsttrap", "#egirl", "who is up", "rate me"];
+        state.targets = ["#thirsttrap", "#nsfwtwt", "#egirl"];
       } else if (type === 'desi') {
         state.captions = [
-          "{Late night mood|No one is home tonight|Feeling so bored alone} {🙊|😈|🔥|👀}",
-          "{Wait till the end 😳|Deleting this video in 15 mins|Did I cross the limit?} {🤫|💦|🔥}",
-          "{Anyone awake right now? 🌙|Desi curves hit different, agree? 👀|Should I upload the full room video? 🙊}"
+          "{Late night mood|No one is home tonight|Feeling so bored alone in bed} {🙊💦|😈🔥|👀}",
+          "{Wait till the end 😳|Deleting this room video in 15 mins|Did I cross the limit?} {🤫|💦|🔥}",
+          "{Anyone awake right now? 🌙|Desi curves hit different, agree? 👀|Should I upload the full uncut MMS? 🙊}"
         ];
         state.replies = [
           "{Full 3 min uncut room video|Watch the full leaked clip before I delete} right here 👇🔞 {{LINK}}",
           "{Too hot to post on X}, watch my private uncensored video free here 👉 {{LINK}} 💦🔥"
         ];
-        state.targets = ["#desimms", "#indianbhabhi", "#nsfwtwt", "#thirsttrap", "desi leaked"];
+        state.targets = ["#desimms", "#indianbhabhi", "#thirsttrap"];
       } else {
         state.captions = [
-          "{Be honest, would you|Could you handle all this|If I sent you my private link, would you watch}? {😳|😈|💦}",
+          "{Be honest, would you help me finish|Could you handle all this|If I sent you my private link, would you watch}? {😳|😈|💦}",
           "{18+ only! Don't open my replies if you're in public 🤫|My ex hated when I posted videos like this 👀🔥}"
         ];
         state.replies = [
-          "18+ Only! Unlock my full private archive for free right here 👇🔞 {{LINK}} 💦"
+          "18+ Only! Unlock my full private uncensored archive for free right here 👇🔞 {{LINK}} 💦"
         ];
-        state.targets = ["#nsfwtwt", "#onlyfans", "#thirsttrap", "up for chat"];
+        state.targets = ["#thirsttrap", "#nsfwtwt", "#GFMode"];
       }
       renderUI();
       showBanner('🔥 Loaded ' + type.toUpperCase() + ' High-Converting Preset! Click "💾 Save Changes" to apply.');
     }
 
     async function instantCloudRefill(niche) {
-      showBanner('☁️ Fetching 30+ fresh trending adult videos from RedGifs Cloud API...');
+      showBanner('☁️ Fetching 30+ fresh amateur trap MP4 videos from RedGifs Cloud API...');
       try {
         const data = await apiCall('cloud_scrape', { niche });
         if (Array.isArray(data.urls) && data.urls.length) {
           const usedSet = new Set(state.usedMedia || []);
-          const fresh = data.urls.filter(u => !usedSet.has(u));
+          const fresh = data.urls.filter(u => !usedSet.has(u) && u.split('?')[0].toLowerCase().endsWith('.mp4'));
           state.mediaQueue = [...new Set([...fresh, ...(state.mediaQueue || [])])];
           renderUI();
           showBanner(data.message);
         } else {
-          showBanner('⚠️ Cloud API returned 0 items right now. Try again or use Save Changes.', true);
+          showBanner('⚠️ Cloud API returned 0 items right now. Try again in a moment.', true);
         }
       } catch (err) {
         showBanner(err.message, true);
@@ -684,14 +738,14 @@ function renderAdminHTML() {
     }
 
     function copyAgentPrompt() {
-      const p = \`Return ONLY a valid JSON object with 15 direct .mp4/.gif/.jpg URLs in "mediaQueue", 10 teasing spintax "captions" (no links), 10 urgent self-reply templates in "replies" containing {{LINK}}, and 6 NSFW search keywords in "targets".\`;
+      const p = \`Return ONLY a valid JSON object with 15 direct .mp4 video URLs (from RedGifs/amateur feeds) in "mediaQueue", 10 lustful/teasing spintax "captions" (no links), 10 urgent self-reply templates in "replies" containing {{LINK}}, and 5 hashtags in "targets".\`;
       navigator.clipboard.writeText(p);
-      showBanner('📋 Master Prompt copied to clipboard!');
+      showBanner('📋 Master AI Scraper Prompt copied to clipboard!');
     }
 
     function extractAiPack() {
       const raw = document.getElementById('aiRawInput').value.trim();
-      if (!raw) return showBanner('Paste JSON or media links first!', true);
+      if (!raw) return showBanner('Paste JSON or MP4 links first!', true);
       let ok = false;
       try {
         const m = raw.match(/\\{[\\s\\S]*\\}/);
@@ -703,10 +757,10 @@ function renderAdminHTML() {
           if (Array.isArray(p.targets)) { state.targets = [...new Set([...state.targets, ...p.targets])]; ok = true; }
         }
       } catch (_) {}
-      const urls = raw.match(/https?:\\/\\/[^\\s"'<>\\\\]+\\.(?:mp4|gif|jpg|jpeg|png)/gi) || [];
+      const urls = raw.match(/https?:\\/\\/[^\\s"'<>\\\\]+\\.mp4/gi) || [];
       if (urls.length) { state.mediaQueue = [...new Set([...urls, ...state.mediaQueue])]; ok = true; }
-      if (ok) { renderUI(); showBanner('⚡ Extracted into Queue! Click "💾 Save Changes".'); }
-      else showBanner('No valid JSON or .mp4/.jpg links found.', true);
+      if (ok) { renderUI(); showBanner('⚡ Extracted into MP4 Queue! Click "💾 Save Changes".'); }
+      else showBanner('No valid JSON or direct .mp4 links found.', true);
     }
 
     function toggleAccountStatus(idx) {
@@ -743,11 +797,42 @@ function renderAdminHTML() {
           <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
             <div class="flex flex-wrap items-center gap-2">
               \${badge}
-              <span class="text-white font-semibold">\${r.name}</span>
-              <span class="text-slate-400">\${new Date(r.createdAt).toLocaleString()}</span>
+              <span class="text-slate-300">\${new Date(r.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
               <span class="text-slate-500">(\${dur}s)</span>
             </div>
-            <a href="\${r.url}" target="_blank" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-400 font-semibold">📜 Step Logs ↗</a>
+            <a href="\${r.url}" target="_blank" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-400 font-semibold">📜 Step Logs ↗</a>
+          </div>\`;
+      }).join('');
+    }
+
+    function renderActivityLog() {
+      const container = document.getElementById('activityLogContainer');
+      const badgeEl = document.getElementById('activityCountBadge');
+      const logs = Array.isArray(state.activityLog) ? state.activityLog : [];
+      badgeEl.textContent = logs.length + ' actions logged';
+
+      if (logs.length === 0) {
+        container.innerHTML = '<div class="text-slate-500 py-2">No verified post/hijack logs yet. Run the bot to see live clickable tweet &amp; comment URLs here!</div>';
+        return;
+      }
+
+      container.innerHTML = logs.slice(0, 15).map(item => {
+        const isHijack = (item.type || '').includes('HIJACK');
+        const isPod = (item.type || '').includes('POD');
+        const tagClass = isHijack
+          ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+          : (isPod ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40');
+        const tStr = item.time ? new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+        return \`
+          <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2 py-0.5 rounded border text-[10px] font-bold \${tagClass}">\${item.type || 'ACTION'}</span>
+              <span class="text-white font-bold">\${item.account || ''}</span>
+              <span class="text-slate-400 text-[11px]">\${item.detail || ''}</span>
+              <span class="text-slate-600 text-[10px]">\${tStr}</span>
+            </div>
+            \${item.targetUrl ? \`<a href="\${item.targetUrl}" target="_blank" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold">Open Tweet ↗</a>\` : ''}
           </div>\`;
       }).join('');
     }
@@ -764,6 +849,8 @@ function renderAdminHTML() {
       document.getElementById('statHarvestedUsers').textContent = (state.harvestedUsers || []).length;
       document.getElementById('statDailyPosts').textContent = dailyPosts + ' posts/d';
       document.getElementById('accountsTableCount').textContent = state.accounts.length + ' accounts';
+
+      renderActivityLog();
 
       const tbody = document.getElementById('accountsTableBody');
       tbody.innerHTML = state.accounts.length === 0
@@ -791,20 +878,18 @@ function renderAdminHTML() {
               </tr>\`;
           }).join('');
 
-      // Render Visual Queue Gallery (Next 8 items)
       const gallery = document.getElementById('visualGalleryGrid');
       const nextItems = (state.mediaQueue || []).slice(0, 8);
       gallery.innerHTML = nextItems.length === 0
-        ? '<div class="col-span-4 py-6 text-center text-xs text-slate-500">Queue empty! Click "☁️ +30 Viral Videos" at top right to refill immediately.</div>'
+        ? '<div class="col-span-4 py-6 text-center text-xs text-slate-500">Queue empty! Click "☁️ +30 Trap MP4s" at top right to refill immediately.</div>'
         : nextItems.map((url, i) => {
-            const isVid = url.toLowerCase().split('?')[0].endsWith('.mp4');
             return \`
-              <div class="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800 h-32 flex flex-col justify-between p-2">
+              <div class="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800 h-28 flex flex-col justify-between p-2.5">
                 <div class="flex justify-between items-center z-10">
-                  <span class="px-1.5 py-0.5 rounded bg-black/70 text-[10px] font-mono text-sky-300">#\${i + 1} \${isVid ? '🎬 MP4' : '🖼️ IMG'}</span>
-                  <a href="\${url}" target="_blank" class="px-1.5 py-0.5 rounded bg-black/70 text-[10px] text-white hover:text-sky-400">Open ↗</a>
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-[10px] font-mono text-emerald-300">#\${i + 1} 🎬 MP4</span>
+                  <a href="\${url}" target="_blank" class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-sky-300 hover:bg-slate-700">Preview ↗</a>
                 </div>
-                <div class="text-[10px] font-mono text-slate-400 truncate bg-black/60 p-1 rounded z-10">\${url}</div>
+                <div class="text-[10px] font-mono text-slate-400 truncate bg-black/60 p-1.5 rounded z-10">\${url}</div>
               </div>\`;
           }).join('');
 
@@ -896,6 +981,7 @@ function renderAdminHTML() {
           mediaQueue: data.config.mediaQueue || [],
           usedMedia: data.config.usedMedia || [],
           harvestedUsers: data.config.harvestedUsers || [],
+          activityLog: data.config.activityLog || [],
           settings: data.config.settings || state.settings
         };
         document.getElementById('connBadge').textContent = '🟢 Live Synced';
@@ -931,7 +1017,6 @@ function renderAdminHTML() {
       }
     }
 
-    // FIXED: Dispatches bot directly without overwriting GitHub's freshly scraped queue!
     async function triggerBotNow() {
       const statusEl = document.getElementById('statBotStatus');
       statusEl.textContent = '🚀 Launching...';
