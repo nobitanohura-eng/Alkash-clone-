@@ -15,8 +15,8 @@
       "ct0": "3b94c1920f4513d0ea502218bd9225ad1ebd2a4912701ebde3e6b9e1b2c3914ece3986f84dbe75c58a0e87947902aaff045528dd79951bb82f8c0726663895f9ed15d8e1cf2ef7b514042b287c03d8e3",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-29T21:27:15.767Z",
-      "lastStatus": "✅ 1 Card + 0 Viral Hijacks"
+      "lastRunAt": "2026-10-29T20:30:55.958Z",
+      "lastStatus": "✅ 1 Card Post + 0 Viral Hijacks"
     },
     {
       "username": "@Chloedaily0",
@@ -24,11 +24,13 @@
       "ct0": "95dee312b51979d567bfd713522e9994c849a4fe7baa7b1f3a0cca4bb2c611ef0810d708a7aeb7131a9f1026e84c779d263883dfa9c8df959cb68503e146f71970e67b5d5aaab1fdc542899ac76c64ef",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-29T21:25:12.331Z",
-      "lastStatus": "✅ 1 Card + 0 Viral Hijacks"
+      "lastRunAt": "2026-10-29T19:47:41.806Z",
+      "lastStatus": "✅ Video + Link (Retry) + 0 Hijacks"
     }
   ],
   "images": [
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309564485_19.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309538240_546.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793308954132_741.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793308836733_353.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793308781939_542.jpg#noblur"
@@ -48,6 +50,8 @@
     "#egirl"
   ],
   "mediaQueue": [
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309564485_19.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309538240_546.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793308781939_542.jpg#noblur",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFlusteredMuffledMice-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FForestgreenJointNightjar-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
@@ -273,5 +277,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 2
   },
-  "updatedAt": "2026-10-29T21:23:13.691Z"
+  "updatedAt": "2026-10-29T21:33:24.168Z"
 }
