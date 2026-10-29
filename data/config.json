@@ -12,7 +12,7 @@
       "auth_token": "ba829d33d505226fd63b9ed1f1cfe18a3c64c99b",
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
       "proxy": "",
-      "status": "paused",
+      "status": "active",
       "lastRunAt": "2026-10-29T10:48:13.973Z",
       "lastStatus": "✅ Active & Posting"
     },
@@ -21,7 +21,7 @@
       "auth_token": "d85a98d39ab207aae4976b959edaea27db5bcd29",
       "ct0": "3b94c1920f4513d0ea502218bd9225ad1ebd2a4912701ebde3e6b9e1b2c3914ece3986f84dbe75c58a0e87947902aaff045528dd79951bb82f8c0726663895f9ed15d8e1cf2ef7b514042b287c03d8e3",
       "proxy": "",
-      "status": "active",
+      "status": "paused",
       "lastRunAt": "2026-10-29T11:16:36.773Z",
       "lastStatus": "✅ Active & Posting Media"
     }
@@ -139,5 +139,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-29T11:15:46.196Z"
+  "updatedAt": "2026-10-29T11:32:25.456Z"
 }
