@@ -1,3 +1,4 @@
+
 import fs from 'fs';
 import path from 'path';
 import { chromium } from 'playwright';
@@ -38,7 +39,7 @@ async function downloadMedia(url) {
     });
     if (!res.ok) return null;
     const buffer = await res.arrayBuffer();
-    if (buffer.byteLength < 5000) return null; // Reject broken/empty files
+    if (buffer.byteLength < 5000) return null; 
     fs.writeFileSync(tempPath, Buffer.from(buffer));
     return tempPath;
   } catch (e) {
@@ -66,7 +67,6 @@ async function runBot() {
   if (!Array.isArray(config.usedMedia)) config.usedMedia = [];
   if (!Array.isArray(config.mediaQueue)) config.mediaQueue = [];
 
-  // Default Viral Spintax if user hasn't loaded any in Admin Panel
   const defaultCaptions = [
     "{Caught me being|Feeling a little|Just being} {cute|naughty|playful|bored} {again ✌️🐆|tonight 😈|🙊|👀}",
     "{Wait for the end|Don't pause at 0:02|Did I show too much?|Deleting this soon} {😳|🤫|💦|🔥}"
@@ -97,7 +97,6 @@ async function runBot() {
     }
 
     const browser = await chromium.launch(launchArgs);
-    // CRITICAL FIX: Use Desktop Viewport & User-Agent so X doesn't block with "Open in App" popups
     const context = await browser.newContext({
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
       viewport: { width: 1280, height: 800 }
@@ -114,7 +113,7 @@ async function runBot() {
     let localMediaPath = null;
 
     try {
-      // STEP 1: FIRST HARVEST ACTIVE USERS FROM LIVE NSFW SEARCH (So we immediately have @users to tag!)
+      // STEP 1: FIRST HARVEST ACTIVE USERS FROM LIVE NSFW SEARCH
       const searchKeywords = targetsPool.filter((t) => !t.startsWith('@'));
       const searchQuery = pickRandom(searchKeywords) || '#nsfwtwt';
       console.log(`🔍 Opening X Search to harvest active @users & engage: "${searchQuery}"`);
@@ -122,7 +121,6 @@ async function runBot() {
       await page.goto(`https://x.com/search?q=${encodeURIComponent(searchQuery)}&f=live`, { waitUntil: 'domcontentloaded', timeout: 45000 });
       await randomSleep(5, 8);
 
-      // Extract @usernames from live search page
       const userLinks = await page.locator('article[data-testid="tweet"] a[href^="/"]').evaluateAll((els) =>
         els.map((el) => el.getAttribute('href')).filter((h) => h && /^\/[a-zA-Z0-9_]{3,15}$/.test(h))
       ).catch(() => []);
@@ -137,7 +135,6 @@ async function runBot() {
       config.harvestedUsers = config.harvestedUsers.slice(-120);
       console.log(`🎯 Active @Users in Pool: ${config.harvestedUsers.length}`);
 
-      // Like & Bait-Reply on 1st active post in search
       const firstTweet = page.locator('article[data-testid="tweet"]').first();
       if (await firstTweet.isVisible().catch(() => false)) {
         const likeBtn = firstTweet.locator('[data-testid="like"]').first();
@@ -168,23 +165,31 @@ async function runBot() {
       const caption = spin(pickRandom(captionsPool));
       const hashtags = pickMultipleRandom(searchKeywords, 2).join(' ');
       const activeMentions = pickMultipleRandom(config.harvestedUsers, 2).join(' ');
-
       const fullMainTweet = [caption, hashtags, activeMentions].filter(Boolean).join('\n\n');
 
-      // STEP 3: GO TO HOME & COMPOSE NATIVE MEDIA POST
+      // STEP 3: GO TO HOME & COMPOSE NATIVE MEDIA POST (FIXED FOR DESKTOP)
       console.log('📝 Navigating to Home Compose Box...');
       await page.goto('https://x.com/home', { waitUntil: 'domcontentloaded', timeout: 45000 });
       await randomSleep(5, 8);
 
+      // 🔴 NAYA FIX: Desktop par Compose Modal open karne ke liye 'Post' button click karein
+      const composeBtn = page.locator('[data-testid="SideNav_NewTweet_Button"]').first();
+      if (await composeBtn.isVisible().catch(() => false)) {
+        await composeBtn.click();
+        console.log('🔘 Clicked Sidebar Post Button to open Modal');
+        await randomSleep(2, 4);
+      }
+
       const editor = page.locator('[data-testid="tweetTextarea_0"]').first();
-      await editor.waitFor({ state: 'visible', timeout: 25000 });
+      await editor.waitFor({ state: 'visible', timeout: 20000 });
       await editor.click();
 
       if (localMediaPath && fs.existsSync(localMediaPath)) {
         console.log(`📤 Attaching media file: ${path.basename(localMediaPath)}`);
         const fileInput = page.locator('input[data-testid="fileInput"]').first();
         await fileInput.setInputFiles(localMediaPath);
-        await randomSleep(8, 12); // Wait for video/image upload bar to finish
+        console.log('⏳ Waiting for media to upload...');
+        await randomSleep(10, 15); // Badhi video upload hone ka extra time
         await editor.fill(fullMainTweet);
       } else {
         await editor.fill(`${fullMainTweet}\n\n${cloakedLink}`);
@@ -234,7 +239,6 @@ async function runBot() {
       await browser.close();
     }
 
-    // Save updated mediaQueue, usedMedia, and harvestedUsers immediately
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   }
 
