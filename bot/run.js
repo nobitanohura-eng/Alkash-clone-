@@ -1,12 +1,10 @@
 /**
- * File: bot/run.js (AlcashX Cloud Pro v9.0 — Bulletproof Viral Hijacker, SafeSearch Card Engine & Pod)
+ * File: bot/run.js (AlcashX Cloud Pro v9.1 — Regex Patched Viral Hijacker & SafeSearch Card Engine)
  * Fixes & Upgrades:
- *  1. ZERO Stock Photos: Uses Custom Image Vault (config.images) first, then SafeSearch Blurred RedGifs/Reddit Model Cards
- *  2. Google SafeSearch Blur Transform (`toSafeSearchCardImage`) on every card for maximum curiosity & CTR
- *  3. Bulletproof 4-Layer Viral Finder (Waits for actual Tweet DOM rendering + skips Promoted/Locked tweets)
- *  4. Reliable OpenGraph Card Preview Trigger (Types Space/Newline so X Composer always fetches the large image card)
- *  5. Verified Reply Submission (Waits for modal close / toast so replies are never cut off mid-flight)
- *  6. Cross-Account Fleet Pod (Like + Bookmark + Retweet) & Full Gmail HTML Telemetry Report
+ *  1. FIXED "Located 0 viral candidates!" by updating DOM regex to match both absolute and relative X status URLs.
+ *  2. Added extra DOM Scroll & Wait logic for Search pages to ensure lazy-loaded tweets are captured.
+ *  3. ZERO Stock Photos: Uses Custom Image Vault (config.images) first, then SafeSearch Blurred RedGifs/Reddit Model Cards.
+ *  4. Google SafeSearch Blur Transform on every card for maximum curiosity & CTR.
  */
 
 import fs from 'fs';
@@ -74,9 +72,6 @@ function logActivity(config, entry) {
   config.activityLog = config.activityLog.slice(0, 100);
 }
 
-/**
- * Emergency Live RedGifs HD Model Poster Fetcher (Used if queue is ever empty — ZERO stock photos!)
- */
 async function fetchEmergencyModelCards() {
   const cards = [];
   try {
@@ -105,23 +100,17 @@ async function fetchEmergencyModelCards() {
   return cards;
 }
 
-/**
- * Ensures any media URL is converted into a high-CTR Google SafeSearch Blurred JPG Card URL
- */
 function normalizeForSafeSearchCard(rawUrl) {
   if (!rawUrl || typeof rawUrl !== 'string' || !rawUrl.startsWith('http')) {
     return '';
   }
   let u = rawUrl.trim();
-  // Convert RedGifs MP4 to Poster JPG first
   if (u.includes('redgifs.com') && u.split('?')[0].endsWith('.mp4')) {
     u = u.replace('-mobile.mp4', '-poster.jpg').replace('.mp4', '-poster.jpg');
   }
-  // If already processed via wsrv.nl or marked with #noblur by user's custom vault, keep as-is
   if (u.includes('wsrv.nl') || u.includes('#noblur')) {
     return u.replace('#noblur', '');
   }
-  // Apply Google SafeSearch style optical censor blur (blur=6, contrast boost)
   return `https://wsrv.nl/?url=${encodeURIComponent(u)}&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg`;
 }
 
@@ -131,24 +120,17 @@ function buildClickableCardLink(mediaItem) {
   return `${CLOAKER_BASE_URL}/?img=${encodeURIComponent(cardImg)}&id=${uniqueCode}`;
 }
 
-/**
- * Enters text into X's DraftJS editor and triggers OpenGraph Card preview reliably
- */
 async function fillAndTriggerCardPreview(page, editorLocator, textWithLink, waitMs = 5500) {
   await editorLocator.waitFor({ state: 'visible', timeout: 20000 });
   await editorLocator.click({ force: true });
   await sleep(400);
   await editorLocator.fill(textWithLink);
   await sleep(500);
-  // Pressing Space + Backspace forces X's lexical editor to parse the URL and fetch the OG Card!
   await page.keyboard.press('End').catch(() => {});
   await page.keyboard.press('Space').catch(() => {});
   await sleep(waitMs);
 }
 
-/**
- * Publishes Tweet/Reply and waits until X actually processes the submission
- */
 async function publishTweetSafely(
   page,
   buttonSelector = '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]'
@@ -175,7 +157,6 @@ async function publishTweetSafely(
     } catch (_) {}
   }
 
-  // Wait for the CreateTweet network response or button disappearance
   await sleep(3500);
   if (await page.locator('[data-testid="tweetButton"]').isVisible().catch(() => false)) {
     try {
@@ -187,12 +168,15 @@ async function publishTweetSafely(
 }
 
 /**
- * Waits for tweets to render on page, skips Promoted ads, and extracts viral tweet URLs + @handles
+ * FIXED in v9.1: Updated Regex to match both absolute and relative X URLs. Added pre-scroll to force lazy loading.
  */
 async function extractTweetsFromPage(page, ownHandle) {
-  await page.waitForSelector('article[data-testid="tweet"]', { timeout: 12000 }).catch(() => {});
+  await page.waitForSelector('article[data-testid="tweet"]', { timeout: 15000 }).catch(() => {});
+  // Double scroll to force X to load images/tweets in the feed
   await page.mouse.wheel(0, 900).catch(() => {});
-  await sleep(2000);
+  await sleep(1500);
+  await page.mouse.wheel(0, 500).catch(() => {});
+  await sleep(2500);
 
   return page
     .evaluate((own) => {
@@ -205,19 +189,19 @@ async function extractTweetsFromPage(page, ownHandle) {
 
       for (const art of articles) {
         const textContent = art.innerText || '';
-        // Skip Promoted Ads
         if (textContent.includes('\nPromoted') || textContent.includes('Ad\n')) continue;
 
-        // Check if reply button is disabled/locked on card
         const replyBtn = art.querySelector('[data-testid="reply"]');
         if (replyBtn && replyBtn.getAttribute('aria-disabled') === 'true') continue;
 
         const links = Array.from(art.querySelectorAll('a[href*="/status/"]'));
         for (const l of links) {
           const href = (l.getAttribute('href') || '').split('?')[0];
-          const match = href.match(/^\/([a-zA-Z0-9_]+)\/status\/(\d+)$/);
+          // v9.1 Fix: Relaxed regex to capture /username/status/id regardless of absolute/relative path
+          const match = href.match(/\/([a-zA-Z0-9_]+)\/status\/(\d+)/);
+          
           if (match && match[1].toLowerCase() !== own.toLowerCase()) {
-            postUrls.push(`https://x.com${match[0]}`);
+            postUrls.push(`https://x.com/${match[1]}/status/${match[2]}`);
           }
         }
 
@@ -265,7 +249,7 @@ async function sendEmailReport(config, runSummary) {
 
     const htmlBody = `
       <div style="font-family:sans-serif;background:#0f172a;color:#f8fafc;padding:20px;border-radius:12px;">
-        <h2 style="color:#38bdf8;margin-top:0;">🚀 AlcashX Cloud Pro v9.0 — Run Telemetry Report</h2>
+        <h2 style="color:#38bdf8;margin-top:0;">🚀 AlcashX Cloud Pro v9.1 — Run Telemetry Report</h2>
         <p><b>Run Time:</b> ${new Date().toLocaleString()} | <b>Custom Vault:</b> ${config.images?.length || 0} | <b>Queue:</b> ${config.mediaQueue.length} items</p>
         <table style="width:100%;border-collapse:collapse;background:#1e293b;color:#e2e8f0;font-size:13px;">
           <thead>
@@ -284,7 +268,7 @@ async function sendEmailReport(config, runSummary) {
     await transporter.sendMail({
       from: `"AlcashX AutoBot" <${emailUser.trim()}>`,
       to: emailTo.trim(),
-      subject: `✅ AlcashX v9.0 Report: ${runSummary.length} Account(s) Executed`,
+      subject: `✅ AlcashX v9.1 Report: ${runSummary.length} Account(s) Executed`,
       html: htmlBody
     });
     console.log(`📧 Email Telemetry Report sent to ${emailTo}!`);
@@ -321,20 +305,17 @@ async function runBot() {
 
   const usedSet = new Set(config.usedMedia);
 
-  // Purge any old Unsplash stock links from config
   config.images = config.images.filter((u) => u && !u.includes('images.unsplash.com'));
   config.mediaQueue = config.mediaQueue.filter(
     (u) => u && !u.includes('images.unsplash.com') && !usedSet.has(u)
   );
 
-  // Priority 1: Ensure user's Custom Uploaded Vault Images (config.images) are front-loaded
   for (const customUrl of config.images) {
     if (!usedSet.has(customUrl) && !config.mediaQueue.includes(customUrl)) {
       config.mediaQueue.unshift(customUrl);
     }
   }
 
-  // Priority 2: If queue is running low, fetch real RedGifs HD Model Cards live
   if (config.mediaQueue.length < 6) {
     const emergencyCards = await fetchEmergencyModelCards();
     for (const c of emergencyCards) {
@@ -374,7 +355,7 @@ async function runBot() {
   const runSummary = [];
 
   console.log(
-    `🚀 AlcashX v9.0 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
+    `🚀 AlcashX v9.1 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
   );
 
   for (const acc of accountsToRun) {
@@ -423,7 +404,6 @@ async function runBot() {
     let newestOwnTweetUrl = null;
 
     try {
-      // Pick next model image (Custom Vault or Scraped SafeSearch Queue)
       const mediaItem = config.mediaQueue.shift() || pickRandom(config.images);
       if (mediaItem) {
         usedSet.add(mediaItem);
@@ -478,7 +458,6 @@ async function runBot() {
       console.log(`✅ Step 1 Complete: Main SafeSearch Card Published!`);
       await randomSleep(5, 7);
 
-      // Grab own latest tweet URL for Fleet Pod
       await page.goto(`https://x.com/${cleanHandle}`, { waitUntil: 'domcontentloaded', timeout: 40000 });
       await page.waitForSelector('article[data-testid="tweet"]', { timeout: 12000 }).catch(() => {});
       await sleep(2500);
@@ -515,7 +494,6 @@ async function runBot() {
       // ------------------------------------------------------------------------
       const viralPostCandidates = [];
 
-      // LAYER A: Top Tab Search (High-Engagement Viral Posts)
       const queryA = pickRandom(VIRAL_SEARCH_QUERIES);
       console.log(`🔍 Step 2A: Searching Viral Posts (Top Tab): "${queryA}"`);
       await page.goto(`https://x.com/search?q=${encodeURIComponent(queryA)}&f=top`, {
@@ -529,7 +507,6 @@ async function runBot() {
         if (!config.harvestedUsers.includes(h)) config.harvestedUsers.push(h);
       }
 
-      // LAYER B: Live Tab Search (Fresh Active Conversations)
       if (viralPostCandidates.length < 4) {
         const queryB = pickRandom(VIRAL_SEARCH_QUERIES);
         console.log(`🔍 Step 2B: Searching Active Posts (Live Tab): "${queryB}"`);
@@ -547,7 +524,6 @@ async function runBot() {
         }
       }
 
-      // LAYER C: Home "For You" Algorithmic Viral Timeline
       if (viralPostCandidates.length < 4) {
         console.log('🔥 Step 2C: Pulling Viral Posts from Home "For You" Feed...');
         await page.goto('https://x.com/home', { waitUntil: 'domcontentloaded', timeout: 40000 });
@@ -558,7 +534,6 @@ async function runBot() {
         }
       }
 
-      // LAYER D: High-Traffic Viral Seed Profiles (100% Guaranteed Fallback)
       if (viralPostCandidates.length < 3) {
         const seedProfile = pickRandom(VIRAL_SEED_PROFILES);
         console.log(`⚡ Step 2D: Pulling Viral Posts from Seed Profile: ${seedProfile}`);
@@ -571,7 +546,6 @@ async function runBot() {
       }
 
       config.harvestedUsers = config.harvestedUsers.slice(-200);
-      // Try up to 6 candidates until we successfully hijack 3 viral posts!
       const candidatePool = viralPostCandidates.slice(0, 6);
       console.log(`🎯 Located ${viralPostCandidates.length} viral candidates! Hijacking up to 3 posts...`);
 
@@ -595,7 +569,7 @@ async function runBot() {
             await sleep(1200);
           }
 
-          // 2) BOOKMARK the Viral Post (Extra engagement signal)
+          // 2) BOOKMARK the Viral Post
           const bmBtn = mainArticle.locator('[data-testid="bookmark"]').first();
           if (await bmBtn.isVisible().catch(() => false)) {
             await bmBtn.click({ force: true }).catch(() => {});
@@ -617,7 +591,7 @@ async function runBot() {
             }
           }
 
-          // 4) OPEN REPLY EDITOR (Try Inline Reply Box first, then Reply Modal Button)
+          // 4) OPEN REPLY EDITOR
           let replyBox = page.locator('[data-testid="tweetTextarea_0"]').first();
           if (!(await replyBox.isVisible().catch(() => false))) {
             const inlineLabel = page.locator('[data-testid="tweetTextarea_0_label"]').first();
@@ -690,9 +664,6 @@ async function runBot() {
     await randomSleep(4, 7);
   }
 
-  // --------------------------------------------------------------------------
-  // STEP 3: CROSS-ACCOUNT ENGAGEMENT POD (Like + Bookmark + Retweet)
-  // --------------------------------------------------------------------------
   if (
     fleetBoostTargets.length > 0 &&
     (config.settings?.crossAccountLike !== false || config.settings?.crossAccountRetweet !== false)
@@ -764,12 +735,9 @@ async function runBot() {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   }
 
-  // --------------------------------------------------------------------------
-  // STEP 4: SEND GMAIL TELEMETRY REPORT
-  // --------------------------------------------------------------------------
   await sendEmailReport(config, runSummary);
 
-  console.log('\n🎉 AlcashX v9.0 Run Completed! All SafeSearch Cards, Viral Hijacks, Pod Boosts & Email Processed.');
+  console.log('\n🎉 AlcashX v9.1 Run Completed! All SafeSearch Cards, Viral Hijacks, Pod Boosts & Email Processed.');
 }
 
 runBot();
