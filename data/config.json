@@ -5,25 +5,21 @@
       "auth_token": "39760f40e9a813dd8872bc73b4bcb65bd81f934e",
       "ct0": "e337ea3bae66cc72c09e0d93aca9ba3a7170d9f968d5434a8db8a32fe69a9971baf33c9980fd2cff7e5752f62ad3ab1fc9f76a02035d24b06756ae0591c2e08c9a7073fb6abe7036d293142402ed97d3",
       "proxy": "",
-      "status": "active",
-      "lastRunAt": "2026-10-29T09:51:02.971Z",
-      "lastStatus": "✅ Active & Posting"
+      "status": "active"
     },
     {
       "username": "@sophieclicks0",
       "auth_token": "ba829d33d505226fd63b9ed1f1cfe18a3c64c99b",
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
       "proxy": "",
-      "status": "active",
-      "lastRunAt": "2026-10-29T09:52:25.962Z"
+      "status": "active"
     },
     {
       "username": "@Mariaclickam",
       "auth_token": "d85a98d39ab207aae4976b959edaea27db5bcd29",
       "ct0": "3b94c1920f4513d0ea502218bd9225ad1ebd2a4912701ebde3e6b9e1b2c3914ece3986f84dbe75c58a0e87947902aaff045528dd79951bb82f8c0726663895f9ed15d8e1cf2ef7b514042b287c03d8e3",
       "proxy": "",
-      "status": "active",
-      "lastRunAt": "2026-10-29T09:53:39.405Z"
+      "status": "active"
     }
   ],
   "images": [
@@ -49,25 +45,15 @@
     "rate me",
     "who is up"
   ],
-  "mediaQueue": [
-    "https://media.redgifs.com/VibrantSpanishBengaltiger-medium.jpg",
-    "https://media.redgifs.com/AmusingSlipperyCowbird-mobile.mp4",
-    "https://media.redgifs.com/LimpSpiritedIberianmidwifetoad-mobile.mp4",
-    "https://media.redgifs.com/ShockedNeedyCapeghostfrog-mobile.mp4",
-    "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
-    "https://media.redgifs.com/NocturnalViciousShrew-mobile.mp4",
-    "https://media.redgifs.com/PolishedGrouchyAurochs-mobile.mp4",
-    "https://assets.mixkit.co/videos/preview/mixkit-sensual-woman-posing-for-the-camera-42995-large.mp4",
-    "https://assets.mixkit.co/videos/preview/mixkit-young-woman-looking-at-the-camera-in-a-room-41643-large.mp4"
-  ],
+  "mediaQueue": [],
   "usedMedia": [],
   "harvestedUsers": [],
   "settings": {
     "autoSelfReply": true,
-    "crossAccountLike": true,
-    "crossAccountRetweet": true,
+    "crossAccountLike": false,
+    "crossAccountRetweet": false,
     "crossAccountBookmark": false,
-    "maxAccountsPerRun": 5
+    "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-29T09:46:04.372Z"
+  "updatedAt": "2026-10-29T10:00:30.713Z"
 }
