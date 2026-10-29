@@ -32,7 +32,7 @@ jobs:
           npm install nodemailer --no-save
           npx playwright install --with-deps chromium
 
-      - name: Scrape Fresh Non-Repeating Adult Videos/Images
+      - name: Harvest Fresh SafeSearch Blurred Model Cards
         continue-on-error: true
         run: node bot/scraper.js
 
@@ -53,4 +53,4 @@ jobs:
           git reset --hard origin/main
           cp /tmp/latest_config.json data/config.json
           git add data/config.json
-          git diff --staged --quiet || (git commit -m "📊 Auto-sync usedMedia, mediaQueue, harvestedUsers & activityLog" && git push origin main)
+          git diff --staged --quiet || (git commit -m "📊 Auto-sync SafeSearch Queue, Custom Vault & Hijack Logs" && git push origin main)
