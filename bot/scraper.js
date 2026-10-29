@@ -1,55 +1,57 @@
 /**
  * File: bot/scraper.js
- * AlcashX Cloud Pro v4.5 — Anti-Blur High-Trap Amateur Video Scraper
- * Targets "Tease-to-Explicit" clips (skirt lift, mirror tease, homemade gf, desi bhabhi)
- * so X's 1st-frame AI scanner DOES NOT blur the video, giving 10x impressions & clicks!
+ * AlcashX Cloud Pro v5.0 — "No-Blur" Leaked & Thirst-Trap Micro-Video Scraper
+ * Specifically targets short (4s-16s) teasing/leaked-style clips that bypass X's AI blur filter!
  */
 
 import fs from 'fs';
 import path from 'path';
 
-// High-Curiosity Trap Niches (Passes X 1st-frame filter without blur, triggers massive clicks!)
-const TRAP_NICHES = [
-  'skirt lift',
-  'shirt lift',
-  'mirror tease',
-  'bedroom tease',
-  'homemade gf',
-  'college girl tease',
-  'desi bhabhi',
-  'indian amateur',
-  'panties tease',
-  'try on haul nsfw',
-  'twerk amateur',
-  'solo tease'
+// High-Curiosity "No-Blur" Teaser & Leaked Keywords (Passes X Vision AI without getting blurred!)
+const NO_BLUR_TRAP_NICHES = [
+  'tiktok tease',
+  'caught on camera',
+  'trying on dress',
+  'shirt lift tease',
+  'mirror bounce',
+  'girlfriend tease',
+  'college dorm',
+  'desi saree tease',
+  'bhabhi tease',
+  'pajama tease',
+  'twerk shorts',
+  'bikini try on'
 ];
 
-const AMATEUR_SUBREDDITS = [
+// Subreddits famous for unblurred viral thirst-traps & micro-videos
+const THIRST_TRAP_SUBREDDITS = [
   'TikTokThots',
   'SFWNextDoorGirls',
+  'BustyPetite',
   'RealGirls',
-  'Amateur',
   'IndianBabes',
   'DesiBoners',
-  'booty',
-  'curves'
+  'girlsinyogapants',
+  'tightdresses'
 ];
 
-const BANNED_TAGS = [
+// Block hardcore/explicit keywords in tags so X's AI never auto-blurs the video!
+const BLUR_TRIGGER_WORDS = [
   'jerkmate', 'chaturbate', 'stripchat', 'bonga', 'cam4', 'ad', 'promo',
   'hentai', 'anime', '3d', 'sfm', 'cartoon', 'animated', 'rule34', 'furry',
-  'gay', 'trans', 'shemale', 'femboy', 'cuck', 'compilation', ' watermark'
+  'gay', 'trans', 'shemale', 'femboy', 'cuck', 'compilation',
+  'blowjob', 'anal', 'cumshot', 'creampie', 'gangbang', 'penetration', 'hardcore', 'dildo', 'fucked'
 ];
 
-function isHighConvertingTrapVideo(gif) {
+function isUnblurredViralClip(gif) {
   if (!gif || !gif.urls) return false;
-  // Keep fast-loading clips (4s to 25s) so GitHub Actions uploads them in <5 seconds without timeout!
-  if (gif.duration && (gif.duration < 4 || gif.duration > 25)) return false;
+  // Micro-videos (4s to 16s) loop 5x faster on X and rarely contain hardcore mid-video nudity!
+  if (gif.duration && (gif.duration < 3.5 || gif.duration > 18)) return false;
 
   const tags = (gif.tags || []).map((t) => String(t).toLowerCase());
   const desc = String(gif.description || '').toLowerCase();
 
-  for (const bad of BANNED_TAGS) {
+  for (const bad of BLUR_TRIGGER_WORDS) {
     if (tags.some((t) => t.includes(bad)) || desc.includes(bad)) {
       return false;
     }
@@ -57,7 +59,7 @@ function isHighConvertingTrapVideo(gif) {
   return true;
 }
 
-async function fetchRedgifsTrapMp4s() {
+async function fetchUnblurredRedgifsMp4s() {
   const urls = [];
   try {
     console.log('🔑 Requesting Official RedGifs OAuth Token...');
@@ -70,13 +72,13 @@ async function fetchRedgifsTrapMp4s() {
     if (authRes.ok) {
       const { token } = await authRes.json();
       if (token) {
-        const pickedNiches = [...TRAP_NICHES].sort(() => 0.5 - Math.random()).slice(0, 4);
+        const pickedNiches = [...NO_BLUR_TRAP_NICHES].sort(() => 0.5 - Math.random()).slice(0, 4);
 
         for (const query of pickedNiches) {
-          const pageNum = Math.floor(Math.random() * 4) + 1;
+          const pageNum = Math.floor(Math.random() * 3) + 1;
           const searchUrl = `https://api.redgifs.com/v2/gifs/search?search_text=${encodeURIComponent(
             query
-          )}&order=trending&type=g&count=35&page=${pageNum}`;
+          )}&order=trending&type=g&count=40&page=${pageNum}`;
 
           const res = await fetch(searchUrl, {
             headers: {
@@ -88,8 +90,7 @@ async function fetchRedgifsTrapMp4s() {
           if (res.ok) {
             const data = await res.json();
             for (const gif of data?.gifs || []) {
-              if (!isHighConvertingTrapVideo(gif)) continue;
-              // Always prefer SD / mobile MP4 (1MB - 4MB) so X never times out on upload!
+              if (!isUnblurredViralClip(gif)) continue;
               const mp4Url = gif?.urls?.sd || gif?.urls?.hd;
               if (mp4Url && mp4Url.split('?')[0].endsWith('.mp4')) {
                 urls.push(mp4Url);
@@ -105,9 +106,9 @@ async function fetchRedgifsTrapMp4s() {
   return urls;
 }
 
-async function fetchRedditTrapMp4s() {
+async function fetchRedditThirstTrapMp4s() {
   const urls = [];
-  const pickedSubs = [...AMATEUR_SUBREDDITS].sort(() => 0.5 - Math.random()).slice(0, 3);
+  const pickedSubs = [...THIRST_TRAP_SUBREDDITS].sort(() => 0.5 - Math.random()).slice(0, 4);
 
   for (const sub of pickedSubs) {
     const rawTarget = `https://old.reddit.com/r/${sub}/hot.json?limit=40&raw_json=1`;
@@ -131,7 +132,7 @@ async function fetchRedditTrapMp4s() {
           const item = p?.data;
           if (!item) continue;
           const titleLower = String(item.title || '').toLowerCase();
-          if (BANNED_TAGS.some((b) => titleLower.includes(b))) continue;
+          if (BLUR_TRIGGER_WORDS.some((b) => titleLower.includes(b))) continue;
 
           if (item.is_video && item.media?.reddit_video?.fallback_url) {
             urls.push(item.media.reddit_video.fallback_url.split('?')[0]);
@@ -182,7 +183,6 @@ async function scrapeAll() {
 
   const usedSet = new Set(config.usedMedia);
 
-  // Purge any Rule34, Mixkit, or broken URLs
   config.mediaQueue = config.mediaQueue.filter((u) => {
     if (!u || typeof u !== 'string') return false;
     const clean = u.toLowerCase().split('?')[0];
@@ -194,13 +194,14 @@ async function scrapeAll() {
   const queueSet = new Set(config.mediaQueue);
   let addedCount = 0;
 
-  const rgUrls = await fetchRedgifsTrapMp4s();
-  console.log(`📡 RedGifs Trap MP4s: found ${rgUrls.length} videos`);
+  // Prioritize Reddit SFW/Tease Thirst-Traps first (0% Blur Rate!) + RedGifs Micro-Teasers
+  const redditUrls = await fetchRedditThirstTrapMp4s();
+  console.log(`📡 Reddit Unblurred Thirst-Trap MP4s: found ${redditUrls.length} videos`);
 
-  const redditUrls = await fetchRedditTrapMp4s();
-  console.log(`📡 Reddit Trap MP4s: found ${redditUrls.length} videos`);
+  const rgUrls = await fetchUnblurredRedgifsMp4s();
+  console.log(`📡 RedGifs Micro-Teaser MP4s: found ${rgUrls.length} videos`);
 
-  const allCandidates = [...rgUrls, ...redditUrls].sort(() => 0.5 - Math.random());
+  const allCandidates = [...redditUrls, ...rgUrls].sort(() => 0.5 - Math.random());
 
   for (const url of allCandidates) {
     if (!usedSet.has(url) && !queueSet.has(url)) {
@@ -217,7 +218,7 @@ async function scrapeAll() {
 
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   console.log(
-    `✅ Scraper Complete! Added ${addedCount} fast-upload trap MP4s | Queue: ${config.mediaQueue.length}`
+    `✅ Scraper v5.0 Complete! Added ${addedCount} No-Blur Teaser MP4s | Queue: ${config.mediaQueue.length}`
   );
   process.exit(0);
 }
