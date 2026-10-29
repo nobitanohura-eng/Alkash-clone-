@@ -15,8 +15,8 @@
       "ct0": "3b94c1920f4513d0ea502218bd9225ad1ebd2a4912701ebde3e6b9e1b2c3914ece3986f84dbe75c58a0e87947902aaff045528dd79951bb82f8c0726663895f9ed15d8e1cf2ef7b514042b287c03d8e3",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-29T17:38:10.155Z",
-      "lastStatus": "✅ Posted Video + 0 Viral Hijacks"
+      "lastRunAt": "2026-10-29T18:34:24.248Z",
+      "lastStatus": "✅ Posted Video + Link & 0 Hijacks"
     },
     {
       "username": "@Chloedaily0",
@@ -24,8 +24,8 @@
       "ct0": "95dee312b51979d567bfd713522e9994c849a4fe7baa7b1f3a0cca4bb2c611ef0810d708a7aeb7131a9f1026e84c779d263883dfa9c8df959cb68503e146f71970e67b5d5aaab1fdc542899ac76c64ef",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-29T16:55:14.769Z",
-      "lastStatus": "✅ Active & Posting Link"
+      "lastRunAt": "2026-10-29T18:33:17.345Z",
+      "lastStatus": "✅ Posted Video + Link & 0 Hijacks"
     }
   ],
   "images": [],
@@ -42,8 +42,6 @@
     "#GFMode"
   ],
   "mediaQueue": [
-    "https://media.redgifs.com/IncompatibleColossalLeafwing-mobile.mp4",
-    "https://media.redgifs.com/IntentPertinentSolenodon-mobile.mp4",
     "https://media.redgifs.com/PristineVitalAustralianfurseal-mobile.mp4",
     "https://media.redgifs.com/HumiliatingStiffAngwantibo-mobile.mp4",
     "https://media.redgifs.com/SeparateSmallAxisdeer-mobile.mp4",
@@ -174,7 +172,11 @@
     "https://media.redgifs.com/DevotedAmbitiousMetamorphosis-mobile.mp4",
     "https://media.redgifs.com/MilkyHastyAgouti-mobile.mp4",
     "https://media.redgifs.com/VapidDrabEquine-mobile.mp4",
-    "https://media.redgifs.com/LostExtrovertedFanworms-mobile.mp4"
+    "https://media.redgifs.com/LostExtrovertedFanworms-mobile.mp4",
+    "https://media.redgifs.com/DazzlingDisfiguredWallaroo-mobile.mp4",
+    "https://media.redgifs.com/SlimySardonicAldabratortoise-mobile.mp4",
+    "https://media.redgifs.com/SardonicWillingIslandcanary-mobile.mp4",
+    "https://media.redgifs.com/SinfulSquigglyChrysalis-mobile.mp4"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -185,10 +187,56 @@
     "https://media.redgifs.com/CleverIndianredGoldfinch-mobile.jpg",
     "https://media.redgifs.com/OutrageousElderlyZebradove-mobile.jpg",
     "https://media.redgifs.com/BestVengefulLeech-mobile.mp4",
-    "https://media.redgifs.com/ChartreuseHuskyTiger-mobile.mp4"
+    "https://media.redgifs.com/ChartreuseHuskyTiger-mobile.mp4",
+    "https://media.redgifs.com/IncompatibleColossalLeafwing-mobile.mp4",
+    "https://media.redgifs.com/IntentPertinentSolenodon-mobile.mp4"
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-10-29T18:35:50.573Z",
+      "account": "@Chloedaily0",
+      "type": "⚡ POD_BOOST",
+      "targetUrl": "https://x.com/Mariaclickam",
+      "detail": "Liked & Retweeted @Mariaclickam's post"
+    },
+    {
+      "time": "2026-10-29T18:35:44.321Z",
+      "account": "@Mariaclickam",
+      "type": "⚡ POD_BOOST",
+      "targetUrl": "https://x.com/Chloedaily0",
+      "detail": "Liked & Retweeted @Chloedaily0's post"
+    },
+    {
+      "time": "2026-10-29T18:35:39.079Z",
+      "account": "@sophieclicks0",
+      "type": "⚡ POD_BOOST",
+      "targetUrl": "https://x.com/Mariaclickam",
+      "detail": "Liked & Retweeted @Mariaclickam's post"
+    },
+    {
+      "time": "2026-10-29T18:35:34.020Z",
+      "account": "@sophieclicks0",
+      "type": "⚡ POD_BOOST",
+      "targetUrl": "https://x.com/Chloedaily0",
+      "detail": "Liked & Retweeted @Chloedaily0's post"
+    },
+    {
+      "time": "2026-10-29T18:35:13.667Z",
+      "account": "@Mariaclickam",
+      "type": "🎬 VIDEO_POST_AND_LINK",
+      "targetUrl": "https://x.com/Mariaclickam",
+      "mediaUrl": "https://media.redgifs.com/IntentPertinentSolenodon-mobile.mp4",
+      "detail": "Published Video + Fanpage Link Comment"
+    },
+    {
+      "time": "2026-10-29T18:34:07.083Z",
+      "account": "@Chloedaily0",
+      "type": "🎬 VIDEO_POST_AND_LINK",
+      "targetUrl": "https://x.com/Chloedaily0",
+      "mediaUrl": "https://media.redgifs.com/IncompatibleColossalLeafwing-mobile.mp4",
+      "detail": "Published Video + Fanpage Link Comment"
+    },
     {
       "time": "2026-10-29T17:40:51.508Z",
       "account": "@Chloedaily0",
