@@ -876,9 +876,3 @@ Rules:
 </body>
 </html>`;
 }
-
-    if (getPassword()) loadConfigFromGitHub();
-  </script>
-</body>
-</html>`;
-}
