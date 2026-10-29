@@ -12,16 +12,16 @@
       "auth_token": "ba829d33d505226fd63b9ed1f1cfe18a3c64c99b",
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
       "proxy": "",
-      "status": "active",
-      "lastRunAt": "2026-10-29T11:07:58.881Z",
-      "lastStatus": "✅ Active & Posting Media"
+      "status": "paused",
+      "lastRunAt": "2026-10-29T10:48:13.973Z",
+      "lastStatus": "✅ Active & Posting"
     },
     {
       "username": "@Mariaclickam",
       "auth_token": "d85a98d39ab207aae4976b959edaea27db5bcd29",
       "ct0": "3b94c1920f4513d0ea502218bd9225ad1ebd2a4912701ebde3e6b9e1b2c3914ece3986f84dbe75c58a0e87947902aaff045528dd79951bb82f8c0726663895f9ed15d8e1cf2ef7b514042b287c03d8e3",
       "proxy": "",
-      "status": "paused"
+      "status": "active"
     }
   ],
   "images": [
@@ -78,6 +78,7 @@
     "mutuals"
   ],
   "mediaQueue": [
+    "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
     "https://media.redgifs.com/LimpSpiritedIberianmidwifetoad-mobile.mp4",
     "https://media.redgifs.com/PlumGlisteningUrutu-mobile.mp4",
     "https://assets.mixkit.co/videos/preview/mixkit-sensual-woman-posing-for-the-camera-42995-large.mp4",
@@ -116,15 +117,9 @@
     "https://media.redgifs.com/LightsteelblueDetailedEuropeanfiresalamander-mobile.jpg",
     "https://media.redgifs.com/ClutteredAnchoredMarbledmurrelet-mobile.jpg",
     "https://media.redgifs.com/IntelligentLightgrayEasternglasslizard-mobile.jpg",
-    "https://media.redgifs.com/PlaintiveVirtualPinemarten-mobile.jpg",
-    "https://media.redgifs.com/StrongSlushyTurtle-mobile.jpg",
-    "https://media.redgifs.com/SizzlingRelievedMare-mobile.jpg",
-    "https://media.redgifs.com/LastingVibrantIbadanmalimbe-mobile.jpg",
-    "https://media.redgifs.com/TenseSecondhandAxolotl-mobile.jpg"
+    "https://media.redgifs.com/PlaintiveVirtualPinemarten-mobile.jpg"
   ],
-  "usedMedia": [
-    "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4"
-  ],
+  "usedMedia": [],
   "harvestedUsers": [
     "@active_user1",
     "@reply_guy_99",
@@ -139,5 +134,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-29T11:07:12.626Z"
+  "updatedAt": "2026-10-29T11:15:32.894Z"
 }
