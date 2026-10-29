@@ -1,107 +1,120 @@
 import fs from 'fs';
 import path from 'path';
+import { chromium } from 'playwright';
 
-const SUBREDDITS = ['TikTokThots', 'gonewild', 'RealGirls', 'nsfw_gifs', 'booty', 'curves', 'BreedingMaterial'];
+const TARGET_URL = 'https://getredgifs.com/trending';
 
-// 1. Fetch Reddit via Public JSON Proxy (Bypasses GitHub IP 403 Block)
-async function fetchRedditViaProxy(sub) {
-  const urls = [];
-  const targetUrl = `https://old.reddit.com/r/${sub}/hot.json?limit=35&raw_json=1`;
-  const endpoints = [
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-    targetUrl
-  ];
-
-  for (const ep of endpoints) {
-    try {
-      const res = await fetch(ep, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-        }
-      });
-      if (!res.ok) continue;
-      const text = await res.text();
-      if (!text.trim().startsWith('{')) continue;
-
-      const data = JSON.parse(text);
-      const posts = data?.data?.children || [];
-      for (const p of posts) {
-        const item = p.data;
-        if (!item) continue;
-        // Direct Reddit MP4
-        if (item.is_video && item.media?.reddit_video?.fallback_url) {
-          urls.push(item.media.reddit_video.fallback_url.split('?')[0]);
-        } else if (item.preview?.reddit_video_preview?.fallback_url) {
-          urls.push(item.preview.reddit_video_preview.fallback_url.split('?')[0]);
-        } else if (item.url && /\.(jpg|jpeg|png|gif|mp4)$/i.test(item.url.split('?')[0])) {
-          urls.push(item.url.split('?')[0]);
-        }
-      }
-      if (urls.length > 0) break;
-    } catch (_) {}
-  }
-  return urls;
-}
-
-// 2. Fetch Explicit Adult Videos/GIFs from RedGifs API
-async function fetchRedgifsAdultClips() {
-  const urls = [];
+// 1. Fast HTML Fetch + Regex Extractor from https://getredgifs.com/trending
+async function scrapeGetRedgifsFast() {
+  const urls = new Set();
   try {
-    const authRes = await fetch('https://api.redgifs.com/v2/auth/temporary', {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+    console.log(`🌐 Fetching ${TARGET_URL} ...`);
+    const res = await fetch(TARGET_URL, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      }
     });
-    if (authRes.ok) {
-      const { token } = await authRes.json();
-      if (token) {
-        const queries = ['amateur', 'tiktok', 'bhabhi', 'desi', 'twerk', 'tease'];
-        const q = queries[Math.floor(Math.random() * queries.length)];
-        const searchRes = await fetch(`https://api.redgifs.com/v2/gifs/search?search_text=${q}&order=trending&count=30`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-          }
-        });
-        if (searchRes.ok) {
-          const sData = await searchRes.json();
-          for (const g of (sData?.gifs || [])) {
-            if (g?.urls?.sd) urls.push(g.urls.sd);
-            else if (g?.urls?.hd) urls.push(g.urls.hd);
-            else if (g?.urls?.poster) urls.push(g.urls.poster);
-          }
+
+    if (res.ok) {
+      const html = await res.text();
+
+      // Match direct MP4 / WebM / GIF / Poster URLs inside HTML or JSON hydration data
+      const mediaMatches =
+        html.match(/https?:\/\/[^\s"'<>\\]+\.(?:mp4|gif|jpg|jpeg|png)/gi) || [];
+
+      for (const rawUrl of mediaMatches) {
+        const clean = rawUrl.replace(/\\u002F/g, '/').replace(/\\/g, '');
+        // Filter out tiny icons, logos, or site assets
+        if (
+          !clean.includes('favicon') &&
+          !clean.includes('logo') &&
+          !clean.includes('avatar') &&
+          (clean.includes('redgifs') ||
+            clean.includes('thumbs') ||
+            clean.includes('media') ||
+            clean.includes('cdn') ||
+            clean.endsWith('.mp4'))
+        ) {
+          urls.add(clean);
         }
       }
     }
-  } catch (e) {
-    console.log('⚠️ RedGifs direct fetch skipped:', e.message);
+  } catch (err) {
+    console.log('⚠️ Fast fetch on getredgifs.com failed:', err.message);
   }
-  return urls;
+  return [...urls];
 }
 
-// 3. Unblockable Adult Booru API (Never blocks GitHub Actions IPs - Returns Direct MP4/JPG/GIF)
-async function fetchUnblockableAdultMedia() {
-  const urls = [];
+// 2. Playwright Headless Browser Scraper for https://getredgifs.com/trending (Handles JS-rendered videos)
+async function scrapeGetRedgifsBrowser() {
+  const urls = new Set();
+  let browser = null;
   try {
-    const apiEndpoints = [
-      'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=40&json=1&tags=video+animated',
-      'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=40&json=1&tags=female+solo'
-    ];
-    for (const ep of apiEndpoints) {
-      const res = await fetch(ep, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-      });
-      if (!res.ok) continue;
-      const items = await res.json();
-      if (Array.isArray(items)) {
-        for (const item of items) {
-          if (item?.file_url && /\.(mp4|jpg|jpeg|png|gif)$/i.test(item.file_url)) {
-            urls.push(item.file_url);
+    console.log(`🎭 Launching Headless Browser to extract videos from ${TARGET_URL} ...`);
+    browser = await chromium.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    });
+    const context = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+    });
+    const page = await context.newPage();
+
+    // Intercept network requests to catch any direct .mp4 or API video streams automatically
+    page.on('response', async (response) => {
+      const reqUrl = response.url();
+      if (/\.mp4(\?|$)/i.test(reqUrl) && !reqUrl.includes('logo')) {
+        urls.add(reqUrl.split('?')[0]);
+      }
+    });
+
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await page.waitForTimeout(5000);
+
+    // Scroll down to trigger lazy-loaded trending videos
+    await page.evaluate(() => window.scrollBy(0, 2500));
+    await page.waitForTimeout(3000);
+
+    // Extract all <video src>, <source src>, data-src, and high-res poster/gif links
+    const domUrls = await page.evaluate(() => {
+      const collected = [];
+      document.querySelectorAll('video, source, a, img').forEach((el) => {
+        const candidates = [
+          el.src,
+          el.getAttribute('data-src'),
+          el.getAttribute('data-video'),
+          el.getAttribute('data-mp4'),
+          el.getAttribute('poster'),
+          el.href
+        ];
+        for (const c of candidates) {
+          if (c && /^https?:\/\/.+\.(mp4|gif|jpg|jpeg|png)(\?.*)?$/i.test(c)) {
+            collected.push(c.split('?')[0]);
           }
         }
+      });
+      return collected;
+    });
+
+    for (const u of domUrls) {
+      if (!u.includes('logo') && !u.includes('favicon') && !u.includes('icon')) {
+        urls.add(u);
       }
     }
-  } catch (_) {}
-  return urls;
+  } catch (err) {
+    console.log('⚠️ Browser scraper warning:', err.message);
+  } finally {
+    if (browser) await browser.close();
+  }
+
+  // Prioritize .mp4 videos first, then images/gifs
+  const all = [...urls];
+  const mp4s = all.filter((u) => u.endsWith('.mp4'));
+  const others = all.filter((u) => !u.endsWith('.mp4'));
+  return [...mp4s, ...others];
 }
 
 async function scrapeAll() {
@@ -119,7 +132,13 @@ async function scrapeAll() {
     mediaQueue: [],
     usedMedia: [],
     harvestedUsers: [],
-    settings: { autoSelfReply: true, crossAccountLike: true, crossAccountRetweet: true, crossAccountBookmark: true, maxAccountsPerRun: 5 }
+    settings: {
+      autoSelfReply: true,
+      crossAccountLike: true,
+      crossAccountRetweet: true,
+      crossAccountBookmark: true,
+      maxAccountsPerRun: 5
+    }
   };
 
   if (fs.existsSync(configPath)) {
@@ -133,45 +152,34 @@ async function scrapeAll() {
 
   let addedCount = 0;
 
-  // Source A: RedGifs Explicit MP4s
-  const rgUrls = await fetchRedgifsAdultClips();
-  console.log(`📡 RedGifs Adult API: fetched ${rgUrls.length} items`);
-  for (const u of rgUrls) {
+  // Step 1: Fast HTML Scrape from getredgifs.com/trending
+  let scrapedUrls = await scrapeGetRedgifsFast();
+  console.log(`📡 Fast HTML Scrape (getredgifs.com/trending): found ${scrapedUrls.length} items`);
+
+  // Step 2: If fast HTML found fewer than 5 MP4s (due to JS rendering), use Playwright Browser Scraper
+  const mp4Count = scrapedUrls.filter((u) => u.endsWith('.mp4')).length;
+  if (mp4Count < 5) {
+    const browserUrls = await scrapeGetRedgifsBrowser();
+    console.log(
+      `📡 Browser DOM Scrape (getredgifs.com/trending): found ${browserUrls.length} items`
+    );
+    scrapedUrls = [...new Set([...browserUrls, ...scrapedUrls])];
+  }
+
+  for (const u of scrapedUrls) {
     if (!config.usedMedia.includes(u) && !config.mediaQueue.includes(u)) {
       config.mediaQueue.push(u);
       addedCount++;
     }
   }
 
-  // Source B: Reddit NSFW Subreddits via Proxy
-  for (const sub of SUBREDDITS) {
-    const rUrls = await fetchRedditViaProxy(sub);
-    console.log(`📡 r/${sub} (Proxy): fetched ${rUrls.length} items`);
-    for (const u of rUrls) {
-      if (!config.usedMedia.includes(u) && !config.mediaQueue.includes(u)) {
-        config.mediaQueue.push(u);
-        addedCount++;
-      }
-    }
-    if (addedCount >= 40) break;
-  }
-
-  // Source C: Unblockable Adult JSON API (If Reddit & RedGifs both blocked)
-  if (config.mediaQueue.length < 10) {
-    const booruUrls = await fetchUnblockableAdultMedia();
-    console.log(`📡 Unblockable Adult Booru API: fetched ${booruUrls.length} items`);
-    for (const u of booruUrls) {
-      if (!config.usedMedia.includes(u) && !config.mediaQueue.includes(u)) {
-        config.mediaQueue.push(u);
-        addedCount++;
-      }
-    }
-  }
-
-  // Source D: User's Custom Fallback Images/Videos
+  // Step 3: Also include any manual URLs from Admin Panel (config.images)
   if (Array.isArray(config.images) && config.images.length > 0) {
     for (const raw of config.images) {
-      const url = raw.startsWith('http') ? raw : `https://i.imgur.com/${raw.replace(/\.(jpg|png|gif|jpeg|mp4)$/i, '')}.jpg`;
+      if (!raw || raw === 'xYz987A') continue;
+      const url = raw.startsWith('http')
+        ? raw
+        : `https://i.imgur.com/${raw.replace(/\.(jpg|png|gif|jpeg|mp4)$/i, '')}.jpg`;
       if (!config.mediaQueue.includes(url) && !config.usedMedia.includes(url)) {
         config.mediaQueue.push(url);
         addedCount++;
@@ -182,7 +190,9 @@ async function scrapeAll() {
   config.mediaQueue = config.mediaQueue.slice(0, 400);
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 
-  console.log(`✅ Scraper Complete! Newly Added: ${addedCount} | Total in Queue: ${config.mediaQueue.length}`);
+  console.log(
+    `✅ Scraper Complete! Newly Added: ${addedCount} | Total in Queue: ${config.mediaQueue.length}`
+  );
   process.exit(0);
 }
 
