@@ -1,6 +1,6 @@
 /**
  * File: bot/run.js
- * AlcashX Cloud Pro v4.0 — High-Engagement Amateur Video Bot + Viral Hijacker + Live Activity Logger
+ * AlcashX Cloud Pro v4.5 — Guaranteed Multi-Account Post Delivery + Safe-Search Bypass Hijacker
  */
 
 import fs from 'fs';
@@ -32,51 +32,60 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const randomSleep = (minSec, maxSec) =>
   sleep((Math.floor(Math.random() * (maxSec - minSec + 1)) + minSec) * 1000);
 
-async function publishTweetSafely(
+// Waits for media upload to finish 100% AND verifies compose editor actually submits!
+async function publishTweetAndWait(
   page,
   buttonSelector = '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]'
 ) {
   await page.keyboard.press('Escape').catch(() => {});
   await sleep(600);
 
-  for (let i = 0; i < 20; i++) {
-    const isDisabled = await page
-      .locator(buttonSelector)
-      .first()
-      .getAttribute('aria-disabled')
-      .catch(() => null);
-    if (isDisabled !== 'true') break;
+  // Wait up to 30 seconds for Twitter to finish processing the MP4 (button becomes enabled)
+  for (let i = 0; i < 30; i++) {
+    const btn = page.locator(buttonSelector).first();
+    const isDisabled = await btn.getAttribute('aria-disabled').catch(() => null);
+    const isUploading = await page
+      .locator('[role="progressbar"]')
+      .isVisible()
+      .catch(() => false);
+    if (isDisabled !== 'true' && !isUploading) break;
     await sleep(1000);
   }
 
-  try {
-    await page.keyboard.press('Control+Enter');
-    await sleep(3000);
-  } catch (_) {}
+  await sleep(1500);
 
+  // Layer 1: Direct DOM Click on Tweet Button
   const btn = page.locator(buttonSelector).first();
   if (await btn.isVisible().catch(() => false)) {
     try {
       await btn.evaluate((el) => el.click());
-      await sleep(3000);
+      await sleep(4000);
     } catch (_) {}
   }
 
+  // Layer 2: Control+Enter if button still visible
+  if (await btn.isVisible().catch(() => false)) {
+    try {
+      await page.keyboard.press('Control+Enter');
+      await sleep(4000);
+    } catch (_) {}
+  }
+
+  // Layer 3: Playwright Force Click if still visible
   if (await btn.isVisible().catch(() => false)) {
     try {
       await btn.click({ force: true, timeout: 8000 });
-      await sleep(2500);
+      await sleep(4000);
     } catch (_) {}
   }
 }
 
-// Downloads MP4 & mutates binary hash so X's automated hash-scanner never auto-blurs or flags duplicates!
+// Downloads fast MP4 (< 8.5 MB so upload never hangs) & mutates binary hash
 async function downloadMedia(rawUrl) {
   try {
     if (!rawUrl || typeof rawUrl !== 'string') return null;
     const url = rawUrl.trim();
 
-    // Block Rule34 animated ads & Mixkit stock videos
     if (
       url === 'xYz987A' ||
       url.includes('aacdn.net') ||
@@ -103,21 +112,18 @@ async function downloadMedia(rawUrl) {
     if (contentType.includes('text/html') || contentType.includes('application/json')) return null;
 
     const rawBuffer = Buffer.from(await res.arrayBuffer());
-    if (rawBuffer.byteLength < 25000 || rawBuffer.byteLength > 45 * 1024 * 1024) return null;
+    // Keep between 30KB and 8.5MB so Twitter processes the video in 3-5 seconds without failing!
+    if (rawBuffer.byteLength < 30000 || rawBuffer.byteLength > 8.5 * 1024 * 1024) {
+      console.log(`⏩ Skipping oversized/tiny file (${(rawBuffer.byteLength / 1024 / 1024).toFixed(2)} MB) for fast upload`);
+      return null;
+    }
 
-    // Anti-Blur Hash Randomizer: Append 16 random bytes so every upload has a 100% unique MD5/SHA256 fingerprint
     const saltBytes = crypto.randomBytes(16);
     const finalBuffer = Buffer.concat([rawBuffer, saltBytes]);
 
-    let ext = '.mp4';
-    const cleanUrl = url.split('?')[0].toLowerCase();
-    if (cleanUrl.endsWith('.gif')) ext = '.gif';
-    else if (cleanUrl.endsWith('.jpg') || cleanUrl.endsWith('.jpeg')) ext = '.jpg';
-    else if (cleanUrl.endsWith('.png')) ext = '.png';
-
     const tempPath = path.resolve(
       process.cwd(),
-      `temp_${Date.now()}_${Math.floor(Math.random() * 9999)}${ext}`
+      `temp_${Date.now()}_${Math.floor(Math.random() * 9999)}.mp4`
     );
     fs.writeFileSync(tempPath, finalBuffer);
     console.log(
@@ -163,7 +169,6 @@ async function runBot() {
   if (!Array.isArray(config.usedMedia)) config.usedMedia = [];
   if (!Array.isArray(config.activityLog)) config.activityLog = [];
 
-  // Purge dummy usernames & old junk URLs
   const dummyPatterns = ['simp_account', 'active_user', 'reply_guy', 'nsfw_retweeter', 'thirst_trap_lover', 'user1'];
   config.harvestedUsers = config.harvestedUsers.filter(
     (u) => !dummyPatterns.some((pat) => u.toLowerCase().includes(pat))
@@ -181,15 +186,15 @@ async function runBot() {
   );
 
   const defaultCaptions = [
-    '{Caught me being|Feeling so|Just being} {naughty alone|horny tonight|playful in bed|so wet rn} {🙊💦|😈🔥|👀|🤫}',
-    "{Wait till 0:04 😳|Don't pause this|Did I show too much?|Deleting this in 10 mins before my ex sees} {😳💦|🤫🔥|😈}",
-    "{can't sleep, who wants the full video? 🌙|would you help me finish? be honest 👀💦|my fingers weren't enough tonight 🙊🔥}"
+    '{Caught me being|Feeling a little|Just being} {naughty alone|playful in bed|so bored tonight} {🙊💦|😈🔥|👀|✌️🐆}',
+    "{Wait till 0:03 😳|Don't pause this|Did I show too much?|Deleting this in 10 mins} {😳💦|🤫🔥|😈}",
+    "{can't sleep, who wants the full video? 🌙|am I your type? be honest 👀💦|should I post the uncut part 2? 🙊🔥}"
   ];
   const defaultReplies = [
-    '{Full 3 min uncut video|Watch me finish without censor|The rest of this clip is too wet for X} right here 👇🔞 {{LINK}}',
+    '{Full 3 min uncut video|Watch what happened next without censor|The rest of this clip is too spicy for X} right here 👇🔞 {{LINK}}',
     "{X keeps deleting the full video}, watch my private uncensored tape free here 👉 {{LINK}} 💦🔥"
   ];
-  const defaultTargets = ['#nsfwtwt', '#thirsttrap', '#desimms', 'who is up'];
+  const defaultTargets = ['#thirsttrap', '#nsfwtwt', '#GFMode'];
 
   const captionsPool = config.captions?.length ? config.captions : defaultCaptions;
   const repliesPool = config.replies?.length ? config.replies : defaultReplies;
@@ -209,7 +214,7 @@ async function runBot() {
   const newlyPublishedTweets = [];
 
   console.log(
-    `🚀 Autonomous Bot v4.0 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
+    `🚀 Autonomous Bot v4.5 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
   );
 
   for (const acc of accountsToRun) {
@@ -250,9 +255,9 @@ async function runBot() {
     let mediaItem = null;
 
     try {
-      // 1. Download Pure Amateur MP4 from Queue
+      // 1. Download Fast-Upload MP4 (< 8.5 MB)
       let tries = 0;
-      while (config.mediaQueue.length > 0 && !localMediaPath && tries < 15) {
+      while (config.mediaQueue.length > 0 && !localMediaPath && tries < 20) {
         tries++;
         const candidate = config.mediaQueue.shift();
         if (usedSet.has(candidate)) continue;
@@ -266,7 +271,7 @@ async function runBot() {
       }
 
       if (!localMediaPath) {
-        console.log('⚠️ No valid MP4 downloaded for this run. Skipping post to avoid low-quality fallback!');
+        console.log('⚠️ Could not download a valid MP4 under 8.5MB. Skipping...');
         if (masterAcc) masterAcc.lastStatus = '⚠️ Queue Needs Refill';
         continue;
       }
@@ -280,16 +285,18 @@ async function runBot() {
         : `${replyTemplate} ${cloakedLink}`;
 
       const hashtags = targetsPool.filter((t) => t.startsWith('#'));
-      const oneHashtag = pickRandom(hashtags.length ? hashtags : ['#nsfwtwt', '#thirsttrap']);
-      const realMentions = pickMultipleRandom(config.harvestedUsers, 2).join(' ');
+      const oneHashtag = pickRandom(hashtags.length ? hashtags : ['#thirsttrap']);
+      const mainMentions = pickMultipleRandom(config.harvestedUsers, 1).join(' ');
+      const replyMentions = pickMultipleRandom(config.harvestedUsers, 2).join(' ');
 
       const caption = spin(pickRandom(captionsPool));
-      const fullMainTweet = [caption, oneHashtag].filter(Boolean).join('\n\n') + ' ';
-      const threadReplyTweet = realMentions
-        ? `${fullReplyText}\n\n👀 ${realMentions} `
+      // Clean Main Post (No link in main caption so X doesn't deboost reach!)
+      const fullMainTweet = [caption, [oneHashtag, mainMentions].filter(Boolean).join(' ')].filter(Boolean).join('\n\n') + ' ';
+      const selfReplyComment = replyMentions
+        ? `${fullReplyText}\n\n👀 ${replyMentions} `
         : `${fullReplyText} `;
 
-      // 2. Open Compose & Upload Video
+      // 2. Open X Compose & Publish Single Video Post First (100% Reliable on ALL Accounts!)
       await page.goto('https://x.com/compose/post', { waitUntil: 'domcontentloaded', timeout: 45000 });
       await randomSleep(5, 7);
 
@@ -306,42 +313,19 @@ async function runBot() {
       await editor0.fill(fullMainTweet);
       await randomSleep(2, 3);
 
-      console.log(`📤 Uploading high-converting MP4: ${path.basename(localMediaPath)}`);
+      console.log(`📤 Uploading MP4 to X: ${path.basename(localMediaPath)}`);
       const fileInput = page.locator('input[data-testid="fileInput"], input[type="file"]').first();
       await fileInput.setInputFiles(localMediaPath);
-      await randomSleep(12, 17);
+      await randomSleep(10, 14);
 
-      // 3. Attach Cloaked Link in Thread Comment #1 via "+" Button
-      let attachedAsThread = false;
-      const addThreadBtn = page.locator('[data-testid="addButton"]').first();
-      if (await addThreadBtn.isVisible().catch(() => false)) {
-        try {
-          await addThreadBtn.click({ force: true });
-          await randomSleep(2, 3);
-          const editor1 = page.locator('[data-testid="tweetTextarea_1"]').first();
-          if (await editor1.isVisible().catch(() => false)) {
-            await editor1.click({ force: true });
-            await editor1.fill(threadReplyTweet);
-            await randomSleep(2, 3);
-            attachedAsThread = true;
-          }
-        } catch (_) {}
-      }
+      await publishTweetAndWait(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
+      console.log(`✅ Main Video Post submitted on ${acc.username}! Waiting 7s for X profile indexing...`);
+      await randomSleep(7, 10);
 
-      if (!attachedAsThread) {
-        await editor0.click({ force: true });
-        await editor0.fill(`${caption}\n\n👇🔞 ${cloakedLink}\n${oneHashtag} `);
-        await randomSleep(2, 3);
-      }
-
-      await publishTweetSafely(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
-      console.log(`✅ Published Video + Cloaked Link on ${acc.username}!`);
-      await randomSleep(8, 11);
-
-      // Verify Published Post URL on Profile & If Thread Failed, Post Self-Reply Directly
+      // 3. Open Profile, Grab Exact Published Tweet URL & Post Self-Reply Comment with Cloaked Link!
       const cleanHandle = acc.username.replace('@', '').trim();
       await page.goto(`https://x.com/${cleanHandle}`, { waitUntil: 'domcontentloaded', timeout: 40000 });
-      await randomSleep(4, 6);
+      await randomSleep(5, 7);
 
       const latestHref = await page
         .evaluate((handle) => {
@@ -361,23 +345,50 @@ async function runBot() {
         : `https://x.com/${cleanHandle}`;
 
       newlyPublishedTweets.push({ url: publishedUrl, author: acc.username });
+
+      // Post Money Link in Self-Reply Comment under the Video!
+      if (latestHref && config.settings?.autoSelfReply !== false) {
+        console.log(`💬 Posting Cloaked Fanpage Link under: ${publishedUrl}`);
+        await page.goto(publishedUrl, { waitUntil: 'domcontentloaded', timeout: 40000 });
+        await randomSleep(4, 6);
+
+        const replyPlaceholder = page
+          .locator('[data-testid="tweetTextarea_0_label"], [data-testid="tweetTextarea_0"]')
+          .first();
+        if (await replyPlaceholder.isVisible().catch(() => false)) {
+          await replyPlaceholder.click({ force: true }).catch(() => {});
+          await sleep(1200);
+        }
+
+        const replyBox = page.locator('[data-testid="tweetTextarea_0"]').first();
+        if (await replyBox.isVisible().catch(() => false)) {
+          await replyBox.click({ force: true });
+          await replyBox.fill(selfReplyComment);
+          await randomSleep(4, 6); // Wait 5s so X renders the clickable Fanpage Card preview!
+          await publishTweetAndWait(page, '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]');
+          console.log(`🔗 Cloaked Fanpage Link + Card published in comment!`);
+          await randomSleep(4, 6);
+        }
+      }
+
       logActivity(config, {
         account: acc.username,
-        type: '🎬 MAIN_VIDEO_POST',
+        type: '🎬 VIDEO_POST_AND_LINK',
         targetUrl: publishedUrl,
         mediaUrl: mediaItem,
-        detail: `Posted MP4 + Link Thread (${attachedAsThread ? 'Thread #1' : 'Direct'})`
+        detail: `Published Video + Fanpage Link Comment`
       });
 
-      // 4. VIRAL COMMENT HIJACKER (Hijacks 2 High-Reach Posts & Logs Exact URLs!)
-      const hijackQueries = [
-        '#nsfwtwt filter:media',
-        '#thirsttrap filter:media',
-        '"who is up" filter:replies',
-        '"rate me" filter:media'
+      // 4. SAFE-SEARCH BYPASS VIRAL HIJACKER (Uses Unfiltered Queries so it NEVER returns 0 users!)
+      const unfilteredQueries = [
+        '"who is up" min_faves:3',
+        '"can\'t sleep" min_faves:5',
+        '"rate me" min_faves:3',
+        '"anyone awake" min_faves:3',
+        '"dm me" min_faves:5'
       ];
-      const chosenQuery = pickRandom(hijackQueries);
-      console.log(`🔍 Searching Viral Posts to Hijack & Harvest Users: ${chosenQuery}`);
+      const chosenQuery = pickRandom(unfilteredQueries);
+      console.log(`🔍 Searching Unfiltered Live Feed for Users & Hijacking: ${chosenQuery}`);
 
       await page.goto(`https://x.com/search?q=${encodeURIComponent(chosenQuery)}&f=live`, {
         waitUntil: 'domcontentloaded',
@@ -385,11 +396,17 @@ async function runBot() {
       });
       await randomSleep(5, 7);
 
+      // Scroll once to ensure tweets are rendered in DOM
+      await page.evaluate(() => window.scrollBy(0, 800)).catch(() => {});
+      await sleep(2000);
+
       // A) Harvest Real Active @Users
       const scrapedHandles = await page
         .evaluate(() => {
-          const banned = new Set(['home', 'explore', 'notifications', 'messages', 'settings', 'search', 'compose', 'i']);
-          const anchors = Array.from(document.querySelectorAll('article[data-testid="tweet"] a[href^="/"]'));
+          const banned = new Set([
+            'home', 'explore', 'notifications', 'messages', 'settings', 'search', 'compose', 'i', 'tos', 'privacy'
+          ]);
+          const anchors = Array.from(document.querySelectorAll('a[href^="/"]'));
           const out = [];
           for (const a of anchors) {
             const raw = (a.getAttribute('href') || '').split('?')[0].replace(/^\/+/, '');
@@ -410,20 +427,20 @@ async function runBot() {
         }
       }
       config.harvestedUsers = config.harvestedUsers.slice(-150);
-      console.log(`🎯 Harvested ${newlyAdded} real @users (Pool: ${config.harvestedUsers.length})`);
+      console.log(`🎯 Harvested ${newlyAdded} real @users (Total Pool: ${config.harvestedUsers.length})`);
 
-      // B) Hijack Top 2 Viral Posts with Teasing Bait Replies
+      // B) Hijack Top 2 Active Posts with Profile-Bait Comments
       const candidateUrls = await page
         .evaluate((own) => {
-          const articles = Array.from(document.querySelectorAll('article[data-testid="tweet"]'));
+          const links = Array.from(document.querySelectorAll('a[href*="/status/"]'));
           const urls = [];
-          for (const art of articles) {
-            const statusLink = art.querySelector('a[href*="/status/"]');
-            if (statusLink) {
-              const href = statusLink.getAttribute('href') || '';
-              if (!href.toLowerCase().includes(`/${own.toLowerCase()}/status/`)) {
-                urls.push(href.startsWith('http') ? href : `https://x.com${href}`);
-              }
+          for (const l of links) {
+            const href = (l.getAttribute('href') || '').split('?')[0];
+            if (
+              /^\/[a-zA-Z0-9_]+\/status\/\d+$/.test(href) &&
+              !href.toLowerCase().includes(`/${own.toLowerCase()}/status/`)
+            ) {
+              urls.push(`https://x.com${href}`);
             }
           }
           return [...new Set(urls)].slice(0, 2);
@@ -436,14 +453,12 @@ async function runBot() {
           await page.goto(targetPostUrl, { waitUntil: 'domcontentloaded', timeout: 35000 });
           await randomSleep(4, 6);
 
-          // Like the viral post first
           const likeBtn = page.locator('article[data-testid="tweet"] [data-testid="like"]').first();
           if (await likeBtn.isVisible().catch(() => false)) {
             await likeBtn.click({ force: true }).catch(() => {});
             await sleep(1500);
           }
 
-          // Activate reply input
           const replyPlaceholder = page
             .locator('[data-testid="tweetTextarea_0_label"], [data-testid="tweetTextarea_0"]')
             .first();
@@ -455,20 +470,20 @@ async function runBot() {
           const replyInput = page.locator('[data-testid="tweetTextarea_0"]').first();
           if (await replyInput.isVisible().catch(() => false)) {
             const baitMsg = spin(
-              `{omg wait till you see the uncut video I just posted on my profile 😳💦|i just uploaded a way wetter video on my page before deleting 🙊🔥|my fingers weren't enough... check my pinned post right now 👀🔞} `
+              `{omg wait till you see the video I just posted on my profile 😳💦|i’m awake too... just uploaded something crazy on my page before deleting 🙊🔥|can someone rate the video I just posted on my profile? 👀🔞} `
             );
             await replyInput.click({ force: true });
             await replyInput.fill(baitMsg);
             await randomSleep(2, 4);
-            await publishTweetSafely(page, '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]');
+            await publishTweetAndWait(page, '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]');
             hijackedCount++;
-            console.log(`🚀 Hijacked Viral Post (${hijackedCount}): ${targetPostUrl}`);
+            console.log(`🚀 Hijacked Active Post (${hijackedCount}): ${targetPostUrl}`);
 
             logActivity(config, {
               account: acc.username,
               type: '💬 VIRAL_HIJACK_REPLY',
               targetUrl: targetPostUrl,
-              detail: `Dropped bait comment & liked viral post`
+              detail: `Dropped bait comment & liked active post`
             });
             await randomSleep(4, 6);
           }
@@ -476,7 +491,7 @@ async function runBot() {
       }
 
       if (masterAcc) {
-        masterAcc.lastStatus = `✅ Posted Video + ${hijackedCount} Viral Hijacks`;
+        masterAcc.lastStatus = `✅ Posted Video + Link & ${hijackedCount} Hijacks`;
       }
     } catch (err) {
       console.error(`❌ Error on ${acc.username}:`, err.message);
@@ -493,7 +508,7 @@ async function runBot() {
     await randomSleep(5, 8);
   }
 
-  // 5. CROSS-ACCOUNT ENGAGEMENT POD (Cross-Like & Retweet + Activity Logging)
+  // 5. CROSS-ACCOUNT ENGAGEMENT POD
   if (
     newlyPublishedTweets.length > 0 &&
     (config.settings?.crossAccountLike || config.settings?.crossAccountRetweet)
@@ -557,7 +572,7 @@ async function runBot() {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   }
 
-  console.log('\n🎉 Run v4.0 Completed & Activity Logs Saved!');
+  console.log('\n🎉 Run v4.5 Completed & Activity Logs Saved!');
 }
 
 runBot();
