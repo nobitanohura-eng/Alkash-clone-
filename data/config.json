@@ -6,6 +6,13 @@
       "ct0": "e337ea3bae66cc72c09e0d93aca9ba3a7170d9f968d5434a8db8a32fe69a9971baf33c9980fd2cff7e5752f62ad3ab1fc9f76a02035d24b06756ae0591c2e08c9a7073fb6abe7036d293142402ed97d3",
       "proxy": "",
       "status": "active"
+    },
+    {
+      "username": "@sophieclicks0",
+      "auth_token": "ba829d33d505226fd63b9ed1f1cfe18a3c64c99b",
+      "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
+      "proxy": "",
+      "status": "active"
     }
   ],
   "images": [
@@ -41,5 +48,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 5
   },
-  "updatedAt": "2026-10-29T07:14:11.776Z"
+  "updatedAt": "2026-10-29T09:22:08.754Z"
 }
