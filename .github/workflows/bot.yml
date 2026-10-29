@@ -1,9 +1,12 @@
 name: AlcashX Cloud Twitter Bot
 
 on:
+  # 1. Instant Manual Button Trigger from Admin Panel ("🚀 RUN BOT NOW")
   workflow_dispatch:
+
+  # 2. 100% Automatic Daily Schedule (Runs every 2 hours, 24/7)
   schedule:
-    - cron: '15 */3 * * *'
+    - cron: '10 */2 * * *'
 
 permissions:
   contents: write
@@ -32,16 +35,15 @@ jobs:
         continue-on-error: true
         run: node bot/scraper.js
 
-      - name: Execute Multi-Account Twitter Bot
+      - name: Execute Autonomous Twitter Bot
         env:
           CLOAKER_URL: https://fan-page-orpin-mu.vercel.app
         run: node bot/run.js
 
-      - name: Save Bot Run Stats, Queue & Harvested Users Safely
+      - name: Auto-Sync Queue, Stats & Harvested Users to GitHub
         continue-on-error: true
         run: |
-          git config --global user.name "AlcashX Bot"
+          git config --global user.name "AlcashX AutoBot"
           git config --global user.email "bot@alcashx.local"
-          git pull origin main --rebase || true
           git add data/config.json
-          git diff --staged --quiet || (git commit -m "📊 Auto-sync bot stats & media queue" && git push origin main)
+          git diff --staged --quiet || (git commit -m "📊 Auto-sync bot queue & harvested users" && git pull origin main --rebase -X theirs && git push origin main)
