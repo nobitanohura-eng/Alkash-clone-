@@ -21,7 +21,9 @@
       "auth_token": "d85a98d39ab207aae4976b959edaea27db5bcd29",
       "ct0": "3b94c1920f4513d0ea502218bd9225ad1ebd2a4912701ebde3e6b9e1b2c3914ece3986f84dbe75c58a0e87947902aaff045528dd79951bb82f8c0726663895f9ed15d8e1cf2ef7b514042b287c03d8e3",
       "proxy": "",
-      "status": "active"
+      "status": "active",
+      "lastRunAt": "2026-10-29T11:16:36.773Z",
+      "lastStatus": "✅ Active & Posting Media"
     }
   ],
   "images": [
@@ -78,7 +80,6 @@
     "mutuals"
   ],
   "mediaQueue": [
-    "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
     "https://media.redgifs.com/LimpSpiritedIberianmidwifetoad-mobile.mp4",
     "https://media.redgifs.com/PlumGlisteningUrutu-mobile.mp4",
     "https://assets.mixkit.co/videos/preview/mixkit-sensual-woman-posing-for-the-camera-42995-large.mp4",
@@ -117,9 +118,13 @@
     "https://media.redgifs.com/LightsteelblueDetailedEuropeanfiresalamander-mobile.jpg",
     "https://media.redgifs.com/ClutteredAnchoredMarbledmurrelet-mobile.jpg",
     "https://media.redgifs.com/IntelligentLightgrayEasternglasslizard-mobile.jpg",
-    "https://media.redgifs.com/PlaintiveVirtualPinemarten-mobile.jpg"
+    "https://media.redgifs.com/PlaintiveVirtualPinemarten-mobile.jpg",
+    "https://media.redgifs.com/HiddenPurpleFlicker-mobile.jpg",
+    "https://media.redgifs.com/SizzlingRelievedMare-mobile.jpg"
   ],
-  "usedMedia": [],
+  "usedMedia": [
+    "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4"
+  ],
   "harvestedUsers": [
     "@active_user1",
     "@reply_guy_99",
