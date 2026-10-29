@@ -1,6 +1,11 @@
 /**
  * File: bot/run.js
- * AlcashX Cloud Pro v5.0 — 100% Guaranteed Cloaked Link Publisher + React Input Trigger + Viral Hijacker
+ * AlcashX Cloud Pro v6.0 (10-Day Challenge Edition)
+ * Upgrades:
+ *  1. 32-Byte Anti-Blur Hash Mutator + Zero-Buffer Corruption
+ *  2. Pinned-Tweet Bypass (Finds exact newest status URL so Self-Reply never hits old pinned post)
+ *  3. High-CTR Viral Hijacker (Drops Direct Cloaked Link + Profile Bait on active posts)
+ *  4. Automated HTML Email Status Reporter (Alerts on Posts, Hijacks, Suspensions & Queue Health)
  */
 
 import fs from 'fs';
@@ -32,14 +37,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const randomSleep = (minSec, maxSec) =>
   sleep((Math.floor(Math.random() * (maxSec - minSec + 1)) + minSec) * 1000);
 
-// CRITICAL FIX: Triggers X's React onChange state so Reply/Post buttons NEVER stay disabled!
+// Triggers X's React Draft.js state so Reply/Post buttons NEVER stay disabled
 async function typeIntoXEditor(page, editorLocator, text) {
   await editorLocator.waitFor({ state: 'visible', timeout: 20000 });
   await editorLocator.click({ force: true });
   await sleep(500);
   await editorLocator.fill(text);
   await sleep(600);
-  // Real keyboard press wakes up Draft.js / React state on X!
   await page.keyboard.type(' ');
   await sleep(400);
 }
@@ -87,6 +91,9 @@ async function publishTweetAndWait(
   }
 }
 
+// ============================================================================
+// ANTI-BLUR MP4 DOWNLOADER & 32-BYTE CRYPTOGRAPHIC HASH MUTATOR
+// ============================================================================
 async function downloadMedia(rawUrl) {
   try {
     if (!rawUrl || typeof rawUrl !== 'string') return null;
@@ -123,7 +130,8 @@ async function downloadMedia(rawUrl) {
       return null;
     }
 
-    const saltBytes = crypto.randomBytes(16);
+    // Append 32 random bytes to mutate SHA-256 / MD5 hash & bypass X duplicate/adult AI filter
+    const saltBytes = crypto.randomBytes(32);
     const finalBuffer = Buffer.concat([rawBuffer, saltBytes]);
 
     const tempPath = path.resolve(
@@ -132,7 +140,7 @@ async function downloadMedia(rawUrl) {
     );
     fs.writeFileSync(tempPath, finalBuffer);
     console.log(
-      `✅ Ready: ${path.basename(tempPath)} (${(finalBuffer.byteLength / 1024 / 1024).toFixed(2)} MB, Unique Hash)`
+      `🛡️ Anti-Blur Hash Mutated: ${path.basename(tempPath)} (${(finalBuffer.byteLength / 1024 / 1024).toFixed(2)} MB)`
     );
     return tempPath;
   } catch (_) {
@@ -147,6 +155,89 @@ function logActivity(config, entry) {
     ...entry
   });
   config.activityLog = config.activityLog.slice(0, 60);
+}
+
+// ============================================================================
+// AUTOMATED EMAIL STATUS REPORTER (GMAIL SMTP)
+// ============================================================================
+async function sendEmailReport(config, runSummaryRows) {
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_PASS;
+  if (!emailUser || !emailPass) {
+    console.log('ℹ️ EMAIL_USER / EMAIL_PASS not set in GitHub Secrets. Skipping email notification.');
+    return;
+  }
+
+  try {
+    const nodemailer = await import('nodemailer');
+    const transporter = nodemailer.default.createTransport({
+      service: 'gmail',
+      auth: { user: emailUser, pass: emailPass }
+    });
+
+    const allAccountsHtml = (config.accounts || [])
+      .map(
+        (a) =>
+          `<tr>
+            <td style="padding:8px;border:1px solid #334155;font-weight:bold;">${a.username}</td>
+            <td style="padding:8px;border:1px solid #334155;">${a.status.toUpperCase()}</td>
+            <td style="padding:8px;border:1px solid #334155;">${a.lastStatus || 'Pending'}</td>
+            <td style="padding:8px;border:1px solid #334155;">${a.lastRunAt ? new Date(a.lastRunAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never'}</td>
+          </tr>`
+      )
+      .join('');
+
+    const runActionsHtml = runSummaryRows
+      .map((r) => `<li style="margin-bottom:6px;">${r}</li>`)
+      .join('');
+
+    const htmlBody = `
+      <div style="font-family:Arial,sans-serif;background:#0f172a;color:#f8fafc;padding:20px;border-radius:12px;">
+        <h2 style="color:#38bdf8;margin-top:0;">🚀 AlcashX Cloud Pro — Live Bot Run Report</h2>
+        <p style="color:#94a3b8;font-size:13px;">Run Time (IST): <b>${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</b></p>
+        
+        <div style="background:#1e293b;padding:12px;border-radius:8px;margin-bottom:16px;">
+          <b>📊 Queue &amp; Pool Telemetry:</b><br/>
+          • Remaining Pure MP4 Queue: <b style="color:#38bdf8;">${(config.mediaQueue || []).length} videos</b><br/>
+          • Total Videos Posted: <b style="color:#10b981;">${(config.usedMedia || []).length}</b><br/>
+          • Harvested Active @Users: <b style="color:#c084fc;">${(config.harvestedUsers || []).length} users</b>
+        </div>
+
+        <h3 style="color:#10b981;">⚡ Actions Executed This Run:</h3>
+        <ul style="font-size:14px;line-height:1.5;">
+          ${runActionsHtml || '<li>No accounts processed in this cycle.</li>'}
+        </ul>
+
+        <h3 style="color:#f59e0b;">👥 Fleet Account Health Overview:</h3>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;background:#1e293b;">
+          <thead>
+            <tr style="background:#020617;color:#94a3b8;">
+              <th style="padding:8px;border:1px solid #334155;text-align:left;">Account</th>
+              <th style="padding:8px;border:1px solid #334155;text-align:left;">Mode</th>
+              <th style="padding:8px;border:1px solid #334155;text-align:left;">Latest Health / Status</th>
+              <th style="padding:8px;border:1px solid #334155;text-align:left;">Last Run (IST)</th>
+            </tr>
+          </thead>
+          <tbody>${allAccountsHtml}</tbody>
+        </table>
+      </div>
+    `;
+
+    const hasAlert = (config.accounts || []).some(
+      (a) => (a.lastStatus || '').includes('❌') || (a.lastStatus || '').includes('⚠️')
+    );
+    const subjectPrefix = hasAlert ? '⚠️ [ACTION NEEDED]' : '✅ [SUCCESS]';
+
+    await transporter.sendMail({
+      from: `"AlcashX AutoBot" <${emailUser}>`,
+      to: emailUser,
+      subject: `${subjectPrefix} AlcashX Report — ${runSummaryRows.length} Account(s) Processed`,
+      html: htmlBody
+    });
+    console.log('📧 HTML Email Status Report sent successfully!');
+  } catch (err) {
+    console.log('⚠️ Email report failed:', err.message);
+  }
 }
 
 async function runBot() {
@@ -217,9 +308,10 @@ async function runBot() {
   );
   const accountsToRun = sortedAccounts.slice(0, maxPerRun);
   const newlyPublishedTweets = [];
+  const runSummaryRows = [];
 
   console.log(
-    `🚀 Autonomous Bot v5.0 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
+    `🚀 Autonomous Bot v6.0 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active account(s)...`
   );
 
   for (const acc of accountsToRun) {
@@ -278,6 +370,7 @@ async function runBot() {
       if (!localMediaPath) {
         console.log('⚠️ Could not download a valid MP4. Skipping...');
         if (masterAcc) masterAcc.lastStatus = '⚠️ Queue Needs Refill';
+        runSummaryRows.push(`<b>${acc.username}</b>: ⚠️ Skipped (Media Queue Empty/Download Failed)`);
         continue;
       }
 
@@ -300,14 +393,25 @@ async function runBot() {
         ? `${fullReplyText}\n\n👀 ${replyMentions}`
         : `${fullReplyText}`;
 
-      // 2. Open Compose & Upload Video
+      // 2. Open Compose & Verify Account Health
       await page.goto('https://x.com/compose/post', { waitUntil: 'domcontentloaded', timeout: 45000 });
       await randomSleep(5, 7);
 
       const currentUrl = page.url();
-      if (currentUrl.includes('/login') || currentUrl.includes('/account/access')) {
+      if (
+        currentUrl.includes('/login') ||
+        currentUrl.includes('/account/access') ||
+        currentUrl.includes('/ suspended')
+      ) {
         console.log(`❌ Account ${acc.username} cookie expired or locked!`);
         if (masterAcc) masterAcc.lastStatus = '❌ Cookie Expired / Locked';
+        logActivity(config, {
+          account: acc.username,
+          type: '🚨 ACCOUNT_LOCKED',
+          targetUrl: `https://x.com/${acc.username.replace('@', '')}`,
+          detail: `Session expired or locked (${currentUrl})`
+        });
+        runSummaryRows.push(`<b>${acc.username}</b>: ❌ <span style="color:#f43f5e;">Cookie Expired / Account Locked!</span>`);
         continue;
       }
 
@@ -324,71 +428,70 @@ async function runBot() {
       console.log(`✅ Main Video Post submitted on ${acc.username}! Waiting 8s for profile indexing...`);
       await randomSleep(8, 10);
 
-      // 3. BULLETPROOF SELF-REPLY VIA PROFILE REPLY MODAL (100% Never Misses Link!)
+      // 3. PINNED-TWEET BYPASS: Find the HIGHEST (Newest) Status ID on Profile!
       const cleanHandle = acc.username.replace('@', '').trim();
       await page.goto(`https://x.com/${cleanHandle}`, { waitUntil: 'domcontentloaded', timeout: 40000 });
       await randomSleep(5, 7);
 
-      const firstTweetArticle = page.locator('article[data-testid="tweet"]').first();
-      const latestHref = await page
+      const newestHref = await page
         .evaluate((handle) => {
-          const links = Array.from(document.querySelectorAll('article[data-testid="tweet"] a[href*="/status/"]'));
+          const links = Array.from(
+            document.querySelectorAll('article[data-testid="tweet"] a[href*="/status/"]')
+          );
+          let bestHref = null;
+          let maxId = 0n;
           for (const a of links) {
-            const h = a.getAttribute('href') || '';
-            if (h.toLowerCase().includes(`/${handle.toLowerCase()}/status/`)) return h;
+            const h = (a.getAttribute('href') || '').split('?')[0];
+            const m = h.match(new RegExp(`^/${handle}/status/(\\d+)$`, 'i'));
+            if (m && m[1]) {
+              const idNum = BigInt(m[1]);
+              if (idNum > maxId) {
+                maxId = idNum;
+                bestHref = h;
+              }
+            }
           }
-          return null;
+          return bestHref;
         }, cleanHandle)
         .catch(() => null);
 
-      const publishedUrl = latestHref
-        ? latestHref.startsWith('http')
-          ? latestHref
-          : `https://x.com${latestHref}`
+      const publishedUrl = newestHref
+        ? `https://x.com${newestHref}`
         : `https://x.com/${cleanHandle}`;
 
       newlyPublishedTweets.push({ url: publishedUrl, author: acc.username });
 
       let linkReplySuccess = false;
 
-      // Method A: Click Reply Icon directly on Profile's 1st Tweet to open clean Reply Modal!
-      if (await firstTweetArticle.isVisible().catch(() => false)) {
-        const replyIconBtn = firstTweetArticle.locator('[data-testid="reply"]').first();
-        if (await replyIconBtn.isVisible().catch(() => false)) {
-          console.log(`💬 Clicking Reply Icon on latest tweet to attach Money Link: ${cloakedLink}`);
-          await replyIconBtn.click({ force: true });
-          await randomSleep(3, 5);
-
-          const modalEditor = page.locator('[data-testid="tweetTextarea_0"]').first();
-          if (await modalEditor.isVisible().catch(() => false)) {
-            await typeIntoXEditor(page, modalEditor, selfReplyComment);
-            await randomSleep(5, 7); // Wait 6s so X fetches the Vercel Fanpage Image Card!
-            await publishTweetAndWait(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
-            linkReplySuccess = true;
-            console.log(`🔗 SUCCESS! Cloaked Fanpage Link published via Reply Modal!`);
-            await randomSleep(4, 6);
-          }
-        }
-      }
-
-      // Method B Fallback: Navigate directly to status URL if Modal didn't open
-      if (!linkReplySuccess && latestHref) {
-        console.log(`🔄 Fallback: Opening ${publishedUrl} directly to post link comment...`);
+      // Navigate directly to the newest tweet URL so we NEVER accidentally reply to an old Pinned Tweet!
+      if (newestHref) {
+        console.log(`💬 Opening newest tweet ${publishedUrl} to attach Cloaked Link...`);
         await page.goto(publishedUrl, { waitUntil: 'domcontentloaded', timeout: 40000 });
         await randomSleep(4, 6);
 
-        const inlinePlaceholder = page
-          .locator('[data-testid="tweetTextarea_0_label"], [data-testid="tweetTextarea_0"]')
-          .first();
-        if (await inlinePlaceholder.isVisible().catch(() => false)) {
-          await inlinePlaceholder.click({ force: true }).catch(() => {});
-          await sleep(1000);
-          const replyBox = page.locator('[data-testid="tweetTextarea_0"]').first();
+        // Try clicking the reply icon on the main tweet to open Modal, or click inline reply box
+        const replyIcon = page.locator('article[data-testid="tweet"] [data-testid="reply"]').first();
+        if (await replyIcon.isVisible().catch(() => false)) {
+          await replyIcon.click({ force: true }).catch(() => {});
+          await sleep(2000);
+        } else {
+          const inlinePlaceholder = page
+            .locator('[data-testid="tweetTextarea_0_label"], [data-testid="tweetTextarea_0"]')
+            .first();
+          if (await inlinePlaceholder.isVisible().catch(() => false)) {
+            await inlinePlaceholder.click({ force: true }).catch(() => {});
+            await sleep(1200);
+          }
+        }
+
+        const replyBox = page.locator('[data-testid="tweetTextarea_0"]').first();
+        if (await replyBox.isVisible().catch(() => false)) {
           await typeIntoXEditor(page, replyBox, selfReplyComment);
-          await randomSleep(5, 7);
-          await publishTweetAndWait(page, '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]');
+          await randomSleep(5, 7); // Allow X to render OpenGraph Card preview
+          await publishTweetAndWait(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
           linkReplySuccess = true;
-          console.log(`🔗 SUCCESS! Cloaked Fanpage Link published on Status Page!`);
+          console.log(`🔗 SUCCESS! Cloaked Fanpage Link published under ${publishedUrl}!`);
+          await randomSleep(4, 6);
         }
       }
 
@@ -397,19 +500,19 @@ async function runBot() {
         type: '🎬 VIDEO_AND_LINK',
         targetUrl: publishedUrl,
         mediaUrl: mediaItem,
-        detail: `Video + Link Comment (${linkReplySuccess ? '✅ Link Posted' : '⚠️ Video Only'})`
+        detail: `Video + Link (${linkReplySuccess ? '✅ Link Attached' : '⚠️ Video Only'})`
       });
 
-      // 4. SAFE-SEARCH BYPASS VIRAL HIJACKER (With React Keyboard Trigger + Cloaked Link Bait!)
+      // 4. SAFE-SEARCH BYPASS VIRAL HIJACKER (With Direct Link + Profile Bait!)
       const unfilteredQueries = [
         '"who is up" min_faves:3',
         '"can\'t sleep" min_faves:5',
         '"rate me" min_faves:3',
         '"anyone awake" min_faves:3',
-        '"dm me" min_faves:5'
+        '"bored" min_faves:10'
       ];
       const chosenQuery = pickRandom(unfilteredQueries);
-      console.log(`🔍 Searching Unfiltered Live Feed for Users & Hijacking: ${chosenQuery}`);
+      console.log(`🔍 Searching Live Feed for Users & Hijacking: ${chosenQuery}`);
 
       await page.goto(`https://x.com/search?q=${encodeURIComponent(chosenQuery)}&f=live`, {
         waitUntil: 'domcontentloaded',
@@ -449,7 +552,7 @@ async function runBot() {
       config.harvestedUsers = config.harvestedUsers.slice(-150);
       console.log(`🎯 Harvested ${newlyAdded} real @users (Total Pool: ${config.harvestedUsers.length})`);
 
-      // B) Hijack Top 2 Active Posts using Reply Modal + React Trigger
+      // B) Hijack Top 2 Active Posts (1st with Profile Bait, 2nd with Direct Cloaked Link!)
       const candidateUrls = await page
         .evaluate((own) => {
           const links = Array.from(document.querySelectorAll('a[href*="/status/"]'));
@@ -468,7 +571,8 @@ async function runBot() {
         .catch(() => []);
 
       let hijackedCount = 0;
-      for (const targetPostUrl of candidateUrls) {
+      for (let idx = 0; idx < candidateUrls.length; idx++) {
+        const targetPostUrl = candidateUrls[idx];
         try {
           await page.goto(targetPostUrl, { waitUntil: 'domcontentloaded', timeout: 35000 });
           await randomSleep(4, 6);
@@ -480,7 +584,6 @@ async function runBot() {
             await sleep(1200);
           }
 
-          // Click the reply icon on the viral tweet to open modal
           const replyIcon = mainArticle.locator('[data-testid="reply"]').first();
           if (await replyIcon.isVisible().catch(() => false)) {
             await replyIcon.click({ force: true }).catch(() => {});
@@ -489,11 +592,17 @@ async function runBot() {
 
           const replyInput = page.locator('[data-testid="tweetTextarea_0"]').first();
           if (await replyInput.isVisible().catch(() => false)) {
-            const baitMsg = spin(
-              `{i can't sleep either 😭 just posted a crazy leaked clip on my profile before deleting 🙊💦|omg wait till you see the uncut video I just dropped on my page 😳🔥|rate the new video I just posted on my profile? be honest 👀🔞}`
-            );
+            const baitMsg =
+              idx === 0
+                ? spin(
+                    `{i can't sleep either 😭 just posted my uncut leaked clip here before deleting 👇🔞|omg wait till you see what I just uploaded on my VIP page 😳🔥} ${cloakedLink}`
+                  )
+                : spin(
+                    `{i can't sleep either 😭 just dropped a crazy video on my profile before deleting 🙊💦|rate the new video I just pinned on my profile? be honest 👀🔞}`
+                  );
+
             await typeIntoXEditor(page, replyInput, baitMsg);
-            await randomSleep(2, 4);
+            await randomSleep(4, 6);
             await publishTweetAndWait(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
             hijackedCount++;
             console.log(`🚀 Hijacked Active Post (${hijackedCount}): ${targetPostUrl}`);
@@ -502,18 +611,21 @@ async function runBot() {
               account: acc.username,
               type: '💬 VIRAL_HIJACK_REPLY',
               targetUrl: targetPostUrl,
-              detail: `Dropped bait comment & liked active post`
+              detail: idx === 0 ? 'Dropped Cloaked Link on Viral Post' : 'Dropped Profile Bait on Viral Post'
             });
             await randomSleep(4, 6);
           }
         } catch (_) {}
       }
 
-      if (masterAcc) {
-        masterAcc.lastStatus = `✅ Video + Link (${linkReplySuccess ? 'OK' : 'Retry'}) + ${hijackedCount} Hijacks`;
-      }
+      const finalAccStatus = `✅ Video + Link (${linkReplySuccess ? 'OK' : 'Retry'}) + ${hijackedCount} Hijacks`;
+      if (masterAcc) masterAcc.lastStatus = finalAccStatus;
+      runSummaryRows.push(
+        `<b>${acc.username}</b>: ${finalAccStatus} — <a href="${publishedUrl}" style="color:#38bdf8;">View Tweet ↗</a>`
+      );
     } catch (err) {
       console.error(`❌ Error on ${acc.username}:`, err.message);
+      runSummaryRows.push(`<b>${acc.username}</b>: ⚠️ Error (${err.message.slice(0, 60)})`);
     } finally {
       if (localMediaPath && fs.existsSync(localMediaPath)) {
         try {
@@ -527,7 +639,7 @@ async function runBot() {
     await randomSleep(5, 8);
   }
 
-  // 5. CROSS-ACCOUNT ENGAGEMENT POD (Likes & Retweets BOTH Main Post & Link Comment!)
+  // 5. CROSS-ACCOUNT ENGAGEMENT POD
   if (
     newlyPublishedTweets.length > 0 &&
     (config.settings?.crossAccountLike || config.settings?.crossAccountRetweet)
@@ -557,7 +669,6 @@ async function runBot() {
           await page.goto(item.url, { waitUntil: 'domcontentloaded', timeout: 40000 });
           await randomSleep(4, 6);
 
-          // Like first 2 tweets on the page (Main Video Post + Self-Reply Link Comment!)
           if (config.settings?.crossAccountLike) {
             const likeBtns = page.locator('[data-testid="like"]');
             const count = await likeBtns.count().catch(() => 0);
@@ -593,7 +704,10 @@ async function runBot() {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   }
 
-  console.log('\n🎉 Run v5.0 Completed & Activity Logs Saved!');
+  // 6. SEND LIVE HTML EMAIL TELEMETRY REPORT
+  await sendEmailReport(config, runSummaryRows);
+
+  console.log('\n🎉 Run v6.0 Completed, Activity Logs & Email Report Dispatched!');
 }
 
 runBot();
