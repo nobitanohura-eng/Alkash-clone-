@@ -1,7 +1,7 @@
 /**
- * AlcashX Cloud Pro v4.5 — Ultimate Command Center & Serverless Admin API (api/admin.js)
- * Upgraded in v4.5:
- *  1. Pure Amateur/Trap MP4 Cloud Harvester (Zero static .jpg posters, blocks Jerkmate/3D/Rule34 ads)
+ * AlcashX Cloud Pro v6.0 — Ultimate Command Center & Serverless Admin API (api/admin.js)
+ * Upgraded in v6.0:
+ *  1. 100% No-Blur Teaser MP4 Cloud Harvester (Aligned with scraper.js to prevent X Adult Blur)
  *  2. Auto-Purge Junk Filter on Save (Strips aacdn.net, mixkit.co, rule34 & non-MP4 links automatically)
  *  3. Live Bot Activity & Viral Hijack Proof Table (Click to verify exact tweets & hijacked comments!)
  *  4. Zero-Conflict Smart Merge + Pure Dispatch (Never overwrites background scraped queues)
@@ -30,11 +30,12 @@ const DEFAULT_CONFIG = {
 const BANNED_WORDS = [
   'jerkmate', 'chaturbate', 'stripchat', 'bonga', 'cam4', 'ad', 'promo',
   'hentai', 'anime', '3d', 'sfm', 'cartoon', 'animated', 'rule34', 'furry',
-  'gay', 'trans', 'shemale', 'femboy', 'cuck', 'compilation'
+  'gay', 'trans', 'shemale', 'femboy', 'cuck', 'compilation',
+  'blowjob', 'anal', 'cumshot', 'creampie', 'gangbang', 'penetration', 'hardcore', 'dildo', 'fucked'
 ];
 
-// Built-in Serverless RedGifs Official API Harvester (Strictly Real Amateur/Tease MP4s — No Posters!)
-async function fetchFreshAdultMediaServerless(nicheQuery = 'skirt lift') {
+// Built-in Serverless RedGifs Official API Harvester (Strictly Unblurred Teaser MP4s — No Posters!)
+async function fetchFreshAdultMediaServerless(nicheQuery = 'tiktok tease') {
   const urls = [];
   try {
     const authRes = await fetch('https://api.redgifs.com/v2/auth/temporary', {
@@ -46,13 +47,13 @@ async function fetchFreshAdultMediaServerless(nicheQuery = 'skirt lift') {
       if (token) {
         const queries = [
           nicheQuery,
-          'solo girl',
-          'fingering',
-          'skirt lift',
-          'mirror tease',
-          'bedroom tease',
-          'homemade gf',
-          'desi bhabhi'
+          'tiktok tease',
+          'caught on camera',
+          'shirt lift tease',
+          'mirror bounce',
+          'girlfriend tease',
+          'desi saree tease',
+          'bikini try on'
         ];
         const picked = queries[Math.floor(Math.random() * queries.length)];
         const page = Math.floor(Math.random() * 4) + 1;
@@ -69,7 +70,7 @@ async function fetchFreshAdultMediaServerless(nicheQuery = 'skirt lift') {
         if (sRes.ok) {
           const data = await sRes.json();
           for (const g of data?.gifs || []) {
-            if (g?.duration && (g.duration < 4 || g.duration > 30)) continue;
+            if (g?.duration && (g.duration < 3.5 || g.duration > 18)) continue;
             const tags = (g?.tags || []).map((t) => String(t).toLowerCase());
             const desc = String(g?.description || '').toLowerCase();
             if (BANNED_WORDS.some((b) => tags.some((t) => t.includes(b)) || desc.includes(b))) {
@@ -129,7 +130,7 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${githubToken}`,
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': 'AlcashX-Cloud-Pro-v4.5',
+        'User-Agent': 'AlcashX-Cloud-Pro-v6.0',
         'Content-Type': 'application/json'
       };
 
@@ -213,13 +214,13 @@ export default async function handler(req, res) {
         return res.status(200).json({ ok: true, repo: githubRepo, runs });
       }
 
-      // 3. INSTANT SERVERLESS CLOUD SCRAPER (1-CLICK PURE MP4 QUEUE REFILL)
+      // 3. INSTANT SERVERLESS CLOUD SCRAPER (1-CLICK PURE NO-BLUR MP4 QUEUE REFILL)
       if (action === 'cloud_scrape') {
-        const freshUrls = await fetchFreshAdultMediaServerless(niche || 'skirt lift');
+        const freshUrls = await fetchFreshAdultMediaServerless(niche || 'tiktok tease');
         return res.status(200).json({
           ok: true,
           urls: freshUrls,
-          message: `☁️ Pulled ${freshUrls.length} pure amateur/trap MP4 videos! Click "💾 Save Changes" to lock them in.`
+          message: `☁️ Pulled ${freshUrls.length} No-Blur Teaser MP4 videos! Click "💾 Save Changes" to lock them in.`
         });
       }
 
@@ -315,7 +316,7 @@ export default async function handler(req, res) {
 
           const contentBase64 = Buffer.from(JSON.stringify(payloadToSave, null, 2), 'utf-8').toString('base64');
           const putBody = {
-            message: `⚡ Sync config via AlcashX Command Center v4.5 [${new Date().toISOString()}]`,
+            message: `⚡ Sync config via AlcashX Command Center v6.0 [${new Date().toISOString()}]`,
             content: contentBase64,
             branch
           };
@@ -359,7 +360,7 @@ export default async function handler(req, res) {
         if (dispatchRes.status === 204 || dispatchRes.ok) {
           return res.status(200).json({
             ok: true,
-            message: `🚀 Autonomous Bot v4.5 Dispatched! Watch Live Monitor below.`
+            message: `🚀 Autonomous Bot v6.0 Dispatched! Watch Live Monitor & Check Gmail after completion.`
           });
         }
         const errText = await dispatchRes.text();
@@ -381,7 +382,7 @@ function renderAdminHTML() {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>AlcashX Cloud Pro v4.5 — Autonomous Traffic & Revenue Center</title>
+  <title>AlcashX Cloud Pro v6.0 — Autonomous Traffic & Revenue Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
@@ -402,16 +403,16 @@ function renderAdminHTML() {
     <header class="glass border border-slate-800/90 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-xl">
       <div>
         <div class="flex flex-wrap items-center gap-2.5">
-          <span class="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider rounded-md bg-gradient-to-r from-emerald-500/20 to-sky-500/20 text-emerald-300 border border-emerald-500/30">v4.5 ANTI-BLUR</span>
+          <span class="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider rounded-md bg-gradient-to-r from-emerald-500/20 to-sky-500/20 text-emerald-300 border border-emerald-500/30">v6.0 ANTI-BLUR + EMAIL</span>
           <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white">AlcashX Command Center</h1>
           <span id="connBadge" class="px-2.5 py-0.5 text-[11px] font-mono font-semibold rounded-full bg-slate-800 text-slate-400 border border-slate-700">⚪ Standby</span>
         </div>
-        <p id="connSubtext" class="text-xs text-slate-400 mt-1">Pure Amateur MP4 Engine · Safe-Search Bypass Hijacker · Live Proof Tracker</p>
+        <p id="connSubtext" class="text-xs text-slate-400 mt-1">No-Blur Micro-Video Engine · Pinned-Safe Linker · Automated Gmail Telemetry</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <input id="adminPassword" type="password" placeholder="Admin PIN" class="w-full sm:w-40 h-10 px-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-sky-500" />
         <button onclick="loadConfigFromGitHub()" class="h-10 px-3.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-semibold cursor-pointer">🔄 Sync GitHub</button>
-        <button onclick="instantCloudRefill('skirt lift')" class="h-10 px-3.5 rounded-xl bg-purple-600/90 hover:bg-purple-500 text-white text-xs font-bold cursor-pointer shadow">☁️ +30 Trap MP4s</button>
+        <button onclick="instantCloudRefill('tiktok tease')" class="h-10 px-3.5 rounded-xl bg-purple-600/90 hover:bg-purple-500 text-white text-xs font-bold cursor-pointer shadow">☁️ +30 Trap MP4s</button>
         <button onclick="saveConfigToGitHub()" class="h-10 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold cursor-pointer shadow-lg">💾 Save Changes</button>
       </div>
     </header>
@@ -497,7 +498,7 @@ function renderAdminHTML() {
           <span id="activityCountBadge" class="text-[11px] font-mono text-emerald-400">0 actions logged</span>
         </div>
         <div id="activityLogContainer" class="space-y-2 text-xs font-mono max-h-60 overflow-y-auto">
-          <div class="text-slate-500 py-2">No verified post/hijack logs yet. Run the bot with v4.5 to see exact clickable tweet &amp; comment URLs here!</div>
+          <div class="text-slate-500 py-2">No verified post/hijack logs yet. Run the bot to see exact clickable tweet &amp; comment URLs here!</div>
         </div>
       </section>
     </div>
@@ -514,7 +515,7 @@ function renderAdminHTML() {
       <div class="glass border border-slate-800 rounded-2xl p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h2 class="text-sm sm:text-base font-bold text-white">Add X (Twitter) Account to Autonomous Fleet</h2>
-          <span class="text-xs text-amber-300 font-mono">💡 Important: Keep "Mark media you post as sensitive" UNTICKED (OFF) in X Settings so videos play UNBLURRED!</span>
+          <span class="text-xs text-amber-300 font-mono">💡 Tip: Our v6.0 scraper uses No-Blur Teasers + 32-Byte Hash Mutation for smooth auto-play!</span>
         </div>
         <form onsubmit="handleAddAccount(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <input id="accUsername" type="text" required placeholder="@handle" class="w-full h-11 px-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono" />
@@ -604,8 +605,8 @@ function renderAdminHTML() {
             <p class="text-xs text-slate-400">Strictly pure <code class="text-sky-400">.mp4</code> videos. Rule34/Mixkit/Posters are automatically purged.</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button onclick="instantCloudRefill('fingering')" class="px-3 py-1.5 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer">☁️ +30 Solo Girl MP4s</button>
-            <button onclick="instantCloudRefill('desi bhabhi')" class="px-3 py-1.5 rounded-lg bg-amber-600/80 hover:bg-amber-500 text-white text-xs font-bold cursor-pointer">☁️ +30 Desi MP4s</button>
+            <button onclick="instantCloudRefill('mirror bounce')" class="px-3 py-1.5 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer">☁️ +30 TikTok Tease MP4s</button>
+            <button onclick="instantCloudRefill('desi saree tease')" class="px-3 py-1.5 rounded-lg bg-amber-600/80 hover:bg-amber-500 text-white text-xs font-bold cursor-pointer">☁️ +30 Desi Tease MP4s</button>
             <button onclick="state.mediaQueue=[];renderUI();showBanner('🧹 Queue cleared! Click +30 Trap MP4s then Save Changes.');" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-rose-300 cursor-pointer">🧹 Clear Queue</button>
           </div>
         </div>
@@ -686,11 +687,11 @@ function renderAdminHTML() {
         state.captions = [
           "{Caught me being|Feeling so|Just being} {naughty alone|playful in bed|horny tonight} {🙊💦|😈🔥|👀|✌️🐆}",
           "{Wait till 0:03 😳|Don't pause this|Did I show too much?|Deleting this in 10 mins} {😳💦|🤫🔥|😈}",
-          "{can't sleep in my dorm, who wants the full video? 🌙|my fingers weren't enough tonight 🙊🔥|am I your type? be honest 👀💦}",
+          "{can't sleep in my dorm, who wants the full video? 🌙|my camera roll is dangerous tonight 🙊🔥|am I your type? be honest 👀💦}",
           "{My camera roll is dangerous|Too risky for X?|Should I post part 2?} {🙊|😈|🔥|👇}"
         ];
         state.replies = [
-          "{Full 3 min uncut video|Watch me finish without censor|The rest of this clip is too wet for X} right here 👇🔞 {{LINK}}",
+          "{Full 3 min uncut video|Watch what happened next without censor|The rest of this clip is too spicy for X} right here 👇🔞 {{LINK}}",
           "{Couldn't post the full 2 min video here}, watch the uncut version free on my VIP page 👉 {{LINK}} 🔥"
         ];
         state.targets = ["#thirsttrap", "#nsfwtwt", "#egirl"];
@@ -720,7 +721,7 @@ function renderAdminHTML() {
     }
 
     async function instantCloudRefill(niche) {
-      showBanner('☁️ Fetching 30+ fresh amateur trap MP4 videos from RedGifs Cloud API...');
+      showBanner('☁️ Fetching 30+ No-Blur Teaser MP4 videos from RedGifs Cloud API...');
       try {
         const data = await apiCall('cloud_scrape', { niche });
         if (Array.isArray(data.urls) && data.urls.length) {
@@ -819,9 +820,12 @@ function renderAdminHTML() {
       container.innerHTML = logs.slice(0, 15).map(item => {
         const isHijack = (item.type || '').includes('HIJACK');
         const isPod = (item.type || '').includes('POD');
-        const tagClass = isHijack
-          ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-          : (isPod ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40');
+        const isAlert = (item.type || '').includes('LOCKED');
+        const tagClass = isAlert
+          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+          : (isHijack
+            ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+            : (isPod ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'));
         const tStr = item.time ? new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
         return \`
