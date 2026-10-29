@@ -1,15 +1,6 @@
 {
   "accounts": [
     {
-      "username": "@Marinasanq7ejm",
-      "auth_token": "39760f40e9a813dd8872bc73b4bcb65bd81f934e",
-      "ct0": "e337ea3bae66cc72c09e0d93aca9ba3a7170d9f968d5434a8db8a32fe69a9971baf33c9980fd2cff7e5752f62ad3ab1fc9f76a02035d24b06756ae0591c2e08c9a7073fb6abe7036d293142402ed97d3",
-      "proxy": "",
-      "status": "paused",
-      "lastRunAt": "2026-10-29T11:39:26.845Z",
-      "lastStatus": null
-    },
-    {
       "username": "@sophieclicks0",
       "auth_token": "ba829d33d505226fd63b9ed1f1cfe18a3c64c99b",
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
@@ -26,6 +17,15 @@
       "status": "active",
       "lastRunAt": "2026-10-29T11:16:36.773Z",
       "lastStatus": "✅ Active & Posting Media"
+    },
+    {
+      "username": "@Chloedaily0",
+      "auth_token": "76d5c58b4c1199d8fb590126449153bb1410bc16",
+      "ct0": "95dee312b51979d567bfd713522e9994c849a4fe7baa7b1f3a0cca4bb2c611ef0810d708a7aeb7131a9f1026e84c779d263883dfa9c8df959cb68503e146f71970e67b5d5aaab1fdc542899ac76c64ef",
+      "proxy": "",
+      "status": "active",
+      "lastRunAt": null,
+      "lastStatus": null
     }
   ],
   "images": [
@@ -163,5 +163,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 2
   },
-  "updatedAt": "2026-10-29T16:24:28.380Z"
+  "updatedAt": "2026-10-29T16:42:59.517Z"
 }
