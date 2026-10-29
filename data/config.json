@@ -5,7 +5,7 @@
       "auth_token": "39760f40e9a813dd8872bc73b4bcb65bd81f934e",
       "ct0": "e337ea3bae66cc72c09e0d93aca9ba3a7170d9f968d5434a8db8a32fe69a9971baf33c9980fd2cff7e5752f62ad3ab1fc9f76a02035d24b06756ae0591c2e08c9a7073fb6abe7036d293142402ed97d3",
       "proxy": "",
-      "status": "active"
+      "status": "paused"
     },
     {
       "username": "@sophieclicks0",
@@ -19,7 +19,7 @@
       "auth_token": "d85a98d39ab207aae4976b959edaea27db5bcd29",
       "ct0": "3b94c1920f4513d0ea502218bd9225ad1ebd2a4912701ebde3e6b9e1b2c3914ece3986f84dbe75c58a0e87947902aaff045528dd79951bb82f8c0726663895f9ed15d8e1cf2ef7b514042b287c03d8e3",
       "proxy": "",
-      "status": "active"
+      "status": "paused"
     }
   ],
   "images": [
@@ -55,5 +55,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-29T10:00:30.713Z"
+  "updatedAt": "2026-10-29T10:03:54.712Z"
 }
