@@ -19,15 +19,6 @@
       "lastStatus": "✅ 1 Card + 0 Viral Hijacks"
     },
     {
-      "username": "@Spicydesimodels",
-      "auth_token": "45b178a6c7c5f4124b0d6c856cd18e24eeab9f41",
-      "ct0": "c40ccb3c0b144b50c0adf3d049ab52ccba603d5ce5f5870beaecd916dbb9686a2ceb8b478f7a37f20d586abbf418e7cd04ddfdd3797fda48be6957cfbdcf22b0c7d8a01587371f8e25173d88f67df13b",
-      "proxy": "",
-      "status": "active",
-      "lastRunAt": "2026-10-30T05:54:00.762Z",
-      "lastStatus": "⚠️ Error: locator.waitFor: Timeout 20000"
-    },
-    {
       "username": "@chloedaily0",
       "auth_token": "3ab8b157404b6e800c4dcbb9b78dfd23506647d7",
       "ct0": "412fc1707d9a90e-fad3d2a6ad34a0a17f596ffd444351655f2b9ae8358e5f41fe169208f4660211a8fa61e3f65af71e0ec010443d25a3d4dc110bcf9fb0328692904c61747b0ffa630811ad7796dd3c9",
@@ -35,6 +26,15 @@
       "status": "active",
       "lastRunAt": "2026-10-30T05:51:41.305Z",
       "lastStatus": "✅ 1 Card + 0 Viral Hijacks"
+    },
+    {
+      "username": "@Spicydesimodels",
+      "auth_token": "757a44a9cbb175105abdf4e76c4f95e2c3f5df8a",
+      "ct0": "e99b969ab45ed24f5e039f3e19b4d03289577a65b9b042386c75d243f2028e24a3a364d7b7f3baa7b0ff7f7062257a46b2386ee09065cd3ea3ab6738311041aad764545198511100ef66d86fec4f41c6",
+      "proxy": "",
+      "status": "active",
+      "lastRunAt": "2026-10-30T05:54:00.762Z",
+      "lastStatus": "⚠️ Error: locator.waitFor: Timeout 20000"
     }
   ],
   "images": [
@@ -417,5 +417,5 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 2
   },
-  "updatedAt": "2026-10-30T05:49:42.469Z"
+  "updatedAt": "2026-10-30T06:09:37.430Z"
 }
