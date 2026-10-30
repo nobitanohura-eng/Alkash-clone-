@@ -6,7 +6,7 @@
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-30T18:32:56.052Z",
+      "lastRunAt": "2026-10-30T19:03:02.968Z",
       "lastStatus": "✅ 📊 Poll + 2 Likes/Replies",
       "postMode": "poll"
     },
@@ -373,7 +373,12 @@
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FHardAdorableArmedcrab-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FRemoteExtrovertedHorsefly-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSeparateSmallAxisdeer-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
-    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSnowScalyRhodesianridgeback-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg"
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSnowScalyRhodesianridgeback-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FThoseBrokenAplomadofalcon-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FProfuseExaltedFerret-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FRuralTruePrimate-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFlawedBackCockroach-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FImmaterialOptimalAzurevasesponge-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -407,6 +412,27 @@
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-10-30T19:04:07.183Z",
+      "account": "@sophieclicks0",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/sophiamlrs/status/2116238455181353473",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-10-30T19:03:47.395Z",
+      "account": "@sophieclicks0",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Annabntti/status/2116206874219434067",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-10-30T19:03:25.634Z",
+      "account": "@sophieclicks0",
+      "type": "📊 TEXT_POLL_POST",
+      "targetUrl": "https://x.com/sophieclicks0/status/2116244542634811811",
+      "detail": "Posted Vertical List Poll (No Link)"
+    },
     {
       "time": "2026-10-30T18:34:04.494Z",
       "account": "@sophieclicks0",
