@@ -3,8 +3,8 @@ name: AlcashX Cloud Twitter Bot
 on:
   workflow_dispatch:
   schedule:
-    # Runs automatically every 2 hours (and backup trigger on odd hours so GitHub never skips!)
-    - cron: '5 */2 * * *'
+    # Runs every 3 hours (Safe interval for 1 account to avoid rate-limit bans)
+    - cron: '10 */3 * * *'
 
 permissions:
   contents: write
@@ -21,9 +21,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Cloudflare WARP (Mask Datacenter IP - Free Ban Protection)
-        uses: ouraigua/warp-action@v1
+      - name: Setup Official Cloudflare WARP IP Masking (Zero-Cost Ban Protection)
         continue-on-error: true
+        run: |
+          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+          sudo apt-get update && sudo apt-get install -y cloudflare-warp
+          sudo warp-cli --accept-tos registration new || true
+          sudo warp-cli --accept-tos mode warp || true
+          sudo warp-cli --accept-tos connect || true
+          sleep 3
+          curl -s https://www.cloudflare.com/cdn-cgi/trace | grep warp || true
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
@@ -36,7 +44,7 @@ jobs:
           npm install nodemailer --no-save
           npx playwright install --with-deps chromium
 
-      - name: Harvest Fresh SafeSearch Blurred Model Cards
+      - name: Harvest Fresh SafeSearch Blurred Model Cards & Viral Polls
         continue-on-error: true
         run: node bot/scraper.js
 
@@ -59,4 +67,4 @@ jobs:
           git reset --hard origin/main
           cp /tmp/latest_config.json data/config.json
           git add data/config.json
-          git diff --staged --quiet || (git commit -m "📊 Auto-sync v10.0 Modes, Threads & Activity Logs" && git push origin main)
+          git diff --staged --quiet || (git commit -m "📊 Auto-sync v10.0 Modes, Polls & Activity Logs" && git push origin main)
