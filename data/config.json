@@ -24,8 +24,8 @@
       "ct0": "412fc1707d9a90e-fad3d2a6ad34a0a17f596ffd444351655f2b9ae8358e5f41fe169208f4660211a8fa61e3f65af71e0ec010443d25a3d4dc110bcf9fb0328692904c61747b0ffa630811ad7796dd3c9",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-30T05:51:41.305Z",
-      "lastStatus": "✅ 1 Card + 0 Viral Hijacks"
+      "lastRunAt": "2026-10-30T12:44:28.039Z",
+      "lastStatus": "⚠️ Error: locator.waitFor: Timeout 20000"
     },
     {
       "username": "@Spicydesimodels",
@@ -33,8 +33,8 @@
       "ct0": "e99b969ab45ed24f5e039f3e19b4d03289577a65b9b042386c75d243f2028e24a3a364d7b7f3baa7b0ff7f7062257a46b2386ee09065cd3ea3ab6738311041aad764545198511100ef66d86fec4f41c6",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-30T05:54:00.762Z",
-      "lastStatus": "⚠️ Error: locator.waitFor: Timeout 20000"
+      "lastRunAt": "2026-10-30T12:44:59.598Z",
+      "lastStatus": "✅ 1 Card + 0 Viral Hijacks"
     }
   ],
   "images": [
@@ -76,8 +76,6 @@
     "#egirl"
   ],
   "mediaQueue": [
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309757128_817.jpg#noblur",
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309753308_60.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309720862_537.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309711716_800.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309699439_567.jpg#noblur",
@@ -264,7 +262,25 @@
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FOptimisticActualEastrussiancoursinghounds-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FBestVengefulLeech-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FMoralVioletredHammerheadshark-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
-    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSilkyEssentialSandpiper-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg"
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSilkyEssentialSandpiper-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FWoozyTalkativeHarborseal-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFuzzyHarmfulUromastyxspinipes-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FLimpSpiritedIberianmidwifetoad-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDroopyChocolateHoneybee-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FImprobableMagnificentSnowgeese-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSecretAuthorizedEyas-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDefiniteVoluminousKentrosaurus-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FRubberyEminentSwan-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FLeftHappygoluckyAnnashummingbird-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FThoseBrokenAplomadofalcon-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSizzlingDistantIslandcanary-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFancyGranularLeonberger-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FZanyFineSow-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FTrustworthyDiligentXenurusunicinctus-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FVibrantAdolescentImago-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FAdventurousShinyAustraliankestrel-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FCostlyTrivialPolyp-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FAwfulRightAxolotl-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -291,7 +307,9 @@
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309851972_77.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309824983_168.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309810135_485.jpg#noblur",
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309785402_86.jpg#noblur"
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309785402_86.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309757128_817.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309753308_60.jpg#noblur"
   ],
   "harvestedUsers": [],
   "activityLog": [
