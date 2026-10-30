@@ -451,7 +451,7 @@
     "crossAccountLike": true,
     "crossAccountRetweet": true,
     "crossAccountBookmark": false,
-    "maxAccountsPerRun": 2
+    "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-30T06:09:37.430Z"
+  "updatedAt": "2026-10-30T14:23:15.613Z"
 }
