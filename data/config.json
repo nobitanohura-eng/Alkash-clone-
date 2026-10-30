@@ -6,7 +6,7 @@
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-30T16:18:37.073Z",
+      "lastRunAt": "2026-10-30T16:32:43.183Z",
       "lastStatus": "✅ 📊 Poll + 2 Likes/Replies",
       "postMode": "poll"
     },
@@ -311,7 +311,17 @@
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDrabVillainousSwan-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FRemoteExtrovertedHorsefly-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FMotionlessScholarlyNorthernpike-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
-    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FHeavyWryConch-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg"
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FHeavyWryConch-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FImprobableMagnificentSnowgeese-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSlushyInsubstantialLimpet-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FProbablePinkThrush-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FTanBestMarten-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FNeatElaborateMice-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FOfficialMedicalPrairiedog-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FExcitableAwareBubblefish-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FGrimyInsistentAmericanratsnake-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSnowScalyRhodesianridgeback-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FEllipticalAgitatedMontanoceratops-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -345,6 +355,27 @@
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-10-30T16:33:50.083Z",
+      "account": "@sophieclicks0",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/sisislvtty/status/2116157006642102547",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-10-30T16:33:29.261Z",
+      "account": "@sophieclicks0",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Lunasqde/status/2116173527690932705",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-10-30T16:33:06.671Z",
+      "account": "@sophieclicks0",
+      "type": "📊 TEXT_POLL_POST",
+      "targetUrl": "https://x.com/sophieclicks0/status/2116206720141930609",
+      "detail": "Posted Vertical List Poll (No Link)"
+    },
     {
       "time": "2026-10-30T16:19:44.026Z",
       "account": "@sophieclicks0",
