@@ -1,11 +1,10 @@
-
-  /**
- * File: bot/run.js (AlcashX Cloud Pro v10.0 — Per-Account Mode + Zero-Link Home Feed Hijacker + Multi-Threads)
- * Fixes & Upgrades:
- *  1. Respects Per-Account Post Mode from Dashboard: 'poll' (100% Zero-Link List Poll), 'image' (SafeSearch Card), or 'hybrid'
- *  2. 100% WORKING Like & Comment on Others' Tweets: Interacts directly on /home feed & seed profiles via Reply Modal (Bypasses X /search login blocks!)
- *  3. STRICT ZERO-LINK POLICY in Replies/Comments & Poll Mode: Never posts links in comments so accounts stay 100% safe from spam bans!
- *  4. Multi-Account Meta Threads Support: Loops through all active config.threadsAccounts
+/**
+ * File: bot/run.js (AlcashX Cloud Pro v11.0 — Self-Reply Funnel + Cooldown Ban-Guard + Multi-Threads)
+ * Upgrades in v11.0:
+ *  1. AUTO SELF-REPLY FUNNEL: After posting a 0-link Poll, the bot replies to its own tweet ("If you voted Yes, check my Pinned Post 🙊") to drive massive Bio/Pinned link clicks with 0% ban risk!
+ *  2. SMART COOLDOWN GUARD: Protects your account if only 1 account is active (enforces minimum 85-minute gap between posts on the same account).
+ *  3. 100% WORKING Like & Comment on /home feed & seed profiles via Reply Modal (Zero links in replies).
+ *  4. Multi-Account Meta Threads Auto-Poster included.
  */
 
 import fs from 'fs';
@@ -14,19 +13,26 @@ import { chromium } from 'playwright';
 
 const CLOAKER_BASE_URL = process.env.CLOAKER_URL || 'https://fan-page-orpin-mu.vercel.app';
 
-// Default Vertical List Polls (100% Zero Links — Pure Engagement!)
+// High-Viral Vertical List Polls (100% Zero Links — Pure Algorithm Bait!)
 const DEFAULT_VERTICAL_POLLS = [
-  `Would you kiss me even if I were {38|42} years old?\n\n︎\n◯ Yes\n︎\n︎\n◯ No\n︎\n︎\n◯ Age is just a number ❤️`,
-  `Be honest... what's the first thing you notice about a girl?\n\n︎\n◯ Eyes & Smile\n︎\n︎\n◯ Curves & Figure 👀\n︎\n︎\n◯ Vibe & Voice`,
-  `If I texted you "I can't sleep, come over" at 2 AM, what are you doing?\n\n︎\n◯ On my way in 5 mins 🚗\n︎\n︎\n◯ Asking for a selfie first 🙊\n︎\n︎\n◯ Staying asleep`,
-  `Sach batana... late night chat ke liye kaunsi vibe best hai?\n\n︎\n◯ Long drive & music 🌙\n︎\n︎\n◯ Room lock & chill 🔒\n︎\n︎\n◯ Video call 📱`
+  `Would you kiss me even if I were {38|42|44} years old?\n\n︎\n◯ Yes, without hesitation\n︎\n︎\n◯ No, too old\n︎\n︎\n◯ Depends how you look (check my profile 👀)`,
+  `If we were locked in my bedroom for 24 hours, what are we doing first?\n\n︎\n◯ Watching movies\n︎\n︎\n◯ Testing the bed frame 🙊\n︎\n︎\n◯ Show me how you look first`,
+  `Be honest... does a girl making the first move at 2 AM turn you on?\n\n︎\n◯ 100% yes 🔥\n︎\n︎\n◯ No, I prefer chasing\n︎\n︎\n◯ DM me and find out 👀`,
+  `If I texted you "I can't sleep, come over" right now, what's your move?\n\n︎\n◯ On my way in 5 mins 🚗\n︎\n︎\n◯ Asking for a preview clip first 🙊\n︎\n︎\n◯ Staying asleep`,
+  `Sach batana... agar pados wali {bhabhi|girl} raat ko akele room me bulaye toh pehla move kya hoga?\n\n︎\n◯ Darwaza andar se lock 🔒\n︎\n︎\n◯ Direct kiss 🙈\n︎\n︎\n◯ Pehle bio wala video dekhunga 👀`
+];
+
+// Self-Reply hooks posted underneath our OWN Poll to funnel viewers to our Bio / Pinned Link (Zero URLs = 0% Ban!)
+const SELF_REPLY_FUNNEL_HOOKS = [
+  '{If you voted Option 1, please don’t open my Pinned Post in public 🙊🔞|Wait till you see the uncut clip I just pinned on my profile 👀🔥|Replying to everyone who votes! Also unlocked my private folder in my bio for the next 10 mins 🤫}',
+  '{Since everyone keeps asking in DMs... the full uncensored video is in my bio link right now 👇🔞|Be honest in the replies 👀 and check my Pinned Post before I delete it 🙊}'
 ];
 
 // 100% ZERO-LINK Teasing Comments for Replying on Other People's Tweets
 const ZERO_LINK_OUTREACH_COMMENTS = [
-  '{omg this is literally my mood right now 😳🔥|wait till you see what I just posted on my profile 🙊|i can’t sleep either, who is still awake? 🌙}',
-  '{be honest, would you say hi back if I DMed you? 👀❤️|rate my latest post on my profile? be honest 🙈🔥|literally me every single night lol 😭✨}',
-  '{who else is scrolling in bed wide awake right now? 👀🌙|stoppp this is too real 😂🔥|check my latest poll on my profile and vote honestly 👀}'
+  '{omg this is literally my mood right now 😳🔥|wait till you see what I just pinned on my profile 🙊|i can’t sleep either, who is still awake? 🌙}',
+  '{be honest, would you say hi back if I DMed you? 👀❤️|rate the latest post on my profile? be honest 🙈🔥|check the poll on my profile and vote honestly 👀}',
+  '{who else is scrolling in bed wide awake right now? 👀🌙|stoppp this is too real 😂🔥|don’t check my profile if you’re in public rn 🤫}'
 ];
 
 const VIRAL_SEED_PROFILES = [
@@ -86,7 +92,6 @@ async function typeIntoEditor(page, editorLocator, text, waitAfterMs = 2500) {
   await sleep(400);
   await editorLocator.fill(text);
   await sleep(500);
-  // Real keystroke wakes up X's React state so Post/Reply button activates!
   await page.keyboard.press('End').catch(() => {});
   await page.keyboard.type(' ').catch(() => {});
   await sleep(waitAfterMs);
@@ -129,13 +134,12 @@ async function publishTweetSafely(
 }
 
 // ============================================================================
-// MULTI-ACCOUNT META THREADS AUTO-POSTER (Supports Unlimited Threads Accounts)
+// MULTI-ACCOUNT META THREADS AUTO-POSTER
 // ============================================================================
 async function runMultiAccountThreads(config, pollsPool) {
   const threadsList = Array.isArray(config.threadsAccounts) ? config.threadsAccounts : [];
   const activeThreads = threadsList.filter((t) => t.status === 'active' && t.accessToken && t.userId);
 
-  // Also check env secret fallback if user added single token in GitHub Secrets
   if (activeThreads.length === 0 && process.env.THREADS_ACCESS_TOKEN) {
     activeThreads.push({
       username: '@Threads_Env',
@@ -183,6 +187,42 @@ async function runMultiAccountThreads(config, pollsPool) {
 }
 
 // ============================================================================
+// NEW v11.0: AUTO SELF-REPLY FUNNEL UNDER OWN POLL TWEET
+// ============================================================================
+async function postSelfReplyFunnelOnOwnPoll(page, ownTweetUrl, acc, config) {
+  if (!ownTweetUrl) return;
+  try {
+    console.log(`🎯 Posting Self-Reply Funnel under our own Poll: ${ownTweetUrl}`);
+    await page.goto(ownTweetUrl, { waitUntil: 'domcontentloaded', timeout: 35000 });
+    await page.waitForSelector('article[data-testid="tweet"]', { timeout: 12000 }).catch(() => {});
+    await randomSleep(2, 4);
+
+    const mainTweet = page.locator('article[data-testid="tweet"]').first();
+    const replyIcon = mainTweet.locator('[data-testid="reply"]').first();
+    if (await replyIcon.isVisible().catch(() => false)) {
+      await replyIcon.click({ force: true }).catch(() => {});
+      await sleep(2000);
+    }
+
+    const replyEditor = page.locator('[data-testid="tweetTextarea_0"]').first();
+    if (await replyEditor.isVisible().catch(() => false)) {
+      const funnelText = spin(pickRandom(SELF_REPLY_FUNNEL_HOOKS));
+      await typeIntoEditor(page, replyEditor, funnelText, 2000);
+      await publishTweetSafely(page, '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]');
+      console.log(`🔥 Self-Reply Funnel Published under ${ownTweetUrl}!`);
+      logActivity(config, {
+        account: acc.username,
+        type: '🎯 SELF_REPLY_FUNNEL',
+        targetUrl: ownTweetUrl,
+        detail: `Added Bio/Pinned funnel reply under Poll`
+      });
+    }
+  } catch (e) {
+    console.log('⚠️ Self-reply funnel skip:', e.message);
+  }
+}
+
+// ============================================================================
 // 100% WORKING HOME-FEED & SEED PROFILE LIKE + ZERO-LINK COMMENT ENGINE
 // ============================================================================
 async function executeLikesAndCommentsOnFeed(page, acc, cleanHandle, config) {
@@ -192,7 +232,6 @@ async function executeLikesAndCommentsOnFeed(page, acc, cleanHandle, config) {
     .filter((r) => r.length > 4);
   const commentPool = customReplies.length > 0 ? customReplies : ZERO_LINK_OUTREACH_COMMENTS;
 
-  // Source 1: Account's Own "For You" Home Feed (Never blocked by X Search filters!)
   const feedSources = ['https://x.com/home', pickRandom(VIRAL_SEED_PROFILES)];
 
   for (const sourceUrl of feedSources) {
@@ -203,12 +242,10 @@ async function executeLikesAndCommentsOnFeed(page, acc, cleanHandle, config) {
       await page.goto(sourceUrl, { waitUntil: 'domcontentloaded', timeout: 40000 });
       await sleep(4000);
 
-      // Dismiss any popups
       await page.keyboard.press('Escape').catch(() => {});
       await page.mouse.wheel(0, 700).catch(() => {});
       await sleep(2500);
 
-      // Extract direct status URLs from rendered tweet cards
       const foundUrls = await page
         .evaluate((own) => {
           const articles = Array.from(document.querySelectorAll('article[data-testid="tweet"]'));
@@ -229,14 +266,11 @@ async function executeLikesAndCommentsOnFeed(page, acc, cleanHandle, config) {
         }, cleanHandle)
         .catch(() => []);
 
-      console.log(`📡 Found ${foundUrls.length} active tweets on ${sourceUrl}`);
-
       for (const targetTweetUrl of foundUrls.slice(0, 4)) {
         if (interactedUrls.length >= 2) break;
         if (interactedUrls.includes(targetTweetUrl)) continue;
 
         try {
-          console.log(`⚡ Interacting with Tweet: ${targetTweetUrl}`);
           await page.goto(targetTweetUrl, { waitUntil: 'domcontentloaded', timeout: 35000 });
           await page.waitForSelector('article[data-testid="tweet"]', { timeout: 12000 }).catch(() => {});
           await randomSleep(3, 5);
@@ -248,11 +282,10 @@ async function executeLikesAndCommentsOnFeed(page, acc, cleanHandle, config) {
           const likeBtn = mainTweet.locator('[data-testid="like"]').first();
           if (await likeBtn.isVisible().catch(() => false)) {
             await likeBtn.click({ force: true }).catch(() => {});
-            console.log(`❤️ Liked Tweet: ${targetTweetUrl}`);
             await sleep(1500);
           }
 
-          // 2. CLICK REPLY ICON TO OPEN MODAL & POST ZERO-LINK COMMENT
+          // 2. CLICK REPLY ICON & POST ZERO-LINK COMMENT
           const replyIcon = mainTweet.locator('[data-testid="reply"]').first();
           if (await replyIcon.isVisible().catch(() => false)) {
             await replyIcon.click({ force: true }).catch(() => {});
@@ -270,7 +303,6 @@ async function executeLikesAndCommentsOnFeed(page, acc, cleanHandle, config) {
 
           replyEditor = page.locator('[data-testid="tweetTextarea_0"]').first();
           if (await replyEditor.isVisible().catch(() => false)) {
-            // Strictly strip any accidental URLs so 0 links are ever posted in comments!
             const cleanComment = spin(pickRandom(commentPool)).replace(/https?:\/\/\S+/g, '').trim();
             await typeIntoEditor(page, replyEditor, cleanComment, 2000);
 
@@ -308,7 +340,7 @@ async function sendEmailReport(config, runSummary) {
   const emailPass = process.env.EMAIL_PASS;
   const emailTo = process.env.EMAIL_TO || emailUser;
 
-  if (!emailUser || !emailPass) return;
+  if (!emailUser || !emailPass || runSummary.length === 0) return;
 
   try {
     const nodemailer = await import('nodemailer');
@@ -332,8 +364,8 @@ async function sendEmailReport(config, runSummary) {
 
     const htmlBody = `
       <div style="font-family:sans-serif;background:#0f172a;color:#f8fafc;padding:20px;border-radius:12px;">
-        <h2 style="color:#38bdf8;margin-top:0;">🚀 AlcashX Cloud Pro v10.0 — Automated Run Report</h2>
-        <p><b>Time:</b> ${new Date().toLocaleString()} | <b>X Accounts Run:</b> ${runSummary.length}</p>
+        <h2 style="color:#38bdf8;margin-top:0;">🚀 AlcashX Cloud Pro v11.0 — Automated Run Report</h2>
+        <p><b>Time:</b> ${new Date().toLocaleString()} | <b>X Accounts Processed:</b> ${runSummary.length}</p>
         <table style="width:100%;border-collapse:collapse;background:#1e293b;color:#e2e8f0;font-size:13px;">
           <thead>
             <tr style="background:#020617;color:#38bdf8;">
@@ -352,10 +384,9 @@ async function sendEmailReport(config, runSummary) {
     await transporter.sendMail({
       from: `"AlcashX AutoBot" <${emailUser.trim()}>`,
       to: emailTo.trim(),
-      subject: `✅ AlcashX v10.0 Report: ${runSummary.length} Account(s) Posted & Engaged`,
+      subject: `✅ AlcashX v11.0 Report: ${runSummary.length} Account(s) Posted & Engaged`,
       html: htmlBody
     });
-    console.log(`📧 Email Report sent to ${emailTo}!`);
   } catch (err) {
     console.log(`⚠️ Email warning: ${err.message}`);
   }
@@ -413,30 +444,36 @@ async function runBot() {
     return timeA - timeB;
   });
 
+  // Safe default: 1 account per run if fleet has <= 2 accounts, otherwise up to config setting
+  const safeDefaultMax = activeAccounts.length <= 2 ? 1 : 2;
   const maxPerRun = Math.min(
     sortedAccounts.length,
-    Math.max(1, parseInt(config.settings?.maxAccountsPerRun || 2, 10))
+    Math.max(1, parseInt(config.settings?.maxAccountsPerRun || safeDefaultMax, 10))
   );
   const accountsToRun = sortedAccounts.slice(0, maxPerRun);
-  const fleetBoostTargets = [];
   const runSummary = [];
 
-  console.log(
-    `🚀 AlcashX v10.0 Starting: Running ${accountsToRun.length} of ${activeAccounts.length} active X account(s)...`
-  );
-
   for (const acc of accountsToRun) {
-    // Determine exact mode for this specific account ('poll', 'image', or 'hybrid')
+    // SMART COOLDOWN BAN-GUARD: If only 1-2 accounts exist and this account ran < 80 mins ago via scheduled cron, let it rest!
+    const lastRunMs = acc.lastRunAt ? new Date(acc.lastRunAt).getTime() : 0;
+    const minsSinceLastRun = (Date.now() - lastRunMs) / 60000;
+    const isManualRun = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
+
+    if (!isManualRun && activeAccounts.length === 1 && minsSinceLastRun < 80) {
+      console.log(`🛡️ Ban-Guard Cooldown: ${acc.username} ran ${Math.round(minsSinceLastRun)}m ago. Skipping to protect single account!`);
+      continue;
+    }
+
     const assignedMode = acc.postMode || 'poll';
     const effectiveMode =
       assignedMode === 'hybrid'
-        ? Math.random() < 0.5
+        ? Math.random() < 0.65
           ? 'poll'
           : 'image'
         : assignedMode;
 
     console.log(`\n======================================================`);
-    console.log(`👤 ACCOUNT: ${acc.username} | ASSIGNED MODE: ${assignedMode.toUpperCase()} -> RUNNING: ${effectiveMode.toUpperCase()}`);
+    console.log(`👤 ACCOUNT: ${acc.username} | MODE: ${effectiveMode.toUpperCase()}`);
     console.log(`======================================================`);
 
     const masterAcc = config.accounts.find((x) => x.username === acc.username);
@@ -494,13 +531,11 @@ async function runBot() {
       const oneHashtag = pickRandom(hashtags.length ? hashtags : ['#latenight']);
 
       if (effectiveMode === 'poll') {
-        // MODE A: 100% ZERO-LINK VERTICAL LIST TEXT POLL
         const rawPoll = spin(pickRandom(config.polls)).replace(/https?:\/\/\S+/g, '').trim();
         const pollTweetText = `${rawPoll}\n\n${oneHashtag}`;
         console.log(`📊 Publishing Vertical Text Poll (Zero Links) on ${acc.username}...`);
         await typeIntoEditor(page, editor0, pollTweetText, 2500);
       } else {
-        // MODE B: SAFESEARCH IMAGE CARD MODE
         const mediaItem = config.mediaQueue.shift() || pickRandom(config.images);
         if (mediaItem) {
           usedSet.add(mediaItem);
@@ -540,13 +575,17 @@ async function runBot() {
         .catch(() => null);
 
       if (newestOwnTweetUrl) {
-        fleetBoostTargets.push({ url: newestOwnTweetUrl, author: acc.username });
         logActivity(config, {
           account: acc.username,
           type: effectiveMode === 'poll' ? '📊 TEXT_POLL_POST' : '🖼️ IMAGE_CARD_POST',
           targetUrl: newestOwnTweetUrl,
           detail: effectiveMode === 'poll' ? 'Posted Vertical List Poll (No Link)' : 'Posted SafeSearch Blurred Image Card'
         });
+
+        // NEW v11.0: If we posted a Poll, drop a Self-Reply underneath pointing to our Pinned Post / Bio!
+        if (effectiveMode === 'poll') {
+          await postSelfReplyFunnelOnOwnPoll(page, newestOwnTweetUrl, acc, config);
+        }
       }
 
       // STEP 2: LIKE & COMMENT ON OTHER PEOPLE'S POSTS (100% Zero-Link Home Feed Engine)
@@ -555,8 +594,8 @@ async function runBot() {
         hijackedList = await executeLikesAndCommentsOnFeed(page, acc, cleanHandle, config);
       }
 
-      const modeBadge = effectiveMode === 'poll' ? '📊 Poll' : '🖼️ Image';
-      const statusMsg = `✅ ${modeBadge} + ${hijackedList.length} Likes/Replies`;
+      const modeBadge = effectiveMode === 'poll' ? '📊 Poll + Self-Funnel' : '🖼️ Image Card';
+      const statusMsg = `✅ ${modeBadge} + ${hijackedList.length} Replies`;
       if (masterAcc) masterAcc.lastStatus = statusMsg;
 
       runSummary.push({
@@ -578,73 +617,8 @@ async function runBot() {
     await randomSleep(4, 7);
   }
 
-  // STEP 3: CROSS-ACCOUNT ENGAGEMENT POD
-  if (
-    fleetBoostTargets.length > 0 &&
-    (config.settings?.crossAccountLike !== false || config.settings?.crossAccountRetweet !== false)
-  ) {
-    console.log(`\n🔥 Step 3: Running Cross-Account Engagement Pod for ${fleetBoostTargets.length} post(s)...`);
-    for (const acc of activeAccounts) {
-      const targetsForAcc = fleetBoostTargets.filter((t) => t.author !== acc.username);
-      if (targetsForAcc.length === 0) continue;
-
-      const browser = await chromium.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-      });
-      const context = await browser.newContext({
-        userAgent:
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-        viewport: { width: 1280, height: 800 }
-      });
-      await context.addCookies([
-        { name: 'auth_token', value: acc.auth_token.trim(), domain: '.x.com', path: '/', httpOnly: true, secure: true },
-        { name: 'ct0', value: acc.ct0.trim(), domain: '.x.com', path: '/', secure: true }
-      ]);
-      const page = await context.newPage();
-
-      try {
-        for (const item of targetsForAcc) {
-          await page.goto(item.url, { waitUntil: 'domcontentloaded', timeout: 40000 });
-          await page.waitForSelector('article[data-testid="tweet"]', { timeout: 10000 }).catch(() => {});
-          await randomSleep(3, 5);
-
-          const likeBtn = page.locator('article[data-testid="tweet"] [data-testid="like"]').first();
-          if (await likeBtn.isVisible().catch(() => false)) {
-            await likeBtn.click({ force: true }).catch(() => {});
-            await sleep(1200);
-          }
-
-          if (config.settings?.crossAccountRetweet) {
-            const rtBtn = page.locator('article[data-testid="tweet"] [data-testid="retweet"]').first();
-            if (await rtBtn.isVisible().catch(() => false)) {
-              await rtBtn.click({ force: true }).catch(() => {});
-              await sleep(1200);
-              const confirmRt = page.locator('[data-testid="retweetConfirm"]').first();
-              if (await confirmRt.isVisible().catch(() => false)) {
-                await confirmRt.click({ force: true }).catch(() => {});
-              }
-              await sleep(1500);
-            }
-          }
-
-          logActivity(config, {
-            account: acc.username,
-            type: '⚡ POD_BOOST',
-            targetUrl: item.url,
-            detail: `Liked & Retweeted ${item.author}'s Post`
-          });
-        }
-      } catch (_) {
-      } finally {
-        await browser.close();
-      }
-    }
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-  }
-
   await sendEmailReport(config, runSummary);
-  console.log('\n🎉 AlcashX v10.0 Run Completed!');
+  console.log('\n🎉 AlcashX v11.0 Run Completed!');
 }
 
 runBot();
