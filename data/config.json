@@ -1,44 +1,14 @@
 {
   "accounts": [
     {
-      "username": "@sophieclicks0",
-      "auth_token": "ba829d33d505226fd63b9ed1f1cfe18a3c64c99b",
-      "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
+      "username": "@ChloexDorm21",
+      "auth_token": "153efe24b21f112a4d9e435110e148324724bc22",
+      "ct0": "962b5c5980d6893c420b2963e04e336f3a3a1a761ed0225a43a666eb8305dc6cda6c5a4fe2671d67419b137ef1daa487dc3e39a80cd62f7ae7a8c04727b7472fc8db384e7a81388836ac01e77b0d8c53",
+      "postMode": "poll",
       "proxy": "",
-      "status": "paused",
-      "lastRunAt": "2026-10-31T06:02:56.300Z",
-      "lastStatus": "✅ 📊 Poll + Self-Funnel + 2 Replies",
-      "postMode": "poll"
-    },
-    {
-      "username": "@Mariaclickam",
-      "auth_token": "d85a98d39ab207aae4976b959edaea27db5bcd29",
-      "ct0": "3b94c1920f4513d0ea502218bd9225ad1ebd2a4912701ebde3e6b9e1b2c3914ece3986f84dbe75c58a0e87947902aaff045528dd79951bb82f8c0726663895f9ed15d8e1cf2ef7b514042b287c03d8e3",
-      "proxy": "",
-      "status": "paused",
-      "lastRunAt": "2026-10-30T14:24:49.690Z",
-      "lastStatus": "✅ 1 Card + 0 Viral Hijacks",
-      "postMode": "poll"
-    },
-    {
-      "username": "@chloedaily0",
-      "auth_token": "3ab8b157404b6e800c4dcbb9b78dfd23506647d7",
-      "ct0": "412fc1707d9a90e-fad3d2a6ad34a0a17f596ffd444351655f2b9ae8358e5f41fe169208f4660211a8fa61e3f65af71e0ec010443d25a3d4dc110bcf9fb0328692904c61747b0ffa630811ad7796dd3c9",
-      "proxy": "",
-      "status": "paused",
-      "lastRunAt": "2026-10-30T12:44:28.039Z",
-      "lastStatus": "⚠️ Error: locator.waitFor: Timeout 20000",
-      "postMode": "poll"
-    },
-    {
-      "username": "@Spicydesimodels",
-      "auth_token": "757a44a9cbb175105abdf4e76c4f95e2c3f5df8a",
-      "ct0": "e99b969ab45ed24f5e039f3e19b4d03289577a65b9b042386c75d243f2028e24a3a364d7b7f3baa7b0ff7f7062257a46b2386ee09065cd3ea3ab6738311041aad764545198511100ef66d86fec4f41c6",
-      "proxy": "",
-      "status": "paused",
-      "lastRunAt": "2026-10-30T12:44:59.598Z",
-      "lastStatus": "✅ 1 Card + 0 Viral Hijacks",
-      "postMode": "poll"
+      "status": "active",
+      "lastRunAt": null,
+      "lastStatus": null
     }
   ],
   "images": [
@@ -943,7 +913,7 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-31T06:07:15.174Z",
+  "updatedAt": "2026-10-31T15:38:47.594Z",
   "threadsAccounts": [],
   "polls": [
     "Would you kiss me even if I were {38|42} years old?\n\n︎\n◯ Yes\n︎\n︎\n◯ No\n︎\n︎\n◯ Age is just a number ❤️",
