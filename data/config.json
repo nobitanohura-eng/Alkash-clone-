@@ -7,8 +7,8 @@
       "postMode": "poll",
       "proxy": "",
       "status": "active",
-      "lastRunAt": null,
-      "lastStatus": null
+      "lastRunAt": "2026-10-31T18:03:37.305Z",
+      "lastStatus": "✅ 📊 Poll + Self-Funnel + 2 Replies"
     }
   ],
   "images": [
@@ -483,6 +483,34 @@
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-10-31T18:04:55.106Z",
+      "account": "@ChloexDorm21",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Humasadaf07/status/2116584060726501576",
+      "detail": "Liked & commented: \"Watch what happened next without ce...\""
+    },
+    {
+      "time": "2026-10-31T18:04:36.431Z",
+      "account": "@ChloexDorm21",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Reyxxicl/status/2116588340967309621",
+      "detail": "Liked & commented: \"Watch what happened next without ce...\""
+    },
+    {
+      "time": "2026-10-31T18:04:14.048Z",
+      "account": "@ChloexDorm21",
+      "type": "🎯 SELF_REPLY_FUNNEL",
+      "targetUrl": "https://x.com/ChloexDorm21/status/2116591980272849387",
+      "detail": "Added Bio/Pinned funnel reply under Poll"
+    },
+    {
+      "time": "2026-10-31T18:03:59.885Z",
+      "account": "@ChloexDorm21",
+      "type": "📊 TEXT_POLL_POST",
+      "targetUrl": "https://x.com/ChloexDorm21/status/2116591980272849387",
+      "detail": "Posted Vertical List Poll (No Link)"
+    },
     {
       "time": "2026-10-31T06:04:27.772Z",
       "account": "@sophieclicks0",
