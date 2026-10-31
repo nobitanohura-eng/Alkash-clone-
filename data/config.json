@@ -5,7 +5,7 @@
       "auth_token": "ba829d33d505226fd63b9ed1f1cfe18a3c64c99b",
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
       "proxy": "",
-      "status": "active",
+      "status": "paused",
       "lastRunAt": "2026-10-31T06:02:56.300Z",
       "lastStatus": "✅ 📊 Poll + Self-Funnel + 2 Replies",
       "postMode": "poll"
@@ -914,7 +914,7 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-30T16:16:07.875Z",
+  "updatedAt": "2026-10-31T06:07:15.174Z",
   "threadsAccounts": [],
   "polls": [
     "Would you kiss me even if I were {38|42} years old?\n\n︎\n◯ Yes\n︎\n︎\n◯ No\n︎\n︎\n◯ Age is just a number ❤️",
