@@ -6,7 +6,7 @@
       "ct0": "660a9e64475c82d8e1068281f4e0eae244c96cc8f55b08fdb79f2012f5841e67b51ffc617aae0d240c310c0d1e9d9c61f7394e908a82967232cc9eab2c442282a0eec30073ba747a36652249244cc175",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-10-30T22:02:30.058Z",
+      "lastRunAt": "2026-10-31T00:02:46.330Z",
       "lastStatus": "✅ 📊 Poll + Self-Funnel + 2 Replies",
       "postMode": "poll"
     },
@@ -423,7 +423,9 @@
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FNuttyTenderBluegill-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FLavishRudeParakeet-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFamiliarBlushingGreatwhiteshark-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
-    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSeashellCourageousWidgeon-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg"
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FSeashellCourageousWidgeon-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDescriptiveStickyXantus-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FDazzlingDisfiguredWallaroo-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -457,6 +459,34 @@
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-10-31T00:04:19.232Z",
+      "account": "@sophieclicks0",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/putricpp/status/2116142523748130877",
+      "detail": "Liked & commented: \"Watch what happened next without ce...\""
+    },
+    {
+      "time": "2026-10-31T00:03:59.735Z",
+      "account": "@sophieclicks0",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Jadeexoxow_/status/2115966577938145380",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-10-31T00:03:36.052Z",
+      "account": "@sophieclicks0",
+      "type": "🎯 SELF_REPLY_FUNNEL",
+      "targetUrl": "https://x.com/sophieclicks0/status/2116289708569538779",
+      "detail": "Added Bio/Pinned funnel reply under Poll"
+    },
+    {
+      "time": "2026-10-31T00:03:21.887Z",
+      "account": "@sophieclicks0",
+      "type": "📊 TEXT_POLL_POST",
+      "targetUrl": "https://x.com/sophieclicks0/status/2116289708569538779",
+      "detail": "Posted Vertical List Poll (No Link)"
+    },
     {
       "time": "2026-10-30T22:03:49.936Z",
       "account": "@sophieclicks0",
