@@ -9,6 +9,16 @@
       "status": "active",
       "lastRunAt": "2026-10-31T18:03:37.305Z",
       "lastStatus": "✅ 📊 Poll + Self-Funnel + 2 Replies"
+    },
+    {
+      "username": "@priyasharma_vip",
+      "auth_token": "97d7d869a672d97fa451988705ad970c0c393a51",
+      "ct0": "6785ec10973a7245e60cf2645406f5f6ec94dbc62478eb8a9f06f80a731a6e2033beb617f347f72ea9c7be98e0363e1e88628831236ea838805d55a3c9cf1c3d6fecf82d2a235c8706218474d67a5a22",
+      "postMode": "poll",
+      "proxy": "",
+      "status": "active",
+      "lastRunAt": null,
+      "lastStatus": null
     }
   ],
   "images": [
@@ -941,7 +951,7 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-10-31T15:38:47.594Z",
+  "updatedAt": "2026-10-31T19:43:57.325Z",
   "threadsAccounts": [],
   "polls": [
     "Would you kiss me even if I were {38|42} years old?\n\n︎\n◯ Yes\n︎\n︎\n◯ No\n︎\n︎\n◯ Age is just a number ❤️",
