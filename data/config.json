@@ -17,7 +17,7 @@
       "postMode": "hybrid",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-11-01T12:03:07.688Z",
+      "lastRunAt": "2026-11-01T18:03:09.767Z",
       "lastStatus": "✅ 🖼️ Image Card + 2 Replies"
     }
   ],
@@ -60,7 +60,6 @@
     "#egirl"
   ],
   "mediaQueue": [
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309684488_357.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309670617_952.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309646028_573.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309629187_27.jpg#noblur",
@@ -458,7 +457,8 @@
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FZealousUnsightlyCaribou-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FOpulentInexperiencedStegosaurus-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FEnchantingIncredibleWildebeast-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
-    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FInterestingStudiousVervet-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg"
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FInterestingStudiousVervet-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFoolhardyDistinctHorsemouse-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -490,10 +490,32 @@
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309753308_60.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309720862_537.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309711716_800.jpg#noblur",
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309699439_567.jpg#noblur"
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309699439_567.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309684488_357.jpg#noblur"
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-11-01T18:04:28.877Z",
+      "account": "@priyasharma_vip",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Mad2zs/status/2116942508206780866",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-11-01T18:04:04.949Z",
+      "account": "@priyasharma_vip",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Clodqgl/status/2116943721782767919",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-11-01T18:03:39.230Z",
+      "account": "@priyasharma_vip",
+      "type": "🖼️ IMAGE_CARD_POST",
+      "targetUrl": "https://x.com/priyasharma_vip/status/2116863666389987746",
+      "detail": "Posted SafeSearch Blurred Image Card"
+    },
     {
       "time": "2026-11-01T13:16:06.192Z",
       "account": "@ChloexDorm21",
@@ -1176,29 +1198,6 @@
       "type": "⚡ POD_BOOST",
       "targetUrl": "https://x.com/sophieclicks0",
       "detail": "Liked & Retweeted @sophieclicks0's post"
-    },
-    {
-      "time": "2026-10-29T17:40:34.914Z",
-      "account": "@sophieclicks0",
-      "type": "⚡ POD_BOOST",
-      "targetUrl": "https://x.com/Mariaclickam",
-      "detail": "Liked & Retweeted @Mariaclickam's post"
-    },
-    {
-      "time": "2026-10-29T17:40:16.554Z",
-      "account": "@sophieclicks0",
-      "type": "🎬 MAIN_VIDEO_POST",
-      "targetUrl": "https://x.com/sophieclicks0",
-      "mediaUrl": "https://media.redgifs.com/ChartreuseHuskyTiger-mobile.mp4",
-      "detail": "Posted MP4 + Link Thread (Thread #1)"
-    },
-    {
-      "time": "2026-10-29T17:39:11.093Z",
-      "account": "@Mariaclickam",
-      "type": "🎬 MAIN_VIDEO_POST",
-      "targetUrl": "https://x.com/Mariaclickam",
-      "mediaUrl": "https://media.redgifs.com/BestVengefulLeech-mobile.mp4",
-      "detail": "Posted MP4 + Link Thread (Thread #1)"
     }
   ],
   "settings": {
