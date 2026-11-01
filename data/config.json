@@ -17,7 +17,7 @@
       "postMode": "poll",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-11-01T04:02:16.401Z",
+      "lastRunAt": "2026-11-01T06:02:41.269Z",
       "lastStatus": "✅ 📊 Poll + Self-Funnel + 2 Replies"
     }
   ],
@@ -493,6 +493,34 @@
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-11-01T06:04:02.784Z",
+      "account": "@priyasharma_vip",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/dirkhanasabymy/status/2116760752509915620",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-11-01T06:03:42.444Z",
+      "account": "@priyasharma_vip",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Mad2zs/status/2116763545098461618",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-11-01T06:03:19.929Z",
+      "account": "@priyasharma_vip",
+      "type": "🎯 SELF_REPLY_FUNNEL",
+      "targetUrl": "https://x.com/priyasharma_vip/status/2116772938451951721",
+      "detail": "Added Bio/Pinned funnel reply under Poll"
+    },
+    {
+      "time": "2026-11-01T06:03:05.860Z",
+      "account": "@priyasharma_vip",
+      "type": "📊 TEXT_POLL_POST",
+      "targetUrl": "https://x.com/priyasharma_vip/status/2116772938451951721",
+      "detail": "Posted Vertical List Poll (No Link)"
+    },
     {
       "time": "2026-11-01T05:54:46.624Z",
       "account": "@ChloexDorm21",
