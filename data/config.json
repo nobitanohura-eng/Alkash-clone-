@@ -17,7 +17,7 @@
       "postMode": "poll",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-11-01T00:02:54.775Z",
+      "lastRunAt": "2026-11-01T00:04:47.195Z",
       "lastStatus": "✅ 📊 Poll + Self-Funnel + 2 Replies"
     }
   ],
@@ -494,31 +494,31 @@
   "harvestedUsers": [],
   "activityLog": [
     {
-      "time": "2026-11-01T00:04:12.562Z",
+      "time": "2026-11-01T00:06:06.325Z",
       "account": "@priyasharma_vip",
       "type": "💬 LIKED_AND_REPLIED",
-      "targetUrl": "https://x.com/Ninamiiaaq9/status/2116678749554975018",
-      "detail": "Liked & commented: \"The rest of this clip is too spicy ...\""
+      "targetUrl": "https://x.com/carlaszc/status/2116671745348517954",
+      "detail": "Liked & commented: \"Watch what happened next without ce...\""
     },
     {
-      "time": "2026-11-01T00:03:50.963Z",
+      "time": "2026-11-01T00:05:45.364Z",
       "account": "@priyasharma_vip",
       "type": "💬 LIKED_AND_REPLIED",
-      "targetUrl": "https://x.com/amberferal_x/status/2116674528688345479",
+      "targetUrl": "https://x.com/Maddy22z/status/2116676788529369130",
       "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
     },
     {
-      "time": "2026-11-01T00:03:29.552Z",
+      "time": "2026-11-01T00:05:22.602Z",
       "account": "@priyasharma_vip",
       "type": "🎯 SELF_REPLY_FUNNEL",
-      "targetUrl": "https://x.com/priyasharma_vip/status/2116682396850598056",
+      "targetUrl": "https://x.com/priyasharma_vip/status/2116682874552569924",
       "detail": "Added Bio/Pinned funnel reply under Poll"
     },
     {
-      "time": "2026-11-01T00:03:17.016Z",
+      "time": "2026-11-01T00:05:10.778Z",
       "account": "@priyasharma_vip",
       "type": "📊 TEXT_POLL_POST",
-      "targetUrl": "https://x.com/priyasharma_vip/status/2116682396850598056",
+      "targetUrl": "https://x.com/priyasharma_vip/status/2116682874552569924",
       "detail": "Posted Vertical List Poll (No Link)"
     },
     {
