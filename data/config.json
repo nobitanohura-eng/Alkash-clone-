@@ -17,7 +17,7 @@
       "postMode": "hybrid",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-11-02T12:02:24.283Z",
+      "lastRunAt": "2026-11-02T21:42:36.494Z",
       "lastStatus": "✅ 🖼️ Image Card + 2 Replies"
     }
   ],
@@ -60,7 +60,6 @@
     "#egirl"
   ],
   "mediaQueue": [
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309646028_573.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309629187_27.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309564485_19.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309538240_546.jpg#noblur",
@@ -493,10 +492,32 @@
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309711716_800.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309699439_567.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309684488_357.jpg#noblur",
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309670617_952.jpg#noblur"
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309670617_952.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309646028_573.jpg#noblur"
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-11-02T21:43:54.573Z",
+      "account": "@priyasharma_vip",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Mirahyxc/status/2117364818785010134",
+      "detail": "Liked & commented: \"🔞 SafeSearch Unblurred Photo & Ful...\""
+    },
+    {
+      "time": "2026-11-02T21:43:30.139Z",
+      "account": "@priyasharma_vip",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/soniaht_/status/2117361668166738036",
+      "detail": "Liked & commented: \"Watch what happened next without ce...\""
+    },
+    {
+      "time": "2026-11-02T21:43:05.868Z",
+      "account": "@priyasharma_vip",
+      "type": "🖼️ IMAGE_CARD_POST",
+      "targetUrl": "https://x.com/priyasharma_vip/status/2116863666389987746",
+      "detail": "Posted SafeSearch Blurred Image Card"
+    },
     {
       "time": "2026-11-02T18:04:04.141Z",
       "account": "@ChloexDorm21",
@@ -1171,27 +1192,6 @@
     },
     {
       "time": "2026-10-30T17:32:40.406Z",
-      "account": "@sophieclicks0",
-      "type": "📊 TEXT_POLL_POST",
-      "targetUrl": "https://x.com/sophieclicks0/status/2116214303489458598",
-      "detail": "Posted Vertical List Poll (No Link)"
-    },
-    {
-      "time": "2026-10-30T17:04:00.064Z",
-      "account": "@sophieclicks0",
-      "type": "💬 LIKED_AND_REPLIED",
-      "targetUrl": "https://x.com/xisabellejadex/status/2116209262904971488",
-      "detail": "Liked & commented: \"🔞 SafeSearch Unblurred Photo & Ful...\""
-    },
-    {
-      "time": "2026-10-30T17:03:38.801Z",
-      "account": "@sophieclicks0",
-      "type": "💬 LIKED_AND_REPLIED",
-      "targetUrl": "https://x.com/Lamantuson/status/2116202922895692285",
-      "detail": "Liked & commented: \"Watch what happened next without ce...\""
-    },
-    {
-      "time": "2026-10-30T17:03:16.048Z",
       "account": "@sophieclicks0",
       "type": "📊 TEXT_POLL_POST",
       "targetUrl": "https://x.com/sophieclicks0/status/2116214303489458598",
