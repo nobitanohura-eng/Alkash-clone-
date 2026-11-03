@@ -7,7 +7,7 @@
       "postMode": "hybrid",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-11-03T17:00:47.600Z",
+      "lastRunAt": "2026-11-03T23:15:56.345Z",
       "lastStatus": "✅ 📊 Poll + Self-Funnel + 2 Replies"
     },
     {
@@ -458,7 +458,8 @@
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FPolishedWeeklyGar-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=4&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FCleverAntiqueSandpiper-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FOptimisticHighlevelSiamang-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
-    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FAbsoluteSilverDrever-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg"
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FAbsoluteSilverDrever-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
+    "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FApprehensiveClosedBluebird-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg"
   ],
   "usedMedia": [
     "https://media.redgifs.com/MatureBonyAmazondolphin-mobile.mp4",
@@ -500,6 +501,27 @@
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-11-03T23:17:35.469Z",
+      "account": "@ChloexDorm21",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/soniaht_/status/2117730556494430580",
+      "detail": "Liked & commented: \"🔞 SafeSearch Unblurred Photo & Ful...\""
+    },
+    {
+      "time": "2026-11-03T23:17:13.992Z",
+      "account": "@ChloexDorm21",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/Mad2zs/status/2117746046201909741",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-11-03T23:16:34.360Z",
+      "account": "@ChloexDorm21",
+      "type": "📊 TEXT_POLL_POST",
+      "targetUrl": "https://x.com/ChloexDorm21/status/2116770611905351920",
+      "detail": "Posted Vertical List Poll (No Link)"
+    },
     {
       "time": "2026-11-03T18:05:10.690Z",
       "account": "@priyasharma_vip",
@@ -1178,27 +1200,6 @@
       "type": "💬 LIKED_AND_REPLIED",
       "targetUrl": "https://x.com/VesperInBlue/status/2116148082870243829",
       "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
-    },
-    {
-      "time": "2026-10-30T22:03:29.994Z",
-      "account": "@sophieclicks0",
-      "type": "💬 LIKED_AND_REPLIED",
-      "targetUrl": "https://x.com/Lunaq9id/status/2115813576719925309",
-      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
-    },
-    {
-      "time": "2026-10-30T22:03:06.952Z",
-      "account": "@sophieclicks0",
-      "type": "🎯 SELF_REPLY_FUNNEL",
-      "targetUrl": "https://x.com/sophieclicks0/status/2116289708569538779",
-      "detail": "Added Bio/Pinned funnel reply under Poll"
-    },
-    {
-      "time": "2026-10-30T22:02:52.971Z",
-      "account": "@sophieclicks0",
-      "type": "📊 TEXT_POLL_POST",
-      "targetUrl": "https://x.com/sophieclicks0/status/2116289708569538779",
-      "detail": "Posted Vertical List Poll (No Link)"
     }
   ],
   "settings": {
