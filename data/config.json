@@ -17,7 +17,7 @@
       "postMode": "hybrid",
       "proxy": "",
       "status": "active",
-      "lastRunAt": "2026-11-03T12:02:24.423Z",
+      "lastRunAt": "2026-11-03T18:03:51.222Z",
       "lastStatus": "✅ 🖼️ Image Card + 2 Replies"
     }
   ],
@@ -60,7 +60,6 @@
     "#egirl"
   ],
   "mediaQueue": [
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309538240_546.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793308781939_542.jpg#noblur",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FFlusteredMuffledMice-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
     "https://wsrv.nl/?url=https%3A%2F%2Fmedia.redgifs.com%2FForestgreenJointNightjar-poster.jpg&w=960&h=540&fit=cover&a=attention&blur=6&con=12&bri=-5&output=jpg",
@@ -496,10 +495,32 @@
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309670617_952.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309646028_573.jpg#noblur",
     "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309629187_27.jpg#noblur",
-    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309564485_19.jpg#noblur"
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309564485_19.jpg#noblur",
+    "https://raw.githubusercontent.com/nobitanohura-eng/Alkash-clone-/main/public/uploads/model_1793309538240_546.jpg#noblur"
   ],
   "harvestedUsers": [],
   "activityLog": [
+    {
+      "time": "2026-11-03T18:05:10.690Z",
+      "account": "@priyasharma_vip",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/miafbdy/status/2117672507704807811",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-11-03T18:04:49.136Z",
+      "account": "@priyasharma_vip",
+      "type": "💬 LIKED_AND_REPLIED",
+      "targetUrl": "https://x.com/lunaxyzl4fs/status/2117637450155864501",
+      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
+    },
+    {
+      "time": "2026-11-03T18:04:22.517Z",
+      "account": "@priyasharma_vip",
+      "type": "🖼️ IMAGE_CARD_POST",
+      "targetUrl": "https://x.com/priyasharma_vip/status/2116863666389987746",
+      "detail": "Posted SafeSearch Blurred Image Card"
+    },
     {
       "time": "2026-11-03T17:02:18.882Z",
       "account": "@ChloexDorm21",
@@ -1177,27 +1198,6 @@
       "account": "@sophieclicks0",
       "type": "📊 TEXT_POLL_POST",
       "targetUrl": "https://x.com/sophieclicks0/status/2116289708569538779",
-      "detail": "Posted Vertical List Poll (No Link)"
-    },
-    {
-      "time": "2026-10-30T20:04:53.802Z",
-      "account": "@sophieclicks0",
-      "type": "💬 LIKED_AND_REPLIED",
-      "targetUrl": "https://x.com/Lexis_bella_/status/2115930332193034249",
-      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
-    },
-    {
-      "time": "2026-10-30T20:04:31.615Z",
-      "account": "@sophieclicks0",
-      "type": "💬 LIKED_AND_REPLIED",
-      "targetUrl": "https://x.com/Kieoffi777/status/2115920349955330497",
-      "detail": "Liked & commented: \"Couldn't post the unblurred version...\""
-    },
-    {
-      "time": "2026-10-30T20:04:07.958Z",
-      "account": "@sophieclicks0",
-      "type": "📊 TEXT_POLL_POST",
-      "targetUrl": "https://x.com/sophieclicks0/status/2116259825386700897",
       "detail": "Posted Vertical List Poll (No Link)"
     }
   ],
