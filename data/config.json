@@ -6,7 +6,7 @@
       "ct0": "962b5c5980d6893c420b2963e04e336f3a3a1a761ed0225a43a666eb8305dc6cda6c5a4fe2671d67419b137ef1daa487dc3e39a80cd62f7ae7a8c04727b7472fc8db384e7a81388836ac01e77b0d8c53",
       "postMode": "hybrid",
       "proxy": "",
-      "status": "active",
+      "status": "paused",
       "lastRunAt": "2026-11-04T06:05:51.945Z",
       "lastStatus": "✅ 🖼️ Image Card + 2 Replies"
     },
@@ -16,7 +16,7 @@
       "ct0": "6785ec10973a7245e60cf2645406f5f6ec94dbc62478eb8a9f06f80a731a6e2033beb617f347f72ea9c7be98e0363e1e88628831236ea838805d55a3c9cf1c3d6fecf82d2a235c8706218474d67a5a22",
       "postMode": "hybrid",
       "proxy": "",
-      "status": "active",
+      "status": "paused",
       "lastRunAt": "2026-11-04T12:03:11.418Z",
       "lastStatus": "✅ 🖼️ Image Card + 2 Replies"
     }
@@ -1214,7 +1214,7 @@
     "crossAccountBookmark": false,
     "maxAccountsPerRun": 1
   },
-  "updatedAt": "2026-11-01T06:33:39.333Z",
+  "updatedAt": "2026-11-04T12:39:27.579Z",
   "threadsAccounts": [],
   "polls": [
     "Would you kiss me even if I were {38|42} years old?\n\n︎\n◯ Yes\n︎\n︎\n◯ No\n︎\n︎\n◯ Age is just a number ❤️",
